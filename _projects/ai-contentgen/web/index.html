@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Content Generator — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+</head>
+<body>
+  <!-- Ambient Background -->
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <div id="shortcuts-modal" class="modal-overlay" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Keyboard Shortcuts</h3>
+        <button class="modal-close" onclick="document.getElementById('shortcuts-modal').hidden=true" aria-label="Close">&times;</button>
+      </div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>Enter</kbd><span>Generate content</span></div>
+        <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>C</kbd><span>Copy output</span></div>
+        <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>S</kbd><span>Save preferences</span></div>
+        <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>K</kbd><span>Focus search / topic</span></div>
+        <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>/</kbd><span>Toggle shortcuts</span></div>
+        <div class="shortcut-item"><kbd>Esc</kbd><span>Close modal / clear</span></div>
+        <div class="shortcut-item"><kbd>1</kbd>-<kbd>5</kbd><span>Select content type</span></div>
+        <div class="shortcut-item"><kbd>Tab</kbd><span>Navigate fields</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app">
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="#" class="nav-brand">
+          <span class="brand-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+            </svg>
+          </span>
+          <span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
+        </a>
+        <div class="nav-actions">
+          <button class="nav-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle dark/light">
+            <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <button class="nav-btn" onclick="document.getElementById('shortcuts-modal').hidden=false" title="Keyboard shortcuts (Ctrl+/)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h0M10 10h0M14 10h0M18 10h0M8 14h8"/></svg>
+          </button>
+          <div class="nav-tier" id="user-tier">
+            <span class="tier-badge">Free</span>
+            <a href="../pricing.html" class="upgrade-link">Upgrade</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="hero">
+      <div class="hero-content">
+        <div class="hero-badge">Powered by Claude AI</div>
+        <h1 class="hero-title">
+          Create <span class="gradient-text">brilliant</span> content<br>
+          in seconds, not hours.
+        </h1>
+        <p class="hero-subtitle">
+          Professional blog posts, social threads, documentation, and marketing copy — all generated with AI precision and your unique voice.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-value" data-count="5">0</span>
+            <span class="stat-label">Content Types</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" data-count="12">0</span>
+            <span class="stat-label">Export Formats</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">&#60;30s</span>
+            <span class="stat-label">Generation Time</span>
+          </div>
+        </div>
+        <button class="hero-cta" onclick="smoothScroll('#generator')">
+          Start Creating
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17l9.2-9.2M17 17V7.8H7.8"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Type Selector -->
+    <section class="section" id="generator">
+      <div class="section-inner">
+        <div class="section-header">
+          <h2 class="section-title">What would you like to create?</h2>
+          <p class="section-desc">Select a content type to get started. Press <kbd>1</kbd>-<kbd>5</kbd> for quick access.</p>
+        </div>
+
+        <div class="type-grid" id="type-grid">
+          <button class="type-card active" data-type="blog" data-key="1">
+            <div class="type-icon type-icon-blog">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <h3 class="type-name">Blog Post</h3>
+            <p class="type-desc">Articles, tutorials, opinion pieces</p>
+            <span class="type-key">1</span>
+          </button>
+
+          <button class="type-card" data-type="social" data-key="2">
+            <div class="type-icon type-icon-social">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l11.733 16h4.267l-11.733-16z"/><path d="M4 20l6.768-6.768M15.232 11.232L20 4"/></svg>
+            </div>
+            <h3 class="type-name">Social Media</h3>
+            <p class="type-desc">Twitter threads, LinkedIn posts</p>
+            <span class="type-key">2</span>
+          </button>
+
+          <button class="type-card" data-type="readme" data-key="3">
+            <div class="type-icon type-icon-readme">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h3 class="type-name">README</h3>
+            <p class="type-desc">GitHub READMEs from project analysis</p>
+            <span class="type-key">3</span>
+          </button>
+
+          <button class="type-card" data-type="marketing" data-key="4">
+            <div class="type-icon type-icon-marketing">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <h3 class="type-name">Marketing</h3>
+            <p class="type-desc">Landing pages, email campaigns</p>
+            <span class="type-key">4</span>
+          </button>
+
+          <button class="type-card" data-type="docs" data-key="5">
+            <div class="type-icon type-icon-docs">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </div>
+            <h3 class="type-name">Documentation</h3>
+            <p class="type-desc">API refs, guides, runbooks</p>
+            <span class="type-key">5</span>
+          </button>
+        </div>
+
+        <!-- Generator Form -->
+        <div class="generator-layout">
+          <div class="generator-form-panel">
+            <form id="gen-form" class="gen-form" autocomplete="off">
+              <h3 class="form-title" id="form-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Blog Post
+              </h3>
+
+              <!-- Topic -->
+              <div class="input-group">
+                <input type="text" id="topic" class="float-input" placeholder=" " required>
+                <label for="topic" class="float-label">Topic or title</label>
+                <div class="input-hint">What should this content be about?</div>
+              </div>
+
+              <!-- Audience -->
+              <div class="input-group">
+                <input type="text" id="audience" class="float-input" placeholder=" ">
+                <label for="audience" class="float-label">Target audience</label>
+                <div class="input-hint">e.g., "developers", "startup founders", "general public"</div>
+              </div>
+
+              <!-- Tone Selector -->
+              <div class="input-group">
+                <label class="select-label">Tone</label>
+                <div class="tone-chips" id="tone-chips">
+                  <button type="button" class="chip active" data-tone="professional">Professional</button>
+                  <button type="button" class="chip" data-tone="casual">Casual</button>
+                  <button type="button" class="chip" data-tone="enthusiastic">Enthusiastic</button>
+                  <button type="button" class="chip" data-tone="technical">Technical</button>
+                  <button type="button" class="chip" data-tone="witty">Witty</button>
+                  <button type="button" class="chip" data-tone="inspirational">Inspirational</button>
+                </div>
+              </div>
+
+              <!-- Length -->
+              <div class="input-group">
+                <label class="select-label">Length</label>
+                <div class="length-slider-wrap">
+                  <input type="range" id="length" class="length-slider" min="1" max="4" step="1" value="2">
+                  <div class="length-labels">
+                    <span>Brief</span>
+                    <span>Standard</span>
+                    <span>Detailed</span>
+                    <span>Comprehensive</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Keywords -->
+              <div class="input-group">
+                <input type="text" id="keywords" class="float-input" placeholder=" ">
+                <label for="keywords" class="float-label">Keywords (comma-separated)</label>
+                <div class="input-hint">SEO keywords to include naturally</div>
+              </div>
+
+              <!-- Export Format -->
+              <div class="input-group">
+                <label class="select-label">Export format</label>
+                <div class="format-toggles">
+                  <button type="button" class="format-btn active" data-format="markdown">Markdown</button>
+                  <button type="button" class="format-btn" data-format="html">HTML</button>
+                  <button type="button" class="format-btn" data-format="text">Plain Text</button>
+                </div>
+              </div>
+
+              <!-- Additional Context (collapsible) -->
+              <details class="advanced-section">
+                <summary class="advanced-toggle">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Advanced options
+                </summary>
+                <div class="advanced-content">
+                  <div class="input-group">
+                    <textarea id="context" class="float-input float-textarea" placeholder=" " rows="3"></textarea>
+                    <label for="context" class="float-label">Additional context or instructions</label>
+                  </div>
+                  <div class="input-group">
+                    <input type="text" id="cta" class="float-input" placeholder=" ">
+                    <label for="cta" class="float-label">Call to action</label>
+                  </div>
+                </div>
+              </details>
+
+              <!-- Generate Button -->
+              <button type="submit" class="generate-btn" id="generate-btn">
+                <span class="btn-content">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  Generate Content
+                </span>
+                <span class="btn-loading">
+                  <span class="spinner"></span>
+                  Creating magic...
+                </span>
+                <span class="btn-shortcut">Ctrl+Enter</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Output Panel -->
+          <div class="output-panel" id="output-panel">
+            <!-- Empty State -->
+            <div class="output-empty" id="output-empty">
+              <div class="empty-illustration">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">Your content will appear here</h3>
+              <p class="empty-desc">Fill in the form and hit Generate to create<br>beautiful, AI-powered content.</p>
+            </div>
+
+            <!-- Loading State -->
+            <div class="output-loading" id="output-loading" hidden>
+              <div class="loading-animation">
+                <div class="loading-orb"></div>
+                <div class="loading-rings">
+                  <div class="ring ring-1"></div>
+                  <div class="ring ring-2"></div>
+                  <div class="ring ring-3"></div>
+                </div>
+              </div>
+              <h3 class="loading-title">Crafting your content...</h3>
+              <div class="loading-steps" id="loading-steps">
+                <div class="loading-step active">
+                  <span class="step-dot"></span>
+                  <span>Analyzing your requirements</span>
+                </div>
+                <div class="loading-step">
+                  <span class="step-dot"></span>
+                  <span>Generating structure</span>
+                </div>
+                <div class="loading-step">
+                  <span class="step-dot"></span>
+                  <span>Writing content</span>
+                </div>
+                <div class="loading-step">
+                  <span class="step-dot"></span>
+                  <span>Polishing output</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Result State -->
+            <div class="output-result" id="output-result" hidden>
+              <div class="result-toolbar">
+                <div class="result-meta">
+                  <span class="result-type" id="result-type">Blog Post</span>
+                  <span class="result-words" id="result-words">0 words</span>
+                </div>
+                <div class="result-actions">
+                  <button class="action-btn" id="copy-btn" title="Copy to clipboard (Ctrl+C)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy</span>
+                  </button>
+                  <button class="action-btn" id="download-btn" title="Download">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download</span>
+                  </button>
+                  <button class="action-btn" id="regenerate-btn" title="Regenerate">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    <span>Redo</span>
+                  </button>
+                </div>
+              </div>
+              <div class="result-content" id="result-content" contenteditable="true" spellcheck="true"></div>
+              <div class="result-footer">
+                <span class="edit-hint">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  Click to edit inline
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Usage Stats -->
+    <section class="section section-alt" id="stats">
+      <div class="section-inner">
+        <div class="section-header">
+          <h2 class="section-title">Today's Usage</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stats-card">
+            <div class="stats-ring" data-progress="0" id="usage-ring">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                <circle cx="60" cy="60" r="52" class="ring-fill" id="usage-ring-fill"/>
+              </svg>
+              <div class="ring-label">
+                <span class="ring-value" id="usage-count">0</span>
+                <span class="ring-max">/ <span id="usage-max">5</span></span>
+              </div>
+            </div>
+            <span class="stats-card-label">Generations today</span>
+          </div>
+          <div class="stats-card">
+            <div class="stats-number" id="total-words">0</div>
+            <span class="stats-card-label">Words generated</span>
+          </div>
+          <div class="stats-card">
+            <div class="stats-number" id="fav-type">Blog</div>
+            <span class="stats-card-label">Most used type</span>
+          </div>
+          <div class="stats-card">
+            <div class="stats-number" id="time-saved">0 min</div>
+            <span class="stats-card-label">Time saved</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent History -->
+    <section class="section" id="history">
+      <div class="section-inner">
+        <div class="section-header">
+          <h2 class="section-title">Recent Creations</h2>
+          <button class="clear-btn" id="clear-history" title="Clear history">Clear all</button>
+        </div>
+        <div class="history-list" id="history-list">
+          <div class="history-empty">
+            <p>Your generated content will appear here. Start creating to build your library.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
+          <span class="footer-copy">Built by Little Boots</span>
+        </div>
+        <div class="footer-links">
+          <a href="../pricing.html">Pricing</a>
+          <a href="https://pypi.org/project/ai-contentgen/">PyPI</a>
+          <a href="#">Docs</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Drop Zone Overlay -->
+  <div class="drop-zone" id="drop-zone" hidden>
+    <div class="drop-zone-content">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <h3>Drop your file here</h3>
+      <p>Upload a file for context or README generation</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
