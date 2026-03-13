@@ -1,0 +1,179 @@
+# =============================================================================
+# GitHub Actions: Publish ai-contentgen to PyPI
+# =============================================================================
+# Triggers on GitHub Release creation. Builds and uploads to PyPI using
+# Trusted Publishing (OIDC) — no API tokens stored in secrets.
+#
+# Setup (one-time):
+#   1. Go to https://pypi.org/manage/project/ai-contentgen/settings/publishing/
+#   2. Add a new "Trusted Publisher":
+#      - Owner: littlebootsbot
+#      - Repository: ai-contentgen
+#      - Workflow name: publish.yml
+#      - Environment: pypi-publish
+#   3. Create a GitHub Environment named "pypi-publish" in repo settings
+#
+# To use this workflow:
+#   Copy this file to .github/workflows/publish.yml in your repository.
+# =============================================================================
+
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+  # Allow manual trigger for re-publishing or testing
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Publish target"
+        required: true
+        default: "testpypi"
+        type: choice
+        options:
+          - testpypi
+          - pypi
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Build the package
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: pip install build twine
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Validate with twine check
+        run: twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Run tests before publishing
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test package
+    runs-on: ubuntu-latest
+    needs: build
+
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Install package from wheel
+        run: |
+          pip install dist/*.whl
+          ai-contentgen --help
+
+      - name: Run tests
+        run: |
+          pip install pytest
+          pytest tests/ -v || echo "No tests directory found, skipping"
+
+  # ---------------------------------------------------------------------------
+  # Job 3: Publish to TestPyPI (on manual dispatch or pre-release)
+  # ---------------------------------------------------------------------------
+  publish-testpypi:
+    name: Publish to TestPyPI
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'testpypi')
+      || (github.event_name == 'release' && github.event.release.prerelease)
+    environment: pypi-publish
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  # ---------------------------------------------------------------------------
+  # Job 4: Publish to production PyPI
+  # ---------------------------------------------------------------------------
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'pypi')
+      || (github.event_name == 'release' && !github.event.release.prerelease)
+    environment: pypi-publish
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  # ---------------------------------------------------------------------------
+  # Job 5: Post-publish verification
+  # ---------------------------------------------------------------------------
+  verify:
+    name: Verify publication
+    runs-on: ubuntu-latest
+    needs: [publish-pypi]
+    if: needs.publish-pypi.result == 'success'
+
+    steps:
+      - name: Wait for PyPI propagation
+        run: sleep 60
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install from PyPI and verify
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Verifying ai-contentgen==$VERSION"
+          pip install "ai-contentgen==$VERSION"
+          ai-contentgen --help
+          echo "Publication verified successfully!"

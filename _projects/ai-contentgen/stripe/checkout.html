@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Generator — Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .checkout-container {
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 1.75rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+        .test-banner {
+            background: #fbbf24;
+            color: #0f172a;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .plan-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .plan-option {
+            flex: 1;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .plan-option:hover { border-color: #64748b; }
+        .plan-option.selected { border-color: #818cf8; }
+        .plan-option .name { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem; }
+        .plan-option .price { font-size: 1.5rem; font-weight: 800; }
+        .plan-option .price span { font-size: 0.85rem; font-weight: 400; color: #94a3b8; }
+        .plan-option .desc { font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; }
+
+        .form-section {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #818cf8;
+        }
+        #card-element {
+            padding: 0.75rem;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            background: #0f172a;
+        }
+        #card-errors {
+            color: #f87171;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            min-height: 1.2em;
+        }
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #818cf8, #38bdf8);
+            color: #0f172a;
+            margin-top: 1.5rem;
+            transition: opacity 0.2s;
+        }
+        .checkout-btn:hover { opacity: 0.88; }
+        .checkout-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .checkout-btn .spinner {
+            display: none;
+        }
+        .checkout-btn.loading .spinner {
+            display: inline-block;
+        }
+        .checkout-btn.loading .btn-text {
+            display: none;
+        }
+        .secure-note {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .order-summary {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .order-summary h3 { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+        .order-line { display: flex; justify-content: space-between; padding: 0.4rem 0; }
+        .order-line.total { border-top: 1px solid #334155; padding-top: 0.75rem; margin-top: 0.5rem; font-weight: 700; font-size: 1.1rem; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: #94a3b8; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(15, 23, 42, 0.3);
+            border-top-color: #0f172a;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+    <div class="test-banner" id="test-banner">TEST MODE — Use card 4242 4242 4242 4242</div>
+
+    <h1>Checkout</h1>
+    <p class="subtitle">Subscribe to AI Content Generator</p>
+
+    <!-- Plan Selector -->
+    <div class="plan-selector">
+        <div class="plan-option selected" data-plan="pro" onclick="selectPlan('pro')">
+            <div class="name">Pro</div>
+            <div class="price">$9<span>/mo</span></div>
+            <div class="desc">Unlimited generations</div>
+        </div>
+        <div class="plan-option" data-plan="enterprise" onclick="selectPlan('enterprise')">
+            <div class="name">Enterprise</div>
+            <div class="price">$29<span>/mo</span></div>
+            <div class="desc">Teams & API access</div>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+        <h3>Order Summary</h3>
+        <div class="order-line">
+            <span id="plan-name">AI Content Generator — Pro</span>
+            <span id="plan-price">$9.00/mo</span>
+        </div>
+        <div class="order-line total">
+            <span>Total</span>
+            <span id="total-price">$9.00/mo</span>
+        </div>
+    </div>
+
+    <!-- Payment Form -->
+    <form id="payment-form" class="form-section">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name on card</label>
+            <input type="text" id="name" placeholder="Full name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Card details</label>
+            <div id="card-element"></div>
+            <div id="card-errors" role="alert"></div>
+        </div>
+
+        <button type="submit" class="checkout-btn" id="submit-btn">
+            <span class="btn-text">Subscribe — $9.00/mo</span>
+            <span class="spinner"></span>
+        </button>
+    </form>
+
+    <p class="secure-note">Payments processed securely by Stripe. Cancel anytime.</p>
+    <a href="../pricing.html" class="back-link">&larr; Back to pricing</a>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION — Replace these values with your Stripe details
+// ============================================================
+
+// Your Stripe publishable key (pk_test_ for testing, pk_live_ for production)
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_PUBLISHABLE_KEY_HERE';
+
+// Your Stripe price IDs (created in the Stripe Dashboard under Products)
+const PRICE_IDS = {
+    pro: 'price_YOUR_PRO_PRICE_ID',
+    enterprise: 'price_YOUR_ENTERPRISE_PRICE_ID'
+};
+
+// Redirect URLs after checkout
+const SUCCESS_URL = './success.html';
+const CANCEL_URL = './cancel.html';
+
+// ============================================================
+// CHECKOUT LOGIC
+// ============================================================
+
+const PLANS = {
+    pro: { name: 'AI Content Generator — Pro', price: '$9.00/mo', amount: 900 },
+    enterprise: { name: 'AI Content Generator — Enterprise', price: '$29.00/mo', amount: 2900 }
+};
+
+let selectedPlan = 'pro';
+
+// Initialize Stripe
+const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+const elements = stripe.elements();
+
+// Create card element with dark theme
+const cardElement = elements.create('card', {
+    style: {
+        base: {
+            color: '#e2e8f0',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontSize: '16px',
+            '::placeholder': { color: '#64748b' }
+        },
+        invalid: { color: '#f87171' }
+    }
+});
+cardElement.mount('#card-element');
+
+// Show card validation errors
+cardElement.on('change', function(event) {
+    const errorEl = document.getElementById('card-errors');
+    errorEl.textContent = event.error ? event.error.message : '';
+});
+
+// Plan selection
+function selectPlan(plan) {
+    selectedPlan = plan;
+    document.querySelectorAll('.plan-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.plan === plan);
+    });
+    document.getElementById('plan-name').textContent = PLANS[plan].name;
+    document.getElementById('plan-price').textContent = PLANS[plan].price;
+    document.getElementById('total-price').textContent = PLANS[plan].price;
+    document.querySelector('.btn-text').textContent = `Subscribe — ${PLANS[plan].price}`;
+}
+
+// Check URL params for pre-selected plan
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('plan') === 'enterprise') {
+    selectPlan('enterprise');
+}
+
+// Handle test mode banner
+if (STRIPE_PUBLISHABLE_KEY.includes('pk_live_')) {
+    document.getElementById('test-banner').style.display = 'none';
+}
+
+// Form submission
+document.getElementById('payment-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+
+    const email = document.getElementById('email').value;
+    const name = document.getElementById('name').value;
+
+    // ============================================================
+    // OPTION 1: Stripe Checkout (Redirect) — Recommended
+    // This redirects to Stripe's hosted checkout page.
+    // Requires a server-side endpoint to create the session.
+    // ============================================================
+
+    // If you have a backend, create a Checkout Session:
+    //
+    // try {
+    //     const response = await fetch('/api/create-checkout-session', {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({
+    //             priceId: PRICE_IDS[selectedPlan],
+    //             customerEmail: email,
+    //             successUrl: window.location.origin + SUCCESS_URL,
+    //             cancelUrl: window.location.origin + CANCEL_URL
+    //         })
+    //     });
+    //     const session = await response.json();
+    //     await stripe.redirectToCheckout({ sessionId: session.id });
+    // } catch (err) {
+    //     document.getElementById('card-errors').textContent = err.message;
+    //     submitBtn.disabled = false;
+    //     submitBtn.classList.remove('loading');
+    // }
+
+    // ============================================================
+    // OPTION 2: Stripe Payment Links (No Backend Required)
+    // Simplest option for static sites / GitHub Pages.
+    // Replace the URLs below with your actual Stripe Payment Links.
+    // ============================================================
+
+    const paymentLinks = {
+        pro: 'https://buy.stripe.com/YOUR_PRO_PAYMENT_LINK',
+        enterprise: 'https://buy.stripe.com/YOUR_ENTERPRISE_PAYMENT_LINK'
+    };
+
+    // Redirect to Stripe Payment Link
+    window.location.href = paymentLinks[selectedPlan] + '?prefilled_email=' + encodeURIComponent(email);
+
+    // Reset button state (in case redirect is slow)
+    setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
+    }, 5000);
+});
+</script>
+
+</body>
+</html>

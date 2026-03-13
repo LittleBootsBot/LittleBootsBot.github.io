@@ -1,0 +1,35 @@
+# =============================================================================
+# PyPI Authentication Configuration Template
+# =============================================================================
+# Copy this file to ~/.pypirc and fill in your credentials.
+#
+#   cp .pypirc.template ~/.pypirc
+#   chmod 600 ~/.pypirc
+#
+# SECURITY: Never commit ~/.pypirc to version control.
+# Prefer API tokens over username/password authentication.
+#
+# To generate an API token:
+#   1. Go to https://pypi.org/manage/account/token/
+#   2. Create a token scoped to the "ai-contentgen" project
+#   3. Copy the token (starts with "pypi-")
+#   4. Paste it as the password below with username "__token__"
+#
+# For TestPyPI tokens:
+#   1. Go to https://test.pypi.org/manage/account/token/
+#   2. Follow the same steps as above
+# =============================================================================
+
+[distutils]
+index-servers =
+    pypi
+    testpypi
+
+[pypi]
+username = __token__
+password = pypi-REPLACE_WITH_YOUR_PYPI_API_TOKEN
+
+[testpypi]
+repository = https://test.pypi.org/legacy/
+username = __token__
+password = pypi-REPLACE_WITH_YOUR_TESTPYPI_API_TOKEN

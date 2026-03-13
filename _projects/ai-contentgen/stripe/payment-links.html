@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Generator — Payment Links</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #94a3b8; margin-bottom: 3rem; }
+        .links { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; }
+        .plan-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            padding: 2.5rem 2rem;
+            width: 320px;
+            text-align: center;
+        }
+        .plan-card.pro { border-color: #818cf8; }
+        .plan-name { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .plan-price { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .plan-price span { font-size: 1rem; font-weight: 400; color: #94a3b8; }
+        .plan-features {
+            list-style: none;
+            text-align: left;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+        .plan-features li { padding: 0.35rem 0; }
+        .plan-features li::before { content: "\2713 "; color: #34d399; font-weight: 700; }
+        .pay-btn {
+            display: block;
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+        .pay-btn:hover { opacity: 0.88; }
+        .pay-btn.pro-btn {
+            background: linear-gradient(135deg, #818cf8, #38bdf8);
+            color: #0f172a;
+        }
+        .pay-btn.ent-btn {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .test-banner {
+            background: #fbbf24;
+            color: #0f172a;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+        footer { margin-top: 3rem; color: #475569; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="test-banner">TEST MODE — No real charges will be made</div>
+
+<h1>Subscribe to AI Content Generator</h1>
+<p class="subtitle">Choose your plan to get started</p>
+
+<div class="links">
+    <!-- Pro Plan -->
+    <div class="plan-card pro">
+        <p class="plan-name">Pro</p>
+        <p class="plan-price">$9<span>/month</span></p>
+        <ul class="plan-features">
+            <li>Unlimited content generations</li>
+            <li>All content templates</li>
+            <li>Advanced tone & style controls</li>
+            <li>Priority processing</li>
+            <li>Export to MD, HTML & PDF</li>
+        </ul>
+        <!--
+            INSTRUCTIONS: Replace the href below with your Stripe Payment Link.
+            Create one at: https://dashboard.stripe.com/payment-links
+            Example: https://buy.stripe.com/test_abc123
+        -->
+        <a href="https://buy.stripe.com/YOUR_PRO_PAYMENT_LINK" class="pay-btn pro-btn" id="pro-link">
+            Subscribe to Pro — $9/mo
+        </a>
+    </div>
+
+    <!-- Enterprise Plan -->
+    <div class="plan-card">
+        <p class="plan-name">Enterprise</p>
+        <p class="plan-price">$29<span>/month</span></p>
+        <ul class="plan-features">
+            <li>Everything in Pro</li>
+            <li>Team collaboration</li>
+            <li>Custom brand voice profiles</li>
+            <li>API access</li>
+            <li>Priority support</li>
+        </ul>
+        <!--
+            INSTRUCTIONS: Replace the href below with your Stripe Payment Link.
+            Create one at: https://dashboard.stripe.com/payment-links
+            Example: https://buy.stripe.com/test_xyz789
+        -->
+        <a href="https://buy.stripe.com/YOUR_ENTERPRISE_PAYMENT_LINK" class="pay-btn ent-btn" id="ent-link">
+            Subscribe to Enterprise — $29/mo
+        </a>
+    </div>
+</div>
+
+<footer>&copy; 2026 AI Content Generator. Powered by Stripe.</footer>
+
+</body>
+</html>

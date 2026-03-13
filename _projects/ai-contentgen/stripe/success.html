@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful — AI Content Generator</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 520px;
+            text-align: center;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #34d399, #10b981);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2.5rem;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .message {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .steps {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        .steps h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+        .steps ol {
+            list-style: none;
+            counter-reset: step;
+        }
+        .steps li {
+            counter-increment: step;
+            padding: 0.6rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: #334155;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #818cf8;
+        }
+        .steps code {
+            background: #0f172a;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            color: #38bdf8;
+        }
+        .btn-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            padding: 0.85rem 1.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.88; }
+        .btn-primary {
+            background: linear-gradient(135deg, #818cf8, #38bdf8);
+            color: #0f172a;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #334155;
+            color: #e2e8f0;
+        }
+        .support {
+            margin-top: 2.5rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .support a { color: #818cf8; text-decoration: none; }
+        .support a:hover { text-decoration: underline; }
+        .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+    </style>
+</head>
+<body>
+
+<canvas class="confetti" id="confetti"></canvas>
+
+<div class="container">
+    <div class="icon">&#10003;</div>
+    <h1>Payment Successful!</h1>
+    <p class="message">
+        Welcome to AI Content Generator Pro! Your subscription is now active
+        and you have access to all premium features.
+    </p>
+
+    <div class="steps">
+        <h3>Get started</h3>
+        <ol>
+            <li>Install the CLI: <code>pip install ai-contentgen</code></li>
+            <li>Activate your license: <code>ai-contentgen activate</code></li>
+            <li>Check your email for your license key and receipt</li>
+            <li>Start generating: <code>ai-contentgen blog --topic "Your Topic"</code></li>
+        </ol>
+    </div>
+
+    <div class="btn-group">
+        <a href="https://pypi.org/project/ai-contentgen/" class="btn btn-primary">Download CLI</a>
+        <a href="../pricing.html" class="btn btn-outline">View Plans</a>
+    </div>
+
+    <p class="support">
+        Need help? <a href="mailto:support@openclaw.dev">Contact support</a> or check the
+        <a href="../README.md">documentation</a>.
+    </p>
+</div>
+
+<script>
+// Simple confetti animation
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const colors = ['#818cf8', '#38bdf8', '#34d399', '#fbbf24', '#f87171'];
+const pieces = [];
+
+for (let i = 0; i < 100; i++) {
+    pieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 8 + 4,
+        h: Math.random() * 4 + 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vy: Math.random() * 3 + 2,
+        vx: (Math.random() - 0.5) * 2,
+        rotation: Math.random() * 360,
+        rv: (Math.random() - 0.5) * 10
+    });
+}
+
+let frame = 0;
+function animate() {
+    if (frame > 180) return; // Stop after ~3 seconds
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+        p.y += p.vy;
+        p.x += p.vx;
+        p.rotation += p.rv;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+    });
+    frame++;
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
