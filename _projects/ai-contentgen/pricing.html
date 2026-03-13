@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Generator — Pricing</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 1rem 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1080px;
+            margin: 2rem auto 4rem;
+            padding: 0 1.5rem;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover { transform: translateY(-4px); }
+
+        .card.featured {
+            border-color: #818cf8;
+            box-shadow: 0 0 30px rgba(129, 140, 248, 0.15);
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #818cf8, #38bdf8);
+            color: #0f172a;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.3rem 1rem;
+            border-radius: 999px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .card .subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #94a3b8;
+        }
+
+        .features {
+            list-style: none;
+            margin: 1.5rem 0;
+            flex: 1;
+        }
+
+        .features li {
+            padding: 0.45rem 0;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .features li::before {
+            content: "\2713";
+            color: #34d399;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .features li.disabled {
+            color: #475569;
+        }
+
+        .features li.disabled::before {
+            content: "\2014";
+            color: #475569;
+        }
+
+        .cta {
+            display: block;
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .cta:hover { opacity: 0.88; }
+
+        .cta-outline {
+            background: transparent;
+            border: 2px solid #334155;
+            color: #e2e8f0;
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, #818cf8, #38bdf8);
+            color: #0f172a;
+        }
+
+        .cta-dark {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Comparison Table */
+        .comparison {
+            max-width: 1080px;
+            margin: 0 auto 5rem;
+            padding: 0 1.5rem;
+        }
+
+        .comparison h2 {
+            text-align: center;
+            font-size: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .comparison table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison th,
+        .comparison td {
+            padding: 0.85rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .comparison th {
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .comparison td:first-child,
+        .comparison th:first-child {
+            text-align: left;
+            color: #cbd5e1;
+        }
+
+        .comparison tr:hover td { background: #1e293b; }
+
+        .check { color: #34d399; }
+        .cross { color: #475569; }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #475569;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            header h1 { font-size: 1.75rem; }
+            .price { font-size: 2.25rem; }
+            .comparison { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>AI Content Generator</h1>
+    <p>Choose the plan that fits your content creation needs. Upgrade or cancel anytime.</p>
+</header>
+
+<section class="pricing-grid">
+
+    <!-- Free -->
+    <div class="card">
+        <h2>Free</h2>
+        <p class="subtitle">Get started at no cost</p>
+        <p class="price">$0<span>/month</span></p>
+        <ul class="features">
+            <li>5 content generations per month</li>
+            <li>Blog post &amp; social media templates</li>
+            <li>Basic tone controls</li>
+            <li class="disabled">Priority processing</li>
+            <li class="disabled">Team collaboration</li>
+            <li class="disabled">Custom brand voice</li>
+        </ul>
+        <a href="#" class="cta cta-outline">Get Started Free</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="card featured">
+        <span class="badge">Most Popular</span>
+        <h2>Pro</h2>
+        <p class="subtitle">For creators who mean business</p>
+        <p class="price">$9<span>/month</span></p>
+        <ul class="features">
+            <li>Unlimited content generations</li>
+            <li>All content templates</li>
+            <li>Advanced tone &amp; style controls</li>
+            <li>Priority processing</li>
+            <li>Export to Markdown, HTML &amp; PDF</li>
+            <li class="disabled">Team collaboration</li>
+        </ul>
+        <a href="#" class="cta cta-primary">Start Pro Trial</a>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="card">
+        <h2>Enterprise</h2>
+        <p class="subtitle">Built for teams at scale</p>
+        <p class="price">$29<span>/month</span></p>
+        <ul class="features">
+            <li>Unlimited content generations</li>
+            <li>All Pro features included</li>
+            <li>Team collaboration &amp; shared workspace</li>
+            <li>Custom brand voice profiles</li>
+            <li>API access</li>
+            <li>Priority support</li>
+        </ul>
+        <a href="#" class="cta cta-dark">Contact Sales</a>
+    </div>
+
+</section>
+
+<section class="comparison">
+    <h2>Feature Comparison</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Free</th>
+                <th>Pro</th>
+                <th>Enterprise</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Monthly generations</td>
+                <td>5</td>
+                <td>Unlimited</td>
+                <td>Unlimited</td>
+            </tr>
+            <tr>
+                <td>Content templates</td>
+                <td>Basic</td>
+                <td>All</td>
+                <td>All + Custom</td>
+            </tr>
+            <tr>
+                <td>Tone &amp; style controls</td>
+                <td>Basic</td>
+                <td>Advanced</td>
+                <td>Advanced</td>
+            </tr>
+            <tr>
+                <td>Priority processing</td>
+                <td class="cross">&#x2014;</td>
+                <td class="check">&#x2713;</td>
+                <td class="check">&#x2713;</td>
+            </tr>
+            <tr>
+                <td>Export formats</td>
+                <td>Text</td>
+                <td>MD / HTML / PDF</td>
+                <td>MD / HTML / PDF</td>
+            </tr>
+            <tr>
+                <td>Team collaboration</td>
+                <td class="cross">&#x2014;</td>
+                <td class="cross">&#x2014;</td>
+                <td class="check">&#x2713;</td>
+            </tr>
+            <tr>
+                <td>Custom brand voice</td>
+                <td class="cross">&#x2014;</td>
+                <td class="cross">&#x2014;</td>
+                <td class="check">&#x2713;</td>
+            </tr>
+            <tr>
+                <td>API access</td>
+                <td class="cross">&#x2014;</td>
+                <td class="cross">&#x2014;</td>
+                <td class="check">&#x2713;</td>
+            </tr>
+            <tr>
+                <td>Support</td>
+                <td>Community</td>
+                <td>Email</td>
+                <td>Priority</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<footer>
+    &copy; 2026 AI Content Generator. All rights reserved.
+</footer>
+
+</body>
+</html>
