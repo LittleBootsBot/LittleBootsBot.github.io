@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Features — ContentGenAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<style>
+:root {
+  --bg:#0a0b0f;--bg-card:#13151c;--bg-elevated:#1a1d27;
+  --text:#e8eaf0;--text-secondary:#8b8fa4;
+  --accent:#6384ff;--success:#34d399;--warning:#fbbf24;--error:#f87171;
+  --gradient:linear-gradient(135deg,#6384ff 0%,#a855f7 50%,#ec4899 100%);
+  --radius:12px;--radius-sm:8px;--transition:.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* Ambient */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15}
+.orb-1{width:600px;height:600px;background:#6384ff;top:-200px;left:-200px;animation:drift1 20s infinite alternate}
+.orb-2{width:500px;height:500px;background:#a855f7;bottom:-100px;right:-100px;animation:drift2 25s infinite alternate}
+.orb-3{width:400px;height:400px;background:#ec4899;top:40%;left:50%;animation:drift3 18s infinite alternate}
+@keyframes drift1{to{transform:translate(80px,60px)}}
+@keyframes drift2{to{transform:translate(-60px,-80px)}}
+@keyframes drift3{to{transform:translate(-80px,40px)}}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.brand-icon{width:36px;height:36px;background:var(--gradient);border-radius:10px;display:grid;place-items:center}
+.brand-text{font-weight:700;font-size:1.1rem}
+.brand-ai{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:8px}
+.nav-link{padding:6px 14px;border-radius:var(--radius-sm);color:var(--text-secondary);text-decoration:none;font-size:.875rem;transition:var(--transition)}
+.nav-link:hover,.nav-link.active{color:var(--text);background:var(--bg-elevated)}
+.nav-link.active{color:var(--accent)}
+
+/* Layout */
+.container{max-width:1200px;margin:0 auto;padding:40px 24px;position:relative;z-index:1}
+.page-header{text-align:center;margin-bottom:48px}
+.page-header h1{font-size:2.5rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+.page-header p{color:var(--text-secondary);font-size:1.05rem}
+
+/* Tab Navigation */
+.tab-nav{display:flex;gap:4px;background:var(--bg-card);border-radius:var(--radius);padding:4px;margin-bottom:36px;overflow-x:auto}
+.tab-btn{flex:1;min-width:120px;padding:10px 16px;border:none;background:transparent;color:var(--text-secondary);border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;font-size:.875rem;font-weight:500;transition:var(--transition);white-space:nowrap}
+.tab-btn:hover{color:var(--text);background:var(--bg-elevated)}
+.tab-btn.active{background:var(--bg-elevated);color:var(--accent);box-shadow:0 0 0 1px rgba(99,132,255,.3)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Cards */
+.card{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:24px;transition:var(--transition)}
+.card:hover{border-color:rgba(99,132,255,.2)}
+.card-grid{display:grid;gap:16px}
+@media(min-width:640px){.card-grid.cols-2{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.card-grid.cols-3{grid-template-columns:repeat(3,1fr)}.card-grid.cols-4{grid-template-columns:repeat(4,1fr)}}
+
+/* Inputs */
+input,textarea,select{width:100%;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.9rem;padding:10px 14px;outline:none;transition:var(--transition);resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,132,255,.1)}
+textarea{min-height:120px;line-height:1.6}
+label{display:block;font-size:.8rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:inherit;font-size:.875rem;font-weight:600;transition:var(--transition)}
+.btn-primary{background:var(--gradient);color:#fff}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid rgba(255,255,255,.1)}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2);background:var(--bg-elevated)}
+.btn-sm{padding:6px 12px;font-size:.8rem}
+.btn-accent{background:rgba(99,132,255,.15);color:var(--accent);border:1px solid rgba(99,132,255,.3)}
+.btn-accent:hover{background:rgba(99,132,255,.25)}
+.btn-success{background:rgba(52,211,153,.15);color:var(--success);border:1px solid rgba(52,211,153,.3)}
+
+/* Tags/Badges */
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:500;background:rgba(99,132,255,.12);color:var(--accent)}
+.tag-purple{background:rgba(168,85,247,.12);color:#a855f7}
+.tag-pink{background:rgba(236,72,153,.12);color:#ec4899}
+.tag-success{background:rgba(52,211,153,.12);color:var(--success)}
+.tag-warning{background:rgba(251,191,36,.12);color:var(--warning)}
+
+/* Search bar */
+.search-bar{position:relative;margin-bottom:16px}
+.search-bar input{padding-left:40px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-secondary);pointer-events:none}
+
+/* Filter tabs */
+.filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.filter-tab{padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:.8rem;font-weight:500;font-family:inherit;transition:var(--transition)}
+.filter-tab:hover{border-color:rgba(99,132,255,.3);color:var(--text)}
+.filter-tab.active{background:rgba(99,132,255,.15);border-color:rgba(99,132,255,.4);color:var(--accent)}
+
+/* Template card */
+.tpl-card{cursor:pointer;position:relative;overflow:hidden}
+.tpl-card::before{content:'';position:absolute;inset:0;background:var(--gradient);opacity:0;transition:var(--transition)}
+.tpl-card:hover::before{opacity:.04}
+.tpl-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.tpl-title{font-weight:600;font-size:.95rem}
+.tpl-preview{font-size:.8rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:10px 0}
+.tpl-tags{display:flex;flex-wrap:wrap;gap:4px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal-overlay[hidden]{display:none}
+.modal{background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:16px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06)}
+.modal-header h3{font-weight:700}
+.modal-close{background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.4rem;padding:4px;line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:24px}
+.modal-preview{background:var(--bg-elevated);border-radius:var(--radius-sm);padding:16px;font-size:.85rem;line-height:1.7;min-height:120px;margin-top:12px;white-space:pre-wrap;border:1px solid rgba(255,255,255,.06)}
+
+/* Gauge rings */
+.gauges-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin:24px 0}
+.gauge-item{text-align:center}
+.gauge-ring{width:100px;height:100px;margin:0 auto 8px}
+.gauge-ring svg{width:100%;height:100%}
+.gauge-label{font-size:.8rem;color:var(--text-secondary)}
+.gauge-val{font-size:1.1rem;font-weight:700;color:var(--text)}
+
+/* Suggestions list */
+.suggestion-item{background:var(--bg-elevated);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
+.suggestion-item .sug-cat{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 6px;border-radius:4px;white-space:nowrap;margin-top:2px}
+.sug-clarity{background:rgba(99,132,255,.15);color:var(--accent)}
+.sug-engage{background:rgba(168,85,247,.15);color:#a855f7}
+.sug-seo{background:rgba(52,211,153,.15);color:var(--success)}
+.sug-read{background:rgba(251,191,36,.15);color:var(--warning)}
+.sug-text{font-size:.85rem;line-height:1.5;flex:1}
+.sug-original{font-family:'JetBrains Mono',monospace;background:rgba(248,113,113,.1);color:var(--error);border-radius:4px;padding:1px 4px}
+.sug-improved{font-family:'JetBrains Mono',monospace;background:rgba(52,211,153,.1);color:var(--success);border-radius:4px;padding:1px 4px}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px;background:var(--bg-elevated);border-radius:var(--radius-sm);margin-bottom:16px;font-size:.8rem}
+.stat-item{display:flex;align-items:center;gap:6px;color:var(--text-secondary)}
+.stat-item strong{color:var(--text)}
+
+/* Mixer */
+.mixer-grid{display:grid;gap:16px}
+@media(min-width:768px){.mixer-grid{grid-template-columns:repeat(3,1fr)}}
+.mixer-viz{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;background:var(--bg-elevated);border-radius:var(--radius);margin:20px 0;overflow:hidden}
+.mix-orb{width:60px;height:60px;border-radius:50%;animation:pulse-mix 2s infinite alternate}
+.mix-orb-1{background:rgba(99,132,255,.5)}
+.mix-orb-2{background:rgba(168,85,247,.5);animation-delay:.5s}
+.mix-orb-3{background:rgba(236,72,153,.5);animation-delay:1s}
+.mix-arrow{color:var(--text-secondary);font-size:1.2rem}
+@keyframes pulse-mix{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.15);opacity:1}}
+.mix-result{background:var(--bg-elevated);border-radius:var(--radius);padding:20px;min-height:120px;font-size:.9rem;line-height:1.7;white-space:pre-wrap}
+.source-a{background:rgba(99,132,255,.15);border-radius:3px;padding:0 3px}
+.source-b{background:rgba(168,85,247,.15);border-radius:3px;padding:0 3px}
+.source-c{background:rgba(236,72,153,.15);border-radius:3px;padding:0 3px}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.slider-row label{width:80px;font-size:.8rem;margin:0}
+input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--accent)}
+
+/* A/B */
+.ab-grid{display:grid;gap:20px}
+@media(min-width:768px){.ab-grid{grid-template-columns:1fr 1fr}}
+.ab-panel{border:2px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;position:relative}
+.ab-panel.winner{border-color:var(--success);box-shadow:0 0 20px rgba(52,211,153,.15)}
+.winner-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gradient);color:#fff;padding:3px 12px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
+.ab-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;color:var(--text-secondary)}
+.ab-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+.metric-item{background:var(--bg-elevated);border-radius:var(--radius-sm);padding:10px;text-align:center}
+.metric-val{font-size:1.1rem;font-weight:700}
+.metric-label{font-size:.7rem;color:var(--text-secondary);margin-top:2px}
+.diff-add{background:rgba(52,211,153,.15);text-decoration:none}
+.diff-del{background:rgba(248,113,113,.15);text-decoration:line-through}
+.diff-view{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.8;background:var(--bg-elevated);padding:16px;border-radius:var(--radius-sm);white-space:pre-wrap;max-height:200px;overflow-y:auto}
+
+/* Export */
+.export-card{background:var(--bg-elevated);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;cursor:pointer;transition:var(--transition);text-align:center}
+.export-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.export-card.selected{border-color:var(--accent);background:rgba(99,132,255,.08)}
+.export-icon{font-size:2rem;margin-bottom:8px}
+.export-name{font-weight:700;font-size:.95rem}
+.export-desc{font-size:.75rem;color:var(--text-secondary);margin-top:4px}
+
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-head{text-align:center;font-size:.7rem;font-weight:700;color:var(--text-secondary);padding:8px 0;text-transform:uppercase}
+.cal-cell{background:var(--bg-card);border:1px solid rgba(255,255,255,.04);border-radius:6px;min-height:80px;padding:6px;cursor:pointer;transition:var(--transition);position:relative}
+.cal-cell:hover{border-color:var(--accent);background:var(--bg-elevated)}
+.cal-cell.today{border-color:var(--accent);box-shadow:0 0 12px rgba(99,132,255,.2)}
+.cal-cell.other{opacity:.35}
+.cal-num{font-size:.75rem;font-weight:600;margin-bottom:4px}
+.cal-item{font-size:.6rem;padding:2px 5px;border-radius:4px;margin-bottom:2px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.cal-legend{font-size:.75rem;color:var(--text-secondary);display:flex;gap:16px;flex-wrap:wrap}
+.align-center{align-items:center}
+.mb-0{margin-bottom:0}
+
+/* Utility */
+.flex{display:flex}.gap-8{gap:8px}.gap-12{gap:12px}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-wrap{flex-wrap:wrap}
+.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}.mt-24{margin-top:24px}
+.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}
+.text-sm{font-size:.875rem}.text-xs{font-size:.75rem}.text-secondary{color:var(--text-secondary)}
+.section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px}
+.empty-state{text-align:center;padding:40px;color:var(--text-secondary)}
+
+/* Personality chip */
+.personality{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:.9rem;margin-bottom:16px}
+
+/* Suggestions toggle */
+.sug-toggles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sug-toggle{padding:4px 12px;border-radius:20px;border:1px solid;cursor:pointer;font-size:.75rem;font-weight:600;font-family:inherit;background:transparent;transition:var(--transition)}
+.sug-toggle[data-cat=clarity]{border-color:rgba(99,132,255,.4);color:var(--accent)}
+.sug-toggle[data-cat=clarity].off{opacity:.35}
+.sug-toggle[data-cat=engage]{border-color:rgba(168,85,247,.4);color:#a855f7}
+.sug-toggle[data-cat=engage].off{opacity:.35}
+.sug-toggle[data-cat=seo]{border-color:rgba(52,211,153,.4);color:var(--success)}
+.sug-toggle[data-cat=seo].off{opacity:.35}
+.sug-toggle[data-cat=read]{border-color:rgba(251,191,36,.4);color:var(--warning)}
+.sug-toggle[data-cat=read].off{opacity:.35}
+
+/* Fade-up animation */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+.fade-up.visible{opacity:1;transform:none}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+<div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<!-- Template Modal -->
+<div id="tpl-modal" class="modal-overlay" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Template Preview</h3>
+      <button class="modal-close" onclick="closeTplModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-category" class="mb-8"></div>
+      <p id="modal-desc" class="text-sm text-secondary mb-16"></p>
+      <div class="card-grid cols-2 mb-16" id="modal-inputs"></div>
+      <label>Live Preview</label>
+      <div class="modal-preview mono" id="modal-preview"></div>
+      <div class="flex gap-8 mt-16">
+        <button class="btn btn-primary" onclick="copyModalPreview()">Copy to Clipboard</button>
+        <button class="btn btn-ghost" onclick="closeTplModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="social.html" class="nav-link">Social</a>
+      <a href="advanced.html" class="nav-link active">Advanced</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-header fade-up">
+    <h1>Advanced Features</h1>
+    <p>Powerful tools for professional content creation and optimization</p>
+  </div>
+
+  <div class="tab-nav fade-up" id="tab-nav"></div>
+
+  <!-- Panel 1: Templates -->
+  <div class="tab-panel active" id="panel-templates">
+    <div class="search-bar fade-up">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="tpl-search" placeholder="Search templates…" oninput="filterTemplates()">
+    </div>
+    <div class="filter-tabs fade-up" id="tpl-filters"></div>
+    <div class="card-grid cols-3" id="tpl-grid"></div>
+  </div>
+
+  <!-- Panel 2: Style Analyzer -->
+  <div class="tab-panel" id="panel-analyzer">
+    <div class="card-grid cols-2">
+      <div class="card fade-up">
+        <div class="section-title">Input Text</div>
+        <textarea id="analyzer-input" placeholder="Paste your content here to analyze style, readability, and tone…" style="min-height:220px" oninput="scheduleAnalysis()"></textarea>
+        <div class="flex gap-8 mt-12">
+          <button class="btn btn-primary btn-sm" onclick="runAnalysis()">Analyze Now</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('analyzer-input').value='';runAnalysis()">Clear</button>
+        </div>
+      </div>
+      <div class="card fade-up">
+        <div class="section-title">Writing Personality</div>
+        <div id="personality-chip" class="personality" style="background:rgba(99,132,255,.1);color:var(--accent)">—</div>
+        <div class="gauges-grid" id="gauges"></div>
+      </div>
+    </div>
+    <div class="card mt-16 fade-up">
+      <div class="section-title">Suggestions</div>
+      <div id="analysis-suggestions" class="text-secondary text-sm">Analyze your text to receive suggestions.</div>
+    </div>
+  </div>
+
+  <!-- Panel 3: Real-time Suggestions -->
+  <div class="tab-panel" id="panel-suggestions">
+    <div class="card-grid cols-2">
+      <div class="fade-up">
+        <div class="card">
+          <div class="section-title">Editor</div>
+          <textarea id="sug-input" placeholder="Start writing… suggestions appear as you type." style="min-height:300px" oninput="scheduleSuggestions()"></textarea>
+        </div>
+        <div class="stats-bar mt-8 fade-up" id="sug-stats">
+          <span class="stat-item">Words: <strong id="sug-words">0</strong></span>
+          <span class="stat-item">Sentences: <strong id="sug-sents">0</strong></span>
+          <span class="stat-item">Score: <strong id="sug-score">—</strong></span>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="flex items-center justify-between mb-8">
+          <div class="section-title" style="margin:0">Suggestions</div>
+          <div class="sug-toggles" id="sug-toggles"></div>
+        </div>
+        <div id="sug-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 4: Content Mixer -->
+  <div class="tab-panel" id="panel-mixer">
+    <div class="mixer-grid fade-up">
+      <div><label>Source A</label><textarea id="mix-a" placeholder="First content source…" style="min-height:150px"></textarea></div>
+      <div><label>Source B</label><textarea id="mix-b" placeholder="Second content source…" style="min-height:150px"></textarea></div>
+      <div><label>Source C (optional)</label><textarea id="mix-c" placeholder="Third content source…" style="min-height:150px"></textarea></div>
+    </div>
+    <div class="card fade-up mt-16">
+      <div class="flex items-center justify-between flex-wrap gap-12 mb-16">
+        <div>
+          <div class="section-title" style="margin-bottom:8px">Mix Mode</div>
+          <div class="filter-tabs" id="mix-modes"></div>
+        </div>
+        <div style="min-width:200px">
+          <div class="section-title" style="margin-bottom:8px">Mix Ratios</div>
+          <div id="mix-sliders"></div>
+        </div>
+      </div>
+      <div class="mixer-viz" id="mixer-viz">
+        <div class="mix-orb mix-orb-1"></div>
+        <div class="mix-arrow">→</div>
+        <div class="mix-orb mix-orb-2"></div>
+        <div class="mix-arrow">→</div>
+        <div class="mix-orb mix-orb-3"></div>
+      </div>
+      <button class="btn btn-primary mb-16" onclick="mixContent()">Mix Content</button>
+      <label>Mixed Result <span class="text-secondary text-xs">(colors = source)</span></label>
+      <div class="mix-result" id="mix-result">Mixed content will appear here…</div>
+    </div>
+  </div>
+
+  <!-- Panel 5: A/B Testing -->
+  <div class="tab-panel" id="panel-ab">
+    <div class="ab-grid">
+      <div class="card ab-panel fade-up" id="ab-panel-a">
+        <div class="ab-label">Version A</div>
+        <textarea id="ab-a" placeholder="Version A content…" style="min-height:180px"></textarea>
+        <div class="ab-metrics" id="ab-metrics-a"></div>
+      </div>
+      <div class="card ab-panel fade-up" id="ab-panel-b">
+        <div class="ab-label">Version B</div>
+        <textarea id="ab-b" placeholder="Version B content…" style="min-height:180px"></textarea>
+        <div class="ab-metrics" id="ab-metrics-b"></div>
+      </div>
+    </div>
+    <div class="flex gap-8 mt-16 fade-up">
+      <button class="btn btn-primary" onclick="runABTest()">Compare Versions</button>
+      <button class="btn btn-ghost" onclick="generateVariant()">Generate Variant B</button>
+      <button class="btn btn-ghost" onclick="toggleDiff()">Toggle Diff View</button>
+    </div>
+    <div class="card mt-16 fade-up" id="diff-panel" style="display:none">
+      <div class="section-title">Diff View</div>
+      <div class="diff-view" id="diff-output"></div>
+    </div>
+  </div>
+
+  <!-- Panel 6: Export to Platforms -->
+  <div class="tab-panel" id="panel-export">
+    <div class="section-title">Content to Export</div>
+    <textarea id="export-content" placeholder="Paste or write your content here to export to any platform..." style="min-height:160px"></textarea>
+    <div class="flex gap-8 mt-8 mb-16 flex-wrap">
+      <input type="text" id="export-title" placeholder="Title" style="flex:1;min-width:200px">
+      <input type="text" id="export-tags" placeholder="Tags (comma-separated)" style="flex:1;min-width:200px">
+    </div>
+    <div class="section-title">Choose Platform</div>
+    <div class="card-grid cols-3" id="export-grid"></div>
+    <div id="export-preview-panel" class="card mt-16 fade-up" style="display:none">
+      <div class="flex justify-between align-center mb-8">
+        <div class="section-title mb-0" id="export-preview-title">Preview</div>
+        <div class="flex gap-8">
+          <button class="btn btn-ghost btn-sm" onclick="copyExport()">Copy</button>
+          <button class="btn btn-primary btn-sm" onclick="downloadExport()">Download</button>
+        </div>
+      </div>
+      <div id="export-char-info" class="text-xs text-secondary mb-8"></div>
+      <div id="export-tips" class="text-sm" style="background:rgba(99,132,255,.08);padding:12px;border-radius:8px;margin-bottom:12px;display:none"></div>
+      <pre class="mono" id="export-output" style="white-space:pre-wrap;max-height:500px;overflow:auto;background:var(--bg-input);padding:16px;border-radius:8px;font-size:13px;line-height:1.6"></pre>
+    </div>
+  </div>
+
+  <!-- Panel 7: Content Calendar -->
+  <div class="tab-panel" id="panel-calendar">
+    <div class="flex justify-between align-center mb-16">
+      <div class="flex gap-8 align-center">
+        <button class="btn btn-ghost btn-sm" onclick="calNav(-1)">&larr;</button>
+        <h3 id="cal-month" style="margin:0;min-width:180px;text-align:center"></h3>
+        <button class="btn btn-ghost btn-sm" onclick="calNav(1)">&rarr;</button>
+      </div>
+      <div class="flex gap-8">
+        <button class="btn btn-ghost btn-sm" onclick="calToday()">Today</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportICal()">Export iCal</button>
+      </div>
+    </div>
+    <div class="cal-legend mb-8">
+      <span class="cal-dot" style="background:#6384ff"></span> Blog
+      <span class="cal-dot" style="background:#a855f7"></span> Social
+      <span class="cal-dot" style="background:#ec4899"></span> Email
+      <span class="cal-dot" style="background:#34d399"></span> Marketing
+      <span class="cal-dot" style="background:#fbbf24"></span> Technical
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div id="cal-day-modal" class="modal-overlay" hidden>
+      <div class="modal-card" style="max-width:420px">
+        <div class="flex justify-between align-center mb-16">
+          <h3 id="cal-day-title" style="margin:0"></h3>
+          <button class="btn btn-ghost btn-sm" onclick="closeCalModal()">&times;</button>
+        </div>
+        <div id="cal-day-items"></div>
+        <div class="section-title mt-16" style="font-size:.9rem">Add Content</div>
+        <input type="text" id="cal-new-title" placeholder="Content title" class="mb-8">
+        <select id="cal-new-type" class="mb-8" style="width:100%;padding:8px 12px;border-radius:8px;background:var(--bg-input);color:var(--text);border:1px solid rgba(255,255,255,.1)">
+          <option value="blog">Blog</option>
+          <option value="social">Social</option>
+          <option value="email">Email</option>
+          <option value="marketing">Marketing</option>
+          <option value="technical">Technical</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="addCalItem()" style="width:100%">Add to Calendar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const TEMPLATES = [
+  {id:1,title:"AIDA Blog Post",category:"Blog",desc:"Attention-Interest-Desire-Action structure for compelling blog articles.",preview:"**Headline:** {topic} That Will Transform Your {outcome}\n\nHave you ever wondered why most {topic} attempts fail? You're about to discover the secret that top {industry} professionals use daily.\n\n[Interest]: Studies show that {statistic}% of people struggle with {pain_point}...",tags:["AIDA","persuasion","long-form"],inputs:[{key:"topic",label:"Topic"},{key:"outcome",label:"Desired Outcome"},{key:"industry",label:"Industry"}]},
+  {id:2,title:"Twitter Thread Hook",category:"Social",desc:"High-engagement opening hook for Twitter/X threads.",preview:"🧵 I spent {time} learning {topic}.\n\nHere are {number} things I wish someone told me sooner:\n\n(this will save you months of frustration)\n\n1/",tags:["twitter","thread","hook"],inputs:[{key:"time",label:"Time Spent"},{key:"topic",label:"Topic"},{key:"number",label:"Number of Tips"}]},
+  {id:3,title:"Cold Email Opener",category:"Email",desc:"Personalized cold outreach that gets replies.",preview:"Hi {name},\n\nI noticed {company} recently {trigger_event}. Congrats!\n\nI help {persona} achieve {result} without {pain_point}.\n\nWould it make sense to chat for 15 minutes this week?\n\nBest,\n{sender}",tags:["cold email","outreach","B2B"],inputs:[{key:"name",label:"Recipient Name"},{key:"company",label:"Company"},{key:"trigger_event",label:"Trigger Event"}]},
+  {id:4,title:"Product Launch Announcement",category:"Marketing",desc:"Launch email that drives immediate conversions.",preview:"Subject: {product} is finally here 🚀\n\nAfter {months} months of development, we're thrilled to announce {product}.\n\nHere's what makes it different:\n✓ {benefit_1}\n✓ {benefit_2}\n✓ {benefit_3}\n\nEarly access ends {deadline}.",tags:["launch","product","announcement"],inputs:[{key:"product",label:"Product Name"},{key:"months",label:"Development Time"},{key:"deadline",label:"Deadline"}]},
+  {id:5,title:"Technical README",category:"Technical",desc:"Clear, structured README for open-source projects.",preview:"# {project_name}\n\n> {tagline}\n\n## Features\n- {feature_1}\n- {feature_2}\n\n## Quick Start\n```bash\nnpm install {package}\n```\n\n## Documentation\nSee [docs]({docs_url}) for full API reference.",tags:["readme","docs","open-source"],inputs:[{key:"project_name",label:"Project Name"},{key:"tagline",label:"Tagline"},{key:"package",label:"NPM Package"}]},
+  {id:6,title:"LinkedIn Thought Leadership",category:"Social",desc:"Professional insight post that builds authority.",preview:"Most {professionals} are doing {common_practice} wrong.\n\nAfter {experience}, I've learned the real approach:\n\n→ {insight_1}\n→ {insight_2}\n→ {insight_3}\n\nThe result? {outcome}.\n\nWhat's your take? Drop it in the comments 👇",tags:["linkedin","thought leadership","B2B"],inputs:[{key:"professionals",label:"Professional Group"},{key:"common_practice",label:"Common Practice"},{key:"experience",label:"Your Experience"}]},
+  {id:7,title:"Case Study Structure",category:"Blog",desc:"Result-driven case study that converts prospects.",preview:"How {client} Achieved {result} in {timeframe}\n\n**The Challenge:**\n{client} was struggling with {problem}. They had tried {previous_solutions} but nothing worked.\n\n**Our Approach:**\nWe implemented {solution} focusing on {key_elements}.\n\n**The Results:**\n• {metric_1}: +{percent_1}%\n• {metric_2}: +{percent_2}%",tags:["case study","social proof","conversion"],inputs:[{key:"client",label:"Client/Company"},{key:"result",label:"Key Result"},{key:"timeframe",label:"Timeframe"}]},
+  {id:8,title:"Newsletter Subject Lines",category:"Email",desc:"5 split-testable subject line variations.",preview:"[CURIOSITY] The {topic} secret nobody talks about\n[BENEFIT] Get {result} without {pain_point}\n[URGENCY] Last chance: {offer} expires tonight\n[SOCIAL PROOF] How {number} people achieved {outcome}\n[QUESTION] Are you making these {topic} mistakes?",tags:["email","subject line","split test"],inputs:[{key:"topic",label:"Newsletter Topic"},{key:"result",label:"Main Benefit"},{key:"pain_point",label:"Pain Point"}]},
+  {id:9,title:"Instagram Caption",category:"Social",desc:"Engaging Instagram caption with CTA.",preview:"{hook_emoji} {attention_hook}\n\n{story_line_1}\n{story_line_2}\n\nHere's what I learned:\n↳ {lesson_1}\n↳ {lesson_2}\n\n{cta_question}?\n\n.\n.\n{hashtags}",tags:["instagram","caption","engagement"],inputs:[{key:"hook_emoji",label:"Hook Emoji"},{key:"attention_hook",label:"Opening Hook"},{key:"cta_question",label:"CTA Question"}]},
+  {id:10,title:"PAS Copywriting",category:"Marketing",desc:"Problem-Agitate-Solve framework for high-converting copy.",preview:"Are you tired of {problem}?\n\nEvery day you {delay}, you're losing {what_is_lost}. The longer you wait, the worse {consequence} gets.\n\n{product} solves this by {mechanism}.\n\nJoin {number}+ {people} who finally {result}.\n\n→ {cta}",tags:["PAS","copywriting","conversion"],inputs:[{key:"problem",label:"Core Problem"},{key:"product",label:"Your Product"},{key:"cta",label:"Call to Action"}]},
+  {id:11,title:"API Documentation",category:"Technical",desc:"Clear endpoint documentation with examples.",preview:"## {endpoint_name}\n\n`{method} /api/v1/{endpoint}`\n\n**Description:** {description}\n\n**Parameters:**\n| Name | Type | Required | Description |\n|------|------|----------|-------------|\n| {param} | string | yes | {param_desc} |\n\n**Response:** `200 OK`\n```json\n{\"success\": true, \"data\": {}}\n```",tags:["API","docs","technical"],inputs:[{key:"endpoint_name",label:"Endpoint Name"},{key:"method",label:"HTTP Method"},{key:"endpoint",label:"Endpoint Path"}]},
+  {id:12,title:"YouTube Video Description",category:"Marketing",desc:"SEO-optimized video description with timestamps.",preview:"{hook} — Watch till the end for {bonus}!\n\n📌 In this video:\n00:00 - Introduction\n{timestamp_1} - {chapter_1}\n{timestamp_2} - {chapter_2}\n\n🔗 Resources mentioned:\n• {resource_1}\n\n▶ Subscribe for weekly {topic} content\n\n#{tag1} #{tag2} #{tag3}",tags:["youtube","SEO","video"],inputs:[{key:"hook",label:"Opening Hook"},{key:"bonus",label:"End Bonus"},{key:"topic",label:"Channel Topic"}]},
+];
+
+const POWER_WORDS = ["amazing","breakthrough","discover","effortless","exclusive","guaranteed","imagine","instantly","proven","remarkable","secret","transform","ultimate","unlock","powerful"];
+const PASSIVE_PATTERNS = [/\b(is|are|was|were|be|been|being)\s+\w+ed\b/gi];
+
+const SUGGESTION_PATTERNS = [
+  {cat:"clarity",label:"Wordy phrase",regex:/\b(in order to|due to the fact that|in the event that|at this point in time)\b/gi,fix:{"in order to":"to","due to the fact that":"because","in the event that":"if","at this point in time":"now"}},
+  {cat:"clarity",label:"Weak verb",regex:/\b(utilize|leverage|facilitate|implement)\b/gi,fix:{"utilize":"use","leverage":"use","facilitate":"enable","implement":"do"}},
+  {cat:"engage",label:"Passive opening",regex:/^(It is|There is|There are|It was)\b/gm,suggest:"Start with an active subject"},
+  {cat:"seo",label:"Missing transition",regex:/\.\s+(?!However|Therefore|Furthermore|Moreover|Additionally|First|Second|Finally|In addition)/g,suggest:"Add a transition word for better flow"},
+  {cat:"read",label:"Long sentence",regex:/[^.!?]{120,}[.!?]/g,suggest:"Break into shorter sentences for clarity"},
+  {cat:"engage",label:"Vague intensifier",regex:/\b(very|really|quite|rather|somewhat|fairly)\s+\w+/gi,suggest:"Replace with a more specific, powerful word"},
+];
+
+const MIX_MODES = ["Combine","Contrast","Synthesize"];
+let activeMixMode = "Combine";
+let activeCategory = "All";
+let sugToggles = {clarity:true,engage:true,seo:true,read:true};
+let analysisTimer, sugTimer;
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+const TABS = [
+  {id:"templates",label:"Templates Gallery"},
+  {id:"analyzer",label:"Style Analyzer"},
+  {id:"suggestions",label:"Real-time Suggestions"},
+  {id:"mixer",label:"Content Mixer"},
+  {id:"ab",label:"A/B Testing"},
+  {id:"export",label:"Export to Platforms"},
+  {id:"calendar",label:"Content Calendar"},
+];
+
+function init() {
+  // Tab nav
+  const nav = document.getElementById('tab-nav');
+  TABS.forEach((t,i) => {
+    const b = document.createElement('button');
+    b.className = 'tab-btn' + (i===0?' active':'');
+    b.textContent = t.label;
+    b.onclick = () => switchTab(t.id);
+    nav.appendChild(b);
+  });
+
+  // Template filters
+  const filters = document.getElementById('tpl-filters');
+  ['All','Blog','Social','Email','Marketing','Technical'].forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'filter-tab' + (cat==='All'?' active':'');
+    b.textContent = cat;
+    b.onclick = () => { activeCategory = cat; document.querySelectorAll('.filter-tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); filterTemplates(); };
+    filters.appendChild(b);
+  });
+  renderTemplates(TEMPLATES);
+  initExport();
+  initCalendar();
+
+  // Gauges
+  renderGauges([{label:'Readability',id:'g-read'},{label:'Vocabulary',id:'g-vocab'},{label:'Engagement',id:'g-eng'},{label:'Passive %',id:'g-pass'}]);
+
+  // Mix modes
+  const mm = document.getElementById('mix-modes');
+  MIX_MODES.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'filter-tab' + (m===activeMixMode?' active':'');
+    b.textContent = m;
+    b.onclick = () => { activeMixMode = m; document.querySelectorAll('#mix-modes .filter-tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
+    mm.appendChild(b);
+  });
+
+  // Mix sliders
+  const sl = document.getElementById('mix-sliders');
+  [{id:'ratio-a',label:'Source A',val:40},{id:'ratio-b',label:'Source B',val:40},{id:'ratio-c',label:'Source C',val:20}].forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'slider-row';
+    row.innerHTML = `<label>${s.label}</label><input type="range" id="${s.id}" min="0" max="100" value="${s.val}"><span id="${s.id}-val" class="text-xs text-secondary">${s.val}%</span>`;
+    sl.appendChild(row);
+    row.querySelector('input').oninput = function(){ document.getElementById(s.id+'-val').textContent = this.value+'%'; };
+  });
+
+  // Suggestion toggles
+  const st = document.getElementById('sug-toggles');
+  [{cat:'clarity',label:'Clarity'},{cat:'engage',label:'Engage'},{cat:'seo',label:'SEO'},{cat:'read',label:'Readability'}].forEach(t => {
+    const b = document.createElement('button');
+    b.className = `sug-toggle`;
+    b.dataset.cat = t.cat;
+    b.textContent = t.label;
+    b.onclick = () => { sugToggles[t.cat] = !sugToggles[t.cat]; b.classList.toggle('off',!sugToggles[t.cat]); renderSuggestions(); };
+    st.appendChild(b);
+  });
+
+  // AB metrics placeholders
+  ['a','b'].forEach(v => {
+    const el = document.getElementById(`ab-metrics-${v}`);
+    [['—','Readability'],['—','Word Count'],['—','Engagement'],['—','Sentiment']].forEach(([val,lbl]) => {
+      const div = document.createElement('div');
+      div.className = 'metric-item';
+      div.innerHTML = `<div class="metric-val" id="ab-${v}-${lbl.toLowerCase().replace(' ','-')}">${val}</div><div class="metric-label">${lbl}</div>`;
+      el.appendChild(div);
+    });
+  });
+
+  // Load persisted data
+  loadStorage();
+
+  // Fade-up observer
+  const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:.1});
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', TABS[i].id===id));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id===`panel-${id}`));
+  saveStorage();
+}
+
+// ─── TEMPLATES ───────────────────────────────────────────────────────────────
+function renderTemplates(list) {
+  const grid = document.getElementById('tpl-grid');
+  grid.innerHTML = '';
+  if(!list.length){ grid.innerHTML='<div class="empty-state">No templates match your search.</div>'; return; }
+  list.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'card tpl-card';
+    card.innerHTML = `
+      <div class="tpl-card-header">
+        <span class="tpl-title">${t.title}</span>
+        <span class="tag">${t.category}</span>
+      </div>
+      <p class="text-sm text-secondary">${t.desc}</p>
+      <div class="tpl-preview mono">${escHtml(t.preview)}</div>
+      <div class="tpl-tags">${t.tags.map(tag=>`<span class="tag tag-purple">${tag}</span>`).join('')}</div>`;
+    card.onclick = () => openTplModal(t);
+    grid.appendChild(card);
+  });
+}
+
+function filterTemplates() {
+  const q = document.getElementById('tpl-search').value.toLowerCase();
+  let list = TEMPLATES;
+  if(activeCategory !== 'All') list = list.filter(t => t.category===activeCategory);
+  if(q) list = list.filter(t => t.title.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)||t.tags.some(tag=>tag.includes(q)));
+  renderTemplates(list);
+}
+
+let currentTpl = null;
+function openTplModal(t) {
+  currentTpl = t;
+  document.getElementById('modal-title').textContent = t.title;
+  document.getElementById('modal-category').innerHTML = `<span class="tag">${t.category}</span>`;
+  document.getElementById('modal-desc').textContent = t.desc;
+  const inputs = document.getElementById('modal-inputs');
+  inputs.innerHTML = '';
+  t.inputs.forEach(inp => {
+    const div = document.createElement('div');
+    div.innerHTML = `<label>${inp.label}</label><input type="text" id="tpl-inp-${inp.key}" placeholder="${inp.label}…" oninput="updateModalPreview()">`;
+    inputs.appendChild(div);
+  });
+  updateModalPreview();
+  document.getElementById('tpl-modal').hidden = false;
+}
+
+function updateModalPreview() {
+  if(!currentTpl) return;
+  let text = currentTpl.preview;
+  currentTpl.inputs.forEach(inp => {
+    const val = (document.getElementById(`tpl-inp-${inp.key}`)||{}).value || `{${inp.key}}`;
+    text = text.replace(new RegExp(`\\{${inp.key}\\}`,'g'), val||`{${inp.key}}`);
+  });
+  document.getElementById('modal-preview').textContent = text;
+}
+
+function closeTplModal() { document.getElementById('tpl-modal').hidden=true; currentTpl=null; }
+
+function copyModalPreview() {
+  const text = document.getElementById('modal-preview').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!'));
+}
+
+// ─── STYLE ANALYZER ──────────────────────────────────────────────────────────
+function renderGauges(defs) {
+  const grid = document.getElementById('gauges');
+  grid.innerHTML = '';
+  defs.forEach(({label,id}) => {
+    const div = document.createElement('div');
+    div.className = 'gauge-item';
+    div.innerHTML = `
+      <div class="gauge-ring">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="8"/>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="url(#g)" stroke-width="8"
+            stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"
+            transform="rotate(-90 50 50)" id="${id}-ring" style="transition:stroke-dashoffset .8s ease"/>
+          <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6384ff"/><stop offset="100%" stop-color="#a855f7"/>
+          </linearGradient></defs>
+        </svg>
+      </div>
+      <div class="gauge-val" id="${id}-val">—</div>
+      <div class="gauge-label">${label}</div>`;
+    grid.appendChild(div);
+  });
+}
+
+function setGauge(id, pct, label) {
+  const ring = document.getElementById(id+'-ring');
+  const val = document.getElementById(id+'-val');
+  if(ring) ring.style.strokeDashoffset = 251.2 * (1 - Math.min(pct,100)/100);
+  if(val) val.textContent = label;
+}
+
+function scheduleAnalysis() { clearTimeout(analysisTimer); analysisTimer = setTimeout(runAnalysis, 400); }
+
+function runAnalysis() {
+  const text = document.getElementById('analyzer-input').value.trim();
+  if(!text){ ['g-read','g-vocab','g-eng','g-pass'].forEach(id=>setGauge(id,0,'—')); document.getElementById('personality-chip').textContent='—'; document.getElementById('analysis-suggestions').innerHTML='<span class="text-secondary text-sm">Analyze your text to receive suggestions.</span>'; return; }
+
+  const words = text.match(/\b\w+\b/g)||[];
+  const sentences = text.split(/[.!?]+/).filter(s=>s.trim().length>2);
+  const uniqueWords = new Set(words.map(w=>w.toLowerCase()));
+  const avgSentLen = words.length/(sentences.length||1);
+  const vocabRichness = uniqueWords.size/Math.max(words.length,1);
+  const passiveCount = PASSIVE_PATTERNS.reduce((n,p)=>{const m=text.match(p); return n+(m?m.length:0);},0);
+  const passivePct = passiveCount/Math.max(sentences.length,1)*100;
+  const powerCount = POWER_WORDS.filter(pw=>words.some(w=>w.toLowerCase()===pw)).length;
+  const fkScore = Math.max(0,Math.min(100,206.835-1.015*(words.length/Math.max(sentences.length,1))-84.6*(text.match(/[aeiou]/gi)||[]).length/Math.max(words.length,1)));
+
+  setGauge('g-read', fkScore, Math.round(fkScore));
+  setGauge('g-vocab', vocabRichness*100, (vocabRichness*100).toFixed(0)+'%');
+  setGauge('g-eng', Math.min(100,powerCount*15+30), powerCount+' PW');
+  setGauge('g-pass', 100-passivePct, passivePct.toFixed(0)+'% pass');
+
+  // Personality
+  let personality, color;
+  if(fkScore>70&&vocabRichness>.6){personality='Academic Scholar';color='#a855f7';}
+  else if(avgSentLen<12&&powerCount>2){personality='Dynamic Communicator';color='var(--success)';}
+  else if(passivePct>30){personality='Formal Writer';color='var(--warning)';}
+  else if(vocabRichness>.5){personality='Balanced Storyteller';color='var(--accent)';}
+  else{personality='Conversational Voice';color='#ec4899';}
+  const chip = document.getElementById('personality-chip');
+  chip.textContent = personality; chip.style.color = color; chip.style.background = color+'22';
+
+  // Suggestions
+  const suggs = [];
+  if(passivePct>25) suggs.push('Reduce passive voice — aim for under 25% of sentences.');
+  if(avgSentLen>20) suggs.push(`Average sentence length is ${avgSentLen.toFixed(1)} words. Try to keep it under 20.`);
+  if(vocabRichness<.3) suggs.push('Vocabulary richness is low. Vary your word choices to keep readers engaged.');
+  if(powerCount<3) suggs.push('Add more power words (e.g., discover, transform, proven) to boost engagement.');
+  if(fkScore<40) suggs.push('Readability is complex. Simplify sentences for a wider audience.');
+
+  const el = document.getElementById('analysis-suggestions');
+  el.innerHTML = suggs.length
+    ? suggs.map(s=>`<div class="suggestion-item"><div class="sug-cat sug-read">Tip</div><div class="sug-text">${s}</div></div>`).join('')
+    : '<div class="suggestion-item"><div class="sug-text text-secondary">Great writing! No major issues detected.</div></div>';
+  saveStorage();
+}
+
+// ─── REAL-TIME SUGGESTIONS ───────────────────────────────────────────────────
+function scheduleSuggestions() { clearTimeout(sugTimer); sugTimer = setTimeout(renderSuggestions, 350); updateSugStats(); }
+
+function updateSugStats() {
+  const text = document.getElementById('sug-input').value;
+  const words = (text.match(/\b\w+\b/g)||[]).length;
+  const sents = (text.split(/[.!?]+/).filter(s=>s.trim().length>2)).length;
+  document.getElementById('sug-words').textContent = words;
+  document.getElementById('sug-sents').textContent = sents;
+  const score = words > 5 ? Math.min(100,Math.round(70 + (sents>2?10:0) + (words>50?10:0))) : '—';
+  document.getElementById('sug-score').textContent = score === '—' ? score : score+'%';
+}
+
+function renderSuggestions() {
+  const text = document.getElementById('sug-input').value;
+  const list = document.getElementById('sug-list');
+  if(!text.trim()){ list.innerHTML='<div class="empty-state">Start typing to see suggestions…</div>'; return; }
+
+  const found = [];
+  SUGGESTION_PATTERNS.forEach(p => {
+    if(!sugToggles[p.cat]) return;
+    let m;
+    const re = new RegExp(p.regex.source, p.regex.flags);
+    while((m = re.exec(text)) !== null) {
+      const matched = m[0];
+      const suggestion = p.fix ? (p.fix[matched.toLowerCase()]||matched) : p.suggest;
+      found.push({cat:p.cat,label:p.label,original:matched,suggestion,idx:m.index});
+      if(found.length>10) break;
+    }
+  });
+
+  if(!found.length){ list.innerHTML='<div class="empty-state" style="padding:20px">No issues found — great writing!</div>'; return; }
+
+  list.innerHTML = found.map((s,i) => `
+    <div class="suggestion-item">
+      <span class="sug-cat sug-${s.cat}">${s.label}</span>
+      <div class="sug-text">
+        Replace <span class="sug-original">${escHtml(s.original)}</span>
+        with <span class="sug-improved">${escHtml(s.suggestion)}</span>
+        <button class="btn btn-sm btn-accent" style="margin-left:8px;padding:2px 8px" onclick="applySuggestion(${i})">Apply</button>
+      </div>
+    </div>`).join('');
+  window._suggestions = found;
+}
+
+function applySuggestion(i) {
+  const s = window._suggestions[i];
+  if(!s) return;
+  const ta = document.getElementById('sug-input');
+  ta.value = ta.value.slice(0,s.idx) + s.suggestion + ta.value.slice(s.idx+s.original.length);
+  renderSuggestions(); updateSugStats();
+}
+
+// ─── CONTENT MIXER ───────────────────────────────────────────────────────────
+function mixContent() {
+  const a = document.getElementById('mix-a').value.trim();
+  const b = document.getElementById('mix-b').value.trim();
+  const c = document.getElementById('mix-c').value.trim();
+  if(!a&&!b){ showToast('Add at least two sources to mix.'); return; }
+
+  const ra = parseInt(document.getElementById('ratio-a').value)/100;
+  const rb = parseInt(document.getElementById('ratio-b').value)/100;
+
+  const senA = splitSentences(a), senB = splitSentences(b), senC = splitSentences(c);
+
+  let result = '';
+  if(activeMixMode==='Combine') {
+    const all = [];
+    senA.forEach((s,i) => { all.push({t:s,src:'a'}); if(senB[i]) all.push({t:senB[i],src:'b'}); if(senC[i]) all.push({t:senC[i],src:'c'}); });
+    result = all.map(x=>`<span class="source-${x.src}">${escHtml(x.t)}</span>`).join(' ');
+  } else if(activeMixMode==='Contrast') {
+    const intro = senA[0]||''; const counter = senB[0]||''; const syn = senC[0]||senA[1]||'';
+    result = `<span class="source-a">${escHtml(intro)}</span> However, <span class="source-b">${escHtml(counter)}</span>${syn?' On the other hand, <span class="source-c">'+escHtml(syn)+'</span>':''}`;
+  } else {
+    const pts = [...senA.slice(0,2),...senB.slice(0,2),...senC.slice(0,2)];
+    result = pts.map((s,i)=>`<span class="source-${['a','a','b','b','c','c'][i]}">${escHtml(s)}</span>`).join(' ');
+  }
+
+  document.getElementById('mix-result').innerHTML = result || '<span class="text-secondary">No content to mix.</span>';
+  saveStorage();
+}
+
+function splitSentences(text) { return text.match(/[^.!?]+[.!?]+/g)||[text]; }
+
+// ─── A/B TESTING ─────────────────────────────────────────────────────────────
+function analyzeAB(text) {
+  const words = (text.match(/\b\w+\b/g)||[]);
+  const sents = text.split(/[.!?]+/).filter(s=>s.trim().length>2);
+  const fk = Math.max(0,Math.min(100,206.835-1.015*(words.length/Math.max(sents.length,1))-84.6*(text.match(/[aeiou]/gi)||[]).length/Math.max(words.length,1)));
+  const posWords = ['great','excellent','amazing','wonderful','best','love','perfect','fantastic'];
+  const negWords = ['bad','terrible','awful','worst','hate','horrible','poor'];
+  const pos = posWords.filter(w=>words.map(x=>x.toLowerCase()).includes(w)).length;
+  const neg = negWords.filter(w=>words.map(x=>x.toLowerCase()).includes(w)).length;
+  const sentiment = pos>neg?'Positive':neg>pos?'Negative':'Neutral';
+  const eng = Math.min(100,Math.round(40+POWER_WORDS.filter(pw=>words.some(w=>w.toLowerCase()===pw)).length*8+(sents.length>2?10:0)));
+  return {readability:Math.round(fk),wordCount:words.length,engagement:eng,sentiment};
+}
+
+function updateABMetrics(v, m) {
+  const labels = {readability:'readability',wordCount:'word-count',engagement:'engagement',sentiment:'sentiment'};
+  Object.entries(labels).forEach(([key,id]) => {
+    const el = document.getElementById(`ab-${v}-${id}`);
+    if(el) el.textContent = m[key];
+  });
+}
+
+function runABTest() {
+  const ta = document.getElementById('ab-a').value.trim();
+  const tb = document.getElementById('ab-b').value.trim();
+  if(!ta||!tb){ showToast('Add content to both versions.'); return; }
+
+  const ma = analyzeAB(ta), mb = analyzeAB(tb);
+  updateABMetrics('a',ma); updateABMetrics('b',mb);
+
+  const scoreA = ma.readability + ma.engagement + (ma.sentiment==='Positive'?10:0);
+  const scoreB = mb.readability + mb.engagement + (mb.sentiment==='Positive'?10:0);
+
+  document.getElementById('ab-panel-a').classList.toggle('winner', scoreA>=scoreB);
+  document.getElementById('ab-panel-b').classList.toggle('winner', scoreB>scoreA);
+
+  // Remove old badges
+  document.querySelectorAll('.winner-badge').forEach(b=>b.remove());
+  const winnerPanel = scoreA>=scoreB ? 'ab-panel-a' : 'ab-panel-b';
+  const badge = document.createElement('div');
+  badge.className = 'winner-badge';
+  badge.textContent = 'Winner 🏆';
+  document.getElementById(winnerPanel).prepend(badge);
+  saveStorage();
+}
+
+function generateVariant() {
+  const ta = document.getElementById('ab-a').value.trim();
+  if(!ta){ showToast('Add content to Version A first.'); return; }
+  const words = ta.replace(/\b(is|are|was|were)\b/g,m=>({is:'becomes',are:'become',was:'became',were:'became'}[m]||m))
+    .replace(/\b(good|nice|big)\b/g,m=>({good:'excellent',nice:'outstanding',big:'substantial'}[m]||m));
+  document.getElementById('ab-b').value = words;
+  showToast('Variant B generated!');
+}
+
+let diffVisible = false;
+function toggleDiff() {
+  const panel = document.getElementById('diff-panel');
+  diffVisible = !diffVisible;
+  panel.style.display = diffVisible ? 'block' : 'none';
+  if(diffVisible) renderDiff();
+}
+
+function renderDiff() {
+  const a = document.getElementById('ab-a').value;
+  const b = document.getElementById('ab-b').value;
+  const wa = a.split(/\s+/), wb = b.split(/\s+/);
+  let html = '';
+  const maxLen = Math.max(wa.length,wb.length);
+  for(let i=0;i<maxLen;i++){
+    if(wa[i]===wb[i]) html += escHtml(wa[i]||'')+' ';
+    else {
+      if(wa[i]) html += `<span class="diff-del">${escHtml(wa[i])}</span> `;
+      if(wb[i]) html += `<span class="diff-add">${escHtml(wb[i])}</span> `;
+    }
+  }
+  document.getElementById('diff-output').innerHTML = html;
+}
+
+// ─── PERSISTENCE ─────────────────────────────────────────────────────────────
+function saveStorage() {
+  try {
+    localStorage.setItem('adv-analyzer', document.getElementById('analyzer-input').value);
+    localStorage.setItem('adv-sug', document.getElementById('sug-input').value);
+    localStorage.setItem('adv-mix-a', document.getElementById('mix-a').value);
+    localStorage.setItem('adv-mix-b', document.getElementById('mix-b').value);
+    localStorage.setItem('adv-mix-c', document.getElementById('mix-c').value);
+    localStorage.setItem('adv-ab-a', document.getElementById('ab-a').value);
+    localStorage.setItem('adv-ab-b', document.getElementById('ab-b').value);
+  } catch(e){}
+}
+
+function loadStorage() {
+  try {
+    const load = (id,key) => { const v = localStorage.getItem(key); if(v) document.getElementById(id).value = v; };
+    load('analyzer-input','adv-analyzer');
+    load('sug-input','adv-sug');
+    load('mix-a','adv-mix-a');
+    load('mix-b','adv-mix-b');
+    load('mix-c','adv-mix-c');
+    load('ab-a','adv-ab-a');
+    load('ab-b','adv-ab-b');
+    if(document.getElementById('analyzer-input').value) runAnalysis();
+    if(document.getElementById('sug-input').value) renderSuggestions();
+  } catch(e){}
+}
+
+// ─── EXPORT TO PLATFORMS ─────────────────────────────────────────────────────
+const PLATFORMS = [
+  {id:'medium',name:'Medium',icon:'M',desc:'Rich article format',color:'#00ab6c',ext:'.md'},
+  {id:'devto',name:'Dev.to',icon:'DEV',desc:'With frontmatter & tags',color:'#0a0a0a',ext:'.md'},
+  {id:'twitter',name:'Twitter/X',icon:'X',desc:'Thread with char counts',color:'#1da1f2',ext:'.txt'},
+  {id:'linkedin',name:'LinkedIn',icon:'in',desc:'Professional format',color:'#0077b5',ext:'.txt'},
+  {id:'wordpress',name:'WordPress',icon:'W',desc:'HTML with WP classes',color:'#21759b',ext:'.html'},
+  {id:'ghost',name:'Ghost',icon:'G',desc:'Ghost markdown format',color:'#738a94',ext:'.md'},
+  {id:'substack',name:'Substack',icon:'S',desc:'Newsletter optimized',color:'#ff6719',ext:'.md'},
+  {id:'markdown',name:'Markdown',icon:'MD',desc:'Clean markdown',color:'#6384ff',ext:'.md'},
+  {id:'html',name:'HTML',icon:'</>',desc:'Styled HTML output',color:'#e34c26',ext:'.html'},
+  {id:'pdf',name:'PDF',icon:'PDF',desc:'Print-ready format',color:'#f40f02',ext:'.pdf'},
+];
+let selectedPlatform = null;
+
+function initExport() {
+  const grid = document.getElementById('export-grid');
+  grid.innerHTML = PLATFORMS.map(p => `
+    <div class="export-card" data-id="${p.id}" onclick="selectPlatform('${p.id}')">
+      <div class="export-icon" style="color:${p.color};font-weight:900;font-family:'JetBrains Mono',monospace">${p.icon}</div>
+      <div class="export-name">${p.name}</div>
+      <div class="export-desc">${p.desc}</div>
+    </div>
+  `).join('');
+}
+
+function selectPlatform(id) {
+  selectedPlatform = id;
+  document.querySelectorAll('.export-card').forEach(c => c.classList.toggle('selected', c.dataset.id===id));
+  const content = document.getElementById('export-content').value;
+  if(!content) { showToast('Write some content first'); return; }
+  generateExport(id, content);
+}
+
+function generateExport(id, content) {
+  const title = document.getElementById('export-title').value || 'Untitled';
+  const tags = document.getElementById('export-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const panel = document.getElementById('export-preview-panel');
+  const output = document.getElementById('export-output');
+  const info = document.getElementById('export-char-info');
+  const tips = document.getElementById('export-tips');
+  panel.style.display = 'block';
+  const p = PLATFORMS.find(x=>x.id===id);
+  document.getElementById('export-preview-title').textContent = `${p.name} Preview`;
+  let result = '', tipText = '', charInfo = '';
+
+  switch(id) {
+    case 'medium':
+      result = `# ${title}\n\n${content}\n\n---\n*Originally created with ContentGenAI*`;
+      tipText = 'Tip: Medium supports rich markdown. Add images between paragraphs for better engagement. Ideal length: 1000-1500 words.';
+      charInfo = `${content.length} chars | ~${Math.ceil(content.split(/\s+/).length/200)} min read`;
+      break;
+    case 'devto':
+      result = `---\ntitle: "${title}"\npublished: false\ntags: ${tags.length?tags.join(', '):'webdev, tutorial'}\ncover_image: \nseries: \n---\n\n${content}`;
+      tipText = 'Tip: Dev.to supports Liquid tags. Use {% codepen url %} for embeds. Max 4 tags allowed.';
+      charInfo = `${content.length} chars | Tags: ${tags.length}/4`;
+      break;
+    case 'twitter':
+      const tweets = splitIntoTweets(content);
+      result = tweets.map((t,i) => `[${i+1}/${tweets.length}] ${t}\n(${t.length}/280 chars)`).join('\n\n---\n\n');
+      tipText = 'Tip: Start with a hook. End thread with a CTA. Use line breaks for readability.';
+      charInfo = `${tweets.length} tweets | Avg ${Math.round(tweets.reduce((a,t)=>a+t.length,0)/tweets.length)} chars each`;
+      break;
+    case 'linkedin':
+      result = `${title.toUpperCase()}\n\n${content.split('\n').slice(0,2).join('\n')}\n\n...\n\n${content}\n\n#${tags.join(' #') || 'contentcreation #AI'}`;
+      tipText = 'Tip: LinkedIn truncates after ~210 chars. Make the first 2 lines compelling. Use emojis sparingly for professional tone.';
+      charInfo = `${content.length} chars | Hook: ${content.split('\n')[0].length} chars`;
+      break;
+    case 'wordpress':
+      result = `<!-- wp:heading -->\n<h1 class="wp-block-heading">${escHtml(title)}</h1>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n${content.split('\n\n').map(p=>`<p>${escHtml(p)}</p>`).join('\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n')}\n<!-- /wp:paragraph -->`;
+      tipText = 'Tip: Uses WordPress Gutenberg block format. Add featured image and excerpt in WP editor.';
+      charInfo = `${result.length} chars HTML`;
+      break;
+    case 'ghost':
+      result = `# ${title}\n\n${content}\n\n---\n\n<!--members-only-->`;
+      tipText = 'Tip: Use <!--members-only--> to gate content. Ghost supports bookmark and gallery cards.';
+      charInfo = `${content.length} chars`;
+      break;
+    case 'substack':
+      result = `# ${title}\n\n*Welcome to this week\'s edition.*\n\n---\n\n${content}\n\n---\n\n**Thanks for reading!** If you enjoyed this, consider sharing with a friend.\n\n[Share](https://substack.com)`;
+      tipText = 'Tip: Substack works best with personal, conversational tone. Include a clear CTA to subscribe.';
+      charInfo = `${content.split(/\s+/).length} words | ~${Math.ceil(content.split(/\s+/).length/200)} min read`;
+      break;
+    case 'markdown':
+      result = `# ${title}\n\n${content}`;
+      charInfo = `${content.length} chars | ${content.split(/\s+/).length} words`;
+      break;
+    case 'html':
+      result = `<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)}</title>\n<style>body{font-family:system-ui,sans-serif;max-width:680px;margin:2rem auto;padding:0 1rem;line-height:1.7;color:#1a1a1a}h1{font-size:2rem}</style></head>\n<body>\n<h1>${escHtml(title)}</h1>\n${content.split('\n\n').map(p=>`<p>${escHtml(p)}</p>`).join('\n')}\n</body></html>`;
+      tipText = 'Tip: Includes responsive inline styles. Add Open Graph meta tags for social sharing.';
+      charInfo = `${result.length} chars HTML`;
+      break;
+    case 'pdf':
+      result = content;
+      tipText = 'Click Download to open print dialog for PDF export.';
+      charInfo = `${content.split(/\s+/).length} words`;
+      break;
+  }
+  output.textContent = result;
+  if(tipText) { tips.style.display='block'; tips.innerHTML='💡 '+tipText; } else { tips.style.display='none'; }
+  info.textContent = charInfo;
+  showToast(`${p.name} export ready`);
+}
+
+function splitIntoTweets(text) {
+  const words = text.split(/\s+/);
+  const tweets = []; let current = '';
+  for(const w of words) {
+    if((current+' '+w).trim().length > 270) { tweets.push(current.trim()); current = w; }
+    else current += ' ' + w;
+  }
+  if(current.trim()) tweets.push(current.trim());
+  return tweets.length ? tweets : [text.slice(0,280)];
+}
+
+let _exportResult = '';
+function copyExport() {
+  const text = document.getElementById('export-output').textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard'));
+}
+
+function downloadExport() {
+  if(selectedPlatform==='pdf') { window.print(); return; }
+  const text = document.getElementById('export-output').textContent;
+  const p = PLATFORMS.find(x=>x.id===selectedPlatform);
+  const title = document.getElementById('export-title').value || 'export';
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = title.replace(/\s+/g,'-').toLowerCase() + (p?p.ext:'.txt');
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Downloaded!');
+}
+
+// ─── CONTENT CALENDAR ───────────────────────────────────────────────────────
+const CAL_COLORS = {blog:'#6384ff',social:'#a855f7',email:'#ec4899',marketing:'#34d399',technical:'#fbbf24'};
+let calYear, calMonth, calItems = {};
+
+function initCalendar() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  try { calItems = JSON.parse(localStorage.getItem('acg-calendar'))||{}; } catch(e){ calItems={}; }
+  renderCalendar();
+}
+
+function calNav(dir) { calMonth+=dir; if(calMonth>11){calMonth=0;calYear++;} if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calToday() { const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); renderCalendar(); }
+
+function renderCalendar() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month').textContent = `${months[calMonth]} ${calYear}`;
+  const grid = document.getElementById('cal-grid');
+  const firstDay = new Date(calYear,calMonth,1).getDay();
+  const daysInMonth = new Date(calYear,calMonth+1,0).getDate();
+  const today = new Date();
+  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-head">${d}</div>`).join('');
+
+  // Previous month padding
+  const prevDays = new Date(calYear,calMonth,0).getDate();
+  for(let i=firstDay-1;i>=0;i--) html += `<div class="cal-cell other"><div class="cal-num">${prevDays-i}</div></div>`;
+
+  for(let d=1;d<=daysInMonth;d++) {
+    const key = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
+    const items = calItems[key]||[];
+    const itemsHtml = items.slice(0,3).map(it=>`<div class="cal-item" style="background:${CAL_COLORS[it.type]||'#6384ff'}" title="${escHtml(it.title)}">${escHtml(it.title)}</div>`).join('');
+    const more = items.length>3 ? `<div style="font-size:.6rem;color:var(--text-muted)">+${items.length-3} more</div>` : '';
+    html += `<div class="cal-cell${isToday?' today':''}" onclick="openCalDay('${key}')"><div class="cal-num">${d}</div>${itemsHtml}${more}</div>`;
+  }
+
+  // Next month padding
+  const totalCells = firstDay + daysInMonth;
+  const remaining = (7 - totalCells%7)%7;
+  for(let i=1;i<=remaining;i++) html += `<div class="cal-cell other"><div class="cal-num">${i}</div></div>`;
+
+  grid.innerHTML = html;
+}
+
+let selectedCalDay = '';
+function openCalDay(key) {
+  selectedCalDay = key;
+  const [y,m,d] = key.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('cal-day-title').textContent = `${months[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
+  const items = calItems[key]||[];
+  const itemsEl = document.getElementById('cal-day-items');
+  if(items.length===0) itemsEl.innerHTML = '<div class="text-sm text-secondary">No content scheduled</div>';
+  else itemsEl.innerHTML = items.map((it,i)=>`<div class="flex justify-between align-center" style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span><span class="cal-dot" style="background:${CAL_COLORS[it.type]}"></span>${escHtml(it.title)}</span><button class="btn btn-ghost btn-sm" onclick="removeCalItem('${key}',${i})" style="font-size:.7rem">&times;</button></div>`).join('');
+  document.getElementById('cal-new-title').value = '';
+  document.getElementById('cal-day-modal').hidden = false;
+}
+
+function closeCalModal() { document.getElementById('cal-day-modal').hidden = true; }
+
+function addCalItem() {
+  const title = document.getElementById('cal-new-title').value.trim();
+  if(!title) { showToast('Enter a title'); return; }
+  const type = document.getElementById('cal-new-type').value;
+  if(!calItems[selectedCalDay]) calItems[selectedCalDay] = [];
+  calItems[selectedCalDay].push({title, type});
+  localStorage.setItem('acg-calendar', JSON.stringify(calItems));
+  renderCalendar();
+  openCalDay(selectedCalDay);
+  showToast('Added to calendar');
+}
+
+function removeCalItem(key, idx) {
+  if(calItems[key]) { calItems[key].splice(idx,1); if(!calItems[key].length) delete calItems[key]; }
+  localStorage.setItem('acg-calendar', JSON.stringify(calItems));
+  renderCalendar();
+  openCalDay(key);
+}
+
+function exportICal() {
+  let ical = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ContentGenAI//Calendar//EN\n';
+  for(const [key, items] of Object.entries(calItems)) {
+    for(const it of items) {
+      const d = key.replace(/-/g,'');
+      ical += `BEGIN:VEVENT\nDTSTART;VALUE=DATE:${d}\nSUMMARY:${it.title} [${it.type}]\nDESCRIPTION:Content type: ${it.type}\nEND:VEVENT\n`;
+    }
+  }
+  ical += 'END:VCALENDAR';
+  const blob = new Blob([ical], {type:'text/calendar'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'content-calendar.ics';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Calendar exported as iCal');
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg) {
+  let tc = document.getElementById('toast-container');
+  if(!tc){ tc = document.createElement('div'); tc.id='toast-container'; tc.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px'; document.body.appendChild(tc); }
+  const t = document.createElement('div');
+  t.style.cssText = 'background:var(--bg-elevated);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:10px 16px;border-radius:8px;font-size:.875rem;animation:fadeIn .2s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)';
+  t.textContent = msg;
+  tc.appendChild(t);
+  setTimeout(()=>t.remove(), 2800);
+}
+
+// Persist on textarea change
+document.addEventListener('input', e => {
+  if(['TEXTAREA','INPUT'].includes(e.target.tagName)) {
+    clearTimeout(window._saveTimer||0); window._saveTimer = setTimeout(saveStorage,500);
+    if(e.target.id==='export-content' && selectedPlatform) setTimeout(()=>generateExport(selectedPlatform, e.target.value), 100);
+  }
+});
+
+// Close modal on overlay click
+document.getElementById('tpl-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeTplModal(); });
+
+// Keyboard escape
+document.getElementById('cal-day-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeCalModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeTplModal(); closeCalModal(); } });
+
+init();
+</script>
+</body>
+</html>

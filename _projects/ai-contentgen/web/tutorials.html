@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Tutorials — ContentGenAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+<style>
+:root{--bg:#0a0b0f;--bg-card:#13151c;--bg-elevated:#1a1d27;--text:#e8eaf0;--text-secondary:#8b8fa4;--accent:#6384ff;--gradient:linear-gradient(135deg,#6384ff 0%,#a855f7 50%,#ec4899 100%);--success:#34d399;--warning:#fbbf24;--radius:12px;--trans:.2s ease}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit}
+/* Ambient */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;animation:drift 20s ease-in-out infinite}
+.orb-1{width:500px;height:500px;background:#6384ff;top:-100px;left:-100px;animation-delay:0s}
+.orb-2{width:400px;height:400px;background:#a855f7;bottom:-80px;right:-80px;animation-delay:-7s}
+.orb-3{width:350px;height:350px;background:#ec4899;top:40%;left:60%;animation-delay:-14s}
+@keyframes drift{0%,100%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-20px,30px)}}
+/* Nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 24px}
+.nav-inner{max-width:1200px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
+.brand-icon{display:flex;align-items:center;padding:6px;background:var(--gradient);border-radius:8px}
+.brand-ai{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-badge{background:rgba(99,132,255,.15);color:var(--accent);border:1px solid rgba(99,132,255,.3);padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+/* Layout */
+.container{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+.page-header{text-align:center;padding:48px 0 32px}
+.page-header h1{font-size:2.2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.page-header p{color:var(--text-secondary);font-size:1rem}
+/* Tabs */
+.tabs{display:flex;gap:4px;background:var(--bg-card);border-radius:12px;padding:4px;margin-bottom:32px;border:1px solid rgba(255,255,255,.06)}
+.tab-btn{flex:1;padding:10px 8px;border:none;background:transparent;color:var(--text-secondary);font-size:.85rem;font-weight:500;border-radius:8px;transition:all var(--trans);position:relative}
+.tab-btn.active{background:var(--bg-elevated);color:var(--text)}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--accent);border-radius:2px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+/* Cards */
+.card{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:24px}
+/* Wizard */
+.wizard-wrap{max-width:720px;margin:0 auto}
+.wizard-progress{display:flex;align-items:center;margin-bottom:32px;gap:0}
+.wp-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.wp-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:rgba(255,255,255,.1);z-index:0;transition:background .4s}
+.wp-step.done:not(:last-child)::after{background:var(--accent)}
+.wp-dot{width:28px;height:28px;border-radius:50%;background:var(--bg-elevated);border:2px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;z-index:1;transition:all .4s;position:relative}
+.wp-step.done .wp-dot{background:var(--accent);border-color:var(--accent);color:#fff}
+.wp-step.active .wp-dot{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 4px rgba(99,132,255,.2)}
+.wp-label{font-size:.65rem;color:var(--text-secondary);margin-top:6px;text-align:center}
+.wp-step.active .wp-label{color:var(--accent)}
+.wizard-stage{overflow:hidden;position:relative;min-height:340px}
+.wz-slide{position:absolute;inset:0;padding:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s;background:var(--bg-card);border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)}
+.wz-slide.hidden-left{transform:translateX(-100%);opacity:0;pointer-events:none}
+.wz-slide.hidden-right{transform:translateX(100%);opacity:0;pointer-events:none}
+.wz-icon{font-size:3rem;margin-bottom:16px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.wz-slide h2{font-size:1.5rem;font-weight:700;margin-bottom:8px}
+.wz-slide p{color:var(--text-secondary);max-width:480px;line-height:1.6}
+.path-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;margin-top:16px}
+.path-card{background:var(--bg-elevated);border:2px solid rgba(255,255,255,.06);border-radius:10px;padding:16px 12px;cursor:pointer;transition:all var(--trans);text-align:center}
+.path-card:hover,.path-card.selected{border-color:var(--accent);background:rgba(99,132,255,.1)}
+.path-card .pc-icon{font-size:1.8rem;margin-bottom:8px}
+.path-card .pc-label{font-size:.8rem;font-weight:600}
+.wizard-form{width:100%;text-align:left;margin-top:16px}
+.form-group{margin-bottom:16px;position:relative}
+.form-group label{font-size:.8rem;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.tooltip-trigger{cursor:pointer;color:var(--accent);font-size:.75rem;background:rgba(99,132,255,.15);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center}
+.tooltip-box{display:none;position:absolute;left:0;top:100%;background:var(--bg-elevated);border:1px solid rgba(99,132,255,.3);border-radius:8px;padding:10px 14px;font-size:.78rem;color:var(--text-secondary);z-index:10;width:260px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.tooltip-trigger:hover+.tooltip-box{display:block}
+input[type=text],textarea,select{width:100%;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);padding:10px 14px;font-family:inherit;font-size:.88rem;transition:border-color var(--trans)}
+input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+.prog-bar-wrap{width:100%;background:rgba(255,255,255,.06);border-radius:20px;overflow:hidden;height:8px;margin:16px 0}
+.prog-bar{height:100%;background:var(--gradient);border-radius:20px;transition:width 1s ease;width:0}
+.wizard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.btn{padding:10px 22px;border-radius:8px;font-size:.88rem;font-weight:600;border:none;transition:all var(--trans)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#7a9aff;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid rgba(255,255,255,.1)}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.results-output{background:var(--bg-elevated);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.7;text-align:left;width:100%;margin-top:12px;position:relative}
+.annotation{display:inline-block;background:rgba(99,132,255,.2);border-bottom:2px solid var(--accent);cursor:pointer;position:relative}
+.ann-tip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--bg-elevated);border:1px solid rgba(99,132,255,.3);border-radius:8px;padding:8px 12px;font-size:.75rem;white-space:nowrap;z-index:10;font-family:'Inter',sans-serif}
+.annotation:hover .ann-tip{display:block}
+.reco-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-top:16px}
+.reco-item{background:var(--bg-elevated);border-radius:8px;padding:14px;border:1px solid rgba(255,255,255,.06);text-align:left;font-size:.82rem}
+.reco-item strong{display:block;color:var(--text);margin-bottom:4px}
+.reco-item span{color:var(--text-secondary)}
+/* Workflows */
+.workflow-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}
+.wf-card{background:var(--bg-card);border:2px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;transition:all var(--trans)}
+.wf-card:hover,.wf-card.active{border-color:var(--accent);background:rgba(99,132,255,.08)}
+.wf-card .wf-icon{font-size:1.6rem;margin-bottom:6px}
+.wf-card .wf-name{font-size:.75rem;font-weight:600}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text-secondary);margin-bottom:20px}
+.bc-sep{opacity:.4}
+.bc-cur{color:var(--text)}
+.wf-steps{display:flex;flex-direction:column;gap:10px}
+.wf-step-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:10px;overflow:hidden}
+.wf-step-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;transition:background var(--trans)}
+.wf-step-header:hover{background:rgba(255,255,255,.03)}
+.step-num{width:24px;height:24px;background:rgba(99,132,255,.15);color:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+.step-title{font-weight:600;font-size:.9rem;flex:1}
+.step-chevron{color:var(--text-secondary);transition:transform var(--trans);font-size:.8rem}
+.wf-step-card.open .step-chevron{transform:rotate(180deg)}
+.wf-step-body{display:none;padding:0 18px 18px;border-top:1px solid rgba(255,255,255,.04)}
+.wf-step-card.open .wf-step-body{display:block}
+.wf-step-body p{color:var(--text-secondary);font-size:.85rem;line-height:1.6;margin:12px 0 10px}
+.owl-tip{display:flex;align-items:flex-start;gap:12px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:12px;margin-top:10px}
+.owl-tip p{color:var(--text-secondary);font-size:.8rem;margin:0}
+/* Sandbox */
+.sandbox{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.sandbox-controls{display:flex;flex-direction:column;gap:20px}
+.ctrl-group{display:flex;flex-direction:column;gap:8px}
+.ctrl-label{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:600}
+.ctrl-val{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.8rem}
+.ctrl-row{display:flex;align-items:center;gap:8px}
+input[type=range]{flex:1;-webkit-appearance:none;height:4px;background:rgba(255,255,255,.1);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;transition:transform var(--trans)}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.explain-btn{background:rgba(99,132,255,.12);color:var(--accent);border:none;padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;white-space:nowrap}
+.explain-btn:hover{background:rgba(99,132,255,.22)}
+.preset-bar{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.preset-bar label{font-size:.8rem;color:var(--text-secondary);font-weight:600}
+.sandbox-preview{display:flex;flex-direction:column;gap:12px}
+.preview-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:20px;flex:1;min-height:320px}
+.preview-card h4{font-size:.78rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.preview-text{font-size:.88rem;line-height:1.8;color:var(--text);transition:opacity .3s}
+.preview-text.updating{opacity:.4}
+.preview-meta{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+.meta-pill{background:var(--bg-elevated);border-radius:6px;padding:4px 10px;font-size:.72rem;color:var(--text-secondary)}
+.explain-panel{background:var(--bg-elevated);border-radius:8px;padding:12px 14px;font-size:.8rem;color:var(--text-secondary);line-height:1.5;display:none}
+.explain-panel.visible{display:block}
+/* Learn by Doing */
+.lbd-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.lbd-progress{display:flex;align-items:center;gap:12px;font-size:.85rem;color:var(--text-secondary)}
+.lbd-bar{width:120px;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.lbd-bar-fill{height:100%;background:var(--gradient);border-radius:3px;transition:width .5s ease}
+.difficulty-filters{display:flex;gap:8px;margin-bottom:20px}
+.diff-btn{padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--text-secondary);transition:all var(--trans)}
+.diff-btn.active,.diff-btn:hover{color:var(--text);border-color:var(--accent);background:rgba(99,132,255,.1)}
+.tasks-grid{display:flex;flex-direction:column;gap:12px}
+.task-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;transition:all var(--trans);position:relative}
+.task-card.completed{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.04)}
+.task-card[data-diff=Beginner] .diff-badge{background:rgba(52,211,153,.15);color:var(--success)}
+.task-card[data-diff=Intermediate] .diff-badge{background:rgba(251,191,36,.15);color:var(--warning)}
+.task-card[data-diff=Advanced] .diff-badge{background:rgba(168,85,247,.15);color:#a855f7}
+.task-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.diff-badge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.04em}
+.task-title{font-weight:700;font-size:.95rem;flex:1}
+.task-done-check{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .3s}
+.task-card.completed .task-done-check{background:var(--success);border-color:var(--success);color:#0a0b0f}
+.task-obj{color:var(--text-secondary);font-size:.83rem;line-height:1.6;margin-bottom:14px}
+.hints-toggle{background:none;border:none;color:var(--accent);font-size:.8rem;font-weight:600;padding:0;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.hints-body{display:none;background:var(--bg-elevated);border-radius:8px;padding:12px 14px;margin-bottom:12px}
+.hints-body li{font-size:.8rem;color:var(--text-secondary);line-height:1.6;margin-left:16px;margin-bottom:4px}
+.task-card.hints-open .hints-body{display:block}
+.criteria{list-style:none;margin-bottom:14px}
+.criteria li{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text-secondary);margin-bottom:6px}
+.criteria li::before{content:'○';color:rgba(255,255,255,.2);font-size:.9rem}
+.task-actions{display:flex;gap:8px}
+.btn-sm{padding:7px 14px;border-radius:7px;font-size:.78rem;font-weight:600;border:none}
+.btn-success{background:rgba(52,211,153,.15);color:var(--success);border:1px solid rgba(52,211,153,.3)}
+.btn-success:hover{background:rgba(52,211,153,.25)}
+.btn-show{background:rgba(99,132,255,.12);color:var(--accent);border:1px solid rgba(99,132,255,.2)}
+.btn-show:hover{background:rgba(99,132,255,.22)}
+/* Confetti */
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
+/* Fade-up */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+/* Responsive */
+@media(max-width:768px){
+  .sandbox{grid-template-columns:1fr}
+  .workflow-grid{grid-template-columns:repeat(3,1fr)}
+  .path-cards{grid-template-columns:1fr 1fr}
+  .reco-grid{grid-template-columns:1fr}
+  .tabs{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div class="ambient">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<canvas id="confetti-canvas"></canvas>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </span>
+      <span>ContentGen<span class="brand-ai">AI</span></span>
+    </a>
+    <span class="nav-badge">Interactive Tutorials</span>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-header fade-up">
+    <h1>Learn ContentGenAI</h1>
+    <p>Hands-on tutorials to master AI content generation — from zero to expert.</p>
+  </div>
+
+  <div class="tabs fade-up" id="main-tabs">
+    <button class="tab-btn active" data-tab="onboarding">🧭 Onboarding Wizard</button>
+    <button class="tab-btn" data-tab="workflows">⚙️ Guided Workflows</button>
+    <button class="tab-btn" data-tab="sandbox">🧪 Sandbox</button>
+    <button class="tab-btn" data-tab="lbd">🎯 Learn-by-Doing</button>
+  </div>
+
+  <!-- TAB 1: ONBOARDING WIZARD -->
+  <div class="tab-panel active fade-up" id="tab-onboarding">
+    <div class="wizard-wrap">
+      <div class="wizard-progress" id="wz-progress"></div>
+      <div class="wizard-stage" id="wz-stage"></div>
+      <div class="wizard-nav">
+        <button class="btn btn-ghost" id="wz-back" onclick="wizardNav(-1)">← Back</button>
+        <span id="wz-step-label" style="font-size:.8rem;color:var(--text-secondary)"></span>
+        <button class="btn btn-primary" id="wz-next" onclick="wizardNav(1)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: GUIDED WORKFLOWS -->
+  <div class="tab-panel" id="tab-workflows">
+    <div class="workflow-grid" id="wf-grid"></div>
+    <div id="wf-content"></div>
+  </div>
+
+  <!-- TAB 3: SANDBOX -->
+  <div class="tab-panel" id="tab-sandbox">
+    <div class="sandbox fade-up">
+      <div class="sandbox-controls card">
+        <div class="preset-bar">
+          <label>Load Example:</label>
+          <select id="preset-select" onchange="loadPreset(this.value)" style="flex:1">
+            <option value="">— choose a preset —</option>
+          </select>
+        </div>
+        <div id="explain-panel" class="explain-panel"></div>
+        <div id="ctrl-area"></div>
+        <div class="form-group" style="margin-top:4px">
+          <label>Topic <span class="tooltip-trigger" title="What is your content about?">?</span></label>
+          <div class="tooltip-box">Describe the subject you want to write about. Be specific for better results.</div>
+          <input type="text" id="sb-topic" placeholder="e.g. Zero-waste cooking tips" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="sandbox-preview">
+        <div class="preview-card">
+          <h4>Live Preview</h4>
+          <div class="preview-text" id="sb-preview">Start typing a topic to see a live preview...</div>
+          <div class="preview-meta" id="sb-meta"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: LEARN BY DOING -->
+  <div class="tab-panel" id="tab-lbd">
+    <div class="lbd-header fade-up">
+      <div>
+        <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:4px">Practice Tasks</h2>
+        <p style="font-size:.83rem;color:var(--text-secondary)">Complete tasks to build real skill.</p>
+      </div>
+      <div class="lbd-progress">
+        <span id="lbd-count">0/0 done</span>
+        <div class="lbd-bar"><div class="lbd-bar-fill" id="lbd-bar-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="difficulty-filters" id="diff-filters"></div>
+    <div class="tasks-grid" id="tasks-grid"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const WZ_STEPS = [
+  { id:'welcome', label:'Welcome' },
+  { id:'path',    label:'Choose Path' },
+  { id:'form',    label:'First Gen' },
+  { id:'magic',   label:'See Magic' },
+  { id:'results', label:'Results' },
+  { id:'next',    label:"What's Next" }
+];
+
+const WORKFLOWS = [
+  { id:'blog', icon:'📝', name:'Blog Post', steps:[
+    { title:'Define Your Audience', body:'Who are you writing for? Specify demographics, expertise level, and pain points.', owl:'Narrow audience = higher engagement. "Developers" is too broad; try "junior Python devs learning async."', input:'text', placeholder:'Audience description...' },
+    { title:'Craft the Hook', body:'Write a compelling first sentence that makes readers keep going.', owl:'The best hooks start with a surprising stat, bold claim, or provocative question.', input:'text', placeholder:'Your hook sentence...' },
+    { title:'Outline Sections', body:'List your H2 headings. Aim for 4–6 sections for a standard 1000-word post.', owl:'Each section should answer one specific question your reader has.', input:'textarea', placeholder:'H2 1:\nH2 2:\nH2 3:' },
+    { title:'Write & Refine', body:'Generate the full draft, then review for clarity, flow, and SEO keywords.', owl:'Read aloud — if you stumble, rewrite. Your reader will stumble too.', input:'textarea', placeholder:'Paste generated draft here for notes...' },
+    { title:'Publish Checklist', body:'Meta description, featured image, internal links, CTA at end.', owl:'Schedule posts at 9 AM Tuesday–Thursday for peak organic traffic.', input:null }
+  ]},
+  { id:'social', icon:'📣', name:'Social Campaign', steps:[
+    { title:'Set Campaign Goal', body:'Define one measurable objective: awareness, clicks, conversions, or engagement.', owl:'One campaign, one goal. Mixing objectives dilutes performance.', input:'text', placeholder:'My goal is...' },
+    { title:'Platform Strategy', body:'Each platform has its own tone. Twitter = punchy, LinkedIn = professional, Instagram = visual.', owl:'Repurpose, don\'t copy-paste. Adapt content for each platform\'s algorithm.', input:'text', placeholder:'Platforms: ...' },
+    { title:'Content Mix (5-3-2)', body:'5 curated posts, 3 original, 2 personal. This keeps your feed balanced and authentic.', owl:'Automation handles the 5. Spend your energy on the 2 personal ones.', input:null },
+    { title:'Hashtag Research', body:'Find 3 niche hashtags (10k–500k posts) + 2 broad ones. Test weekly.', owl:'Niche hashtags have less competition and more targeted audiences.', input:'text', placeholder:'#hashtag1 #hashtag2...' }
+  ]},
+  { id:'readme', icon:'📄', name:'README', steps:[
+    { title:'Project Headline', body:'One sentence: what it does and who it\'s for. No jargon.', owl:'Pretend you\'re explaining it to a smart friend who doesn\'t know your stack.', input:'text', placeholder:'A tool that...' },
+    { title:'Quick Start', body:'Show the minimum commands to get from zero to working in under 2 minutes.', owl:'If quick start takes more than 5 commands, your UX needs work — fix the tool, not the docs.', input:'textarea', placeholder:'npm install ...\nnpm start' },
+    { title:'Features & API', body:'List key features with one-line descriptions. Document every public function.', owl:'Auto-generate API docs with JSDoc/docstring — don\'t write them by hand.', input:'textarea', placeholder:'- Feature 1: does X' },
+    { title:'Contributing Guide', body:'Branch naming, PR template, code style, and how to run tests.', owl:'Good contributing guides reduce "how do I…" issues by 60%.', input:null }
+  ]},
+  { id:'marketing', icon:'💼', name:'Marketing', steps:[
+    { title:'Value Proposition', body:'Complete: "We help [audience] do [outcome] without [pain point]."', owl:'If you can\'t complete this sentence clearly, your positioning needs work.', input:'text', placeholder:'We help...' },
+    { title:'Messaging Matrix', body:'Create 3 messages for 3 buyer personas. Same product, different angles.', owl:'Decision-makers care about ROI. End-users care about ease. Both must be convinced.', input:'textarea', placeholder:'Persona 1:\nPersona 2:' },
+    { title:'CTA Hierarchy', body:'Primary CTA (one per page), secondary CTA, and micro-conversions (newsletter, etc).', owl:'Every page should have exactly one primary CTA. Two CTAs = zero CTAs.', input:null },
+    { title:'A/B Test Plan', body:'Define your hypothesis, variant, success metric, and sample size.', owl:'Test one variable at a time. Testing headline AND button color means you learn nothing.', input:'text', placeholder:'Hypothesis: Changing X will improve Y by Z%' }
+  ]},
+  { id:'docs', icon:'📚', name:'Docs', steps:[
+    { title:'Docs Architecture', body:'Structure: Getting Started → Concepts → How-To Guides → Reference → Troubleshooting.', owl:'This mirrors the Diataxis framework — the gold standard for technical documentation.', input:null },
+    { title:'Write for Skimmers', body:'Use headers, bullet points, code examples, and callout boxes. No walls of text.', owl:'80% of readers skim. The 20% who read thoroughly will find the details in the code blocks.', input:'textarea', placeholder:'Section outline...' },
+    { title:'Code Examples', body:'Every feature needs a runnable code example. Untested examples erode trust.', owl:'Copy-paste examples into your test suite. If they break, your tests catch it automatically.', input:'textarea', placeholder:'```python\n# example\n```' },
+    { title:'Changelog & Versioning', body:'Document every breaking change with migration instructions.', owl:'A good changelog is a marketing tool — it shows your product is actively improved.', input:null }
+  ]}
+];
+
+const SANDBOX_CTRLS = [
+  { id:'tone', label:'Tone', min:0, max:4, val:2, labels:['Formal','Professional','Neutral','Friendly','Casual'],
+    explain:'Tone controls how your content sounds to readers. Formal suits legal/academic writing; Casual works for social media.' },
+  { id:'length', label:'Length', min:0, max:4, val:2, labels:['Tweet','Short','Medium','Long','Detailed'],
+    explain:'Length determines word count: Tweet ≈50w, Short ≈150w, Medium ≈400w, Long ≈800w, Detailed ≈1500w+.' },
+  { id:'complexity', label:'Complexity', min:0, max:4, val:2, labels:['ELI5','Simple','Standard','Technical','Expert'],
+    explain:'Complexity adjusts vocabulary and assumed knowledge. ELI5 avoids jargon; Expert uses domain-specific terminology.' }
+];
+
+const PRESETS = [
+  { label:'Tech Blog Post', topic:'The future of WebAssembly in 2026', tone:2, length:3, complexity:3 },
+  { label:'Social Media Thread', topic:'Morning productivity habits', tone:4, length:0, complexity:1 },
+  { label:'API Documentation', topic:'Rate limiting and authentication', tone:1, length:2, complexity:4 },
+  { label:'Marketing Landing Page', topic:'Cloud backup for small businesses', tone:3, length:2, complexity:1 }
+];
+
+const TASKS = [
+  { id:'t1', diff:'Beginner', title:'Write Your First Prompt', objective:'Use ContentGenAI to generate a 3-sentence product description for a fictional coffee brand.',
+    hints:['Start with a clear subject: "Write a product description for…"','Specify tone: try "warm and inviting"','Include a benefit: mention aroma, sustainability, or origin'],
+    criteria:['Contains product name','Mentions at least one benefit','Under 50 words','Has a clear CTA'],
+    autofill:{topic:'Artisan coffee from Ethiopian highlands',tone:3,length:0,complexity:1} },
+  { id:'t2', diff:'Beginner', title:'Explore Tone Variations', objective:'Generate the same message — a meeting reminder — in 3 different tones: formal, friendly, and urgent.',
+    hints:['Use the Sandbox tab with the tone slider','Copy each version to compare','Notice how word choice changes'],
+    criteria:['All 3 versions convey the same info','Clear tonal difference between versions','None exceeds 30 words'],
+    autofill:{topic:'Team standup meeting tomorrow at 9 AM',tone:1,length:0,complexity:2} },
+  { id:'t3', diff:'Intermediate', title:'Build a Blog Outline', objective:'Create a 5-section blog post outline about "Sustainable Remote Work" targeting eco-conscious professionals.',
+    hints:['Use the Blog Post workflow in Guided Workflows','Each H2 should answer a specific reader question','Include an intro and conclusion section'],
+    criteria:['Exactly 5 sections','Each has a 1-line description','Intro hooks the reader','Conclusion has a CTA'],
+    autofill:{topic:'Sustainable remote work practices for eco-conscious professionals',tone:2,length:2,complexity:2} },
+  { id:'t4', diff:'Intermediate', title:'Craft a Value Proposition', objective:'Write a value proposition following the formula: "We help [X] achieve [Y] without [Z]" for a SaaS analytics tool.',
+    hints:['Be specific about the audience (not "businesses", try "e-commerce founders")','Y should be a concrete outcome, not a feature','Z should name the real pain point'],
+    criteria:['Follows the formula exactly','Audience is specific','Outcome is measurable','Pain point is relatable'],
+    autofill:{topic:'Value proposition for a SaaS analytics tool for e-commerce founders',tone:1,length:0,complexity:2} },
+  { id:'t5', diff:'Advanced', title:'Multi-Platform Campaign', objective:'Design a 3-platform content campaign (Twitter/X, LinkedIn, Instagram) for a product launch with consistent messaging but platform-native formats.',
+    hints:['Twitter: punchy hook + thread structure','LinkedIn: story-driven, professional tone, data-backed','Instagram: visual description + CTA in first line','All 3 must share the same core value prop'],
+    criteria:['All 3 platforms covered','Distinct format for each','Single consistent value proposition','Each ends with a clear CTA'],
+    autofill:{topic:'Launch of AI-powered writing assistant for content teams',tone:3,length:1,complexity:2} },
+  { id:'t6', diff:'Advanced', title:'Technical README from Scratch', objective:'Generate a complete README for an open-source CLI tool using the Guided Workflows → README path. Include all 4 sections.',
+    hints:['Follow the README workflow step by step','Quick Start must be copy-paste runnable','Include at least one code block','Add a contributing section'],
+    criteria:['Project headline in one sentence','Quick Start under 5 commands','At least 3 features listed','Contributing section present'],
+    autofill:{topic:'Open-source CLI tool for managing environment variables across projects',tone:1,length:3,complexity:3} }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let wzStep = 0, wzPath = '', wzPrevDir = 1;
+let activeWf = WORKFLOWS[0];
+let activeFilter = 'All';
+const completedTasks = new Set(JSON.parse(localStorage.getItem('tut_done') || '[]'));
+let sbDebounce = null;
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+document.getElementById('main-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+});
+
+// ─── WIZARD ───────────────────────────────────────────────────────────────────
+function buildWizardProgress() {
+  const el = document.getElementById('wz-progress');
+  el.innerHTML = WZ_STEPS.map((s, i) => `
+    <div class="wp-step ${i < wzStep ? 'done' : i === wzStep ? 'active' : ''}" id="wps-${i}">
+      <div class="wp-dot">${i < wzStep ? '✓' : i + 1}</div>
+      <div class="wp-label">${s.label}</div>
+    </div>`).join('');
+}
+
+const WZ_RENDERS = {
+  welcome: () => `
+    <div class="wz-icon" style="font-size:4rem">✨</div>
+    <h2>Welcome to ContentGenAI</h2>
+    <p>This short wizard will guide you through your first content generation experience. Takes about 3 minutes.</p>`,
+  path: () => `
+    <h2>What do you want to create?</h2>
+    <p>Choose your content type to get a tailored experience.</p>
+    <div class="path-cards">
+      ${[['📝','Blog Post'],['📣','Social'],['📄','README'],['💼','Marketing'],['📚','Docs'],['✨','Surprise']].map(([i,l]) =>
+        `<div class="path-card ${wzPath===l?'selected':''}" onclick="wzPath='${l}';renderWzSlide(${wzStep})">
+          <div class="pc-icon">${i}</div><div class="pc-label">${l}</div>
+        </div>`).join('')}
+    </div>`,
+  form: () => `
+    <h2>Let's generate something</h2>
+    <div class="wizard-form">
+      <div class="form-group">
+        <label>Topic <span class="tooltip-trigger">?</span><div class="tooltip-box">Describe your subject clearly — the more specific, the better the output.</div></label>
+        <input type="text" id="wz-topic" placeholder="e.g. Benefits of async programming">
+      </div>
+      <div class="form-group">
+        <label>Audience <span class="tooltip-trigger">?</span><div class="tooltip-box">Who will read this? "Junior developers" beats "developers".</div></label>
+        <input type="text" id="wz-audience" placeholder="e.g. Junior developers">
+      </div>
+      <div class="form-group">
+        <label>Tone <span class="tooltip-trigger">?</span><div class="tooltip-box">Formal for reports, friendly for blogs, casual for social.</div></label>
+        <select id="wz-tone"><option>Professional</option><option>Friendly</option><option>Casual</option><option>Formal</option></select>
+      </div>
+    </div>`,
+  magic: () => `
+    <h2>Generating your content…</h2>
+    <p>Watch the AI craft your content in real time.</p>
+    <div class="prog-bar-wrap" style="max-width:400px"><div class="prog-bar" id="wz-prog"></div></div>
+    <p id="wz-status" style="font-size:.8rem;color:var(--text-secondary);margin-top:8px">Analyzing topic…</p>`,
+  results: () => `
+    <h2>Here's your result!</h2>
+    <p>Hover the highlighted sections to see annotations.</p>
+    <div class="results-output">
+      <span class="annotation">The rise of async programming<ann-tip class="ann-tip">Strong hook — leads with the trend</ann-tip></span> has transformed how developers build scalable applications.
+      <span class="annotation">By decoupling I/O operations from execution threads<ann-tip class="ann-tip">Technical definition placed early for context</ann-tip></span>,
+      async patterns allow systems to handle thousands of concurrent requests without blocking.
+      <span class="annotation">For teams adopting Node.js or Python's asyncio<ann-tip class="ann-tip">Specific platforms = practical relevance</ann-tip></span>,
+      understanding event loops is the first step to writing production-ready async code.
+    </div>`,
+  next: () => `
+    <h2>You're ready to explore! 🎉</h2>
+    <p>Based on your choices, here are your next steps:</p>
+    <div class="reco-grid">
+      ${[['Guided Workflow','Follow the step-by-step workflow for your content type'],
+         ['Sandbox','Experiment with tone, length, and complexity sliders'],
+         ['Practice Tasks','Complete hands-on tasks to build real skill'],
+         ['Go to App','Jump into the full ContentGenAI interface']].map(([t,d]) =>
+        `<div class="reco-item"><strong>${t}</strong><span>${d}</span></div>`).join('')}
+    </div>`
+};
+
+function renderWzSlide(idx) {
+  const stage = document.getElementById('wz-stage');
+  const existing = stage.querySelector('.wz-slide:not(.hidden-left):not(.hidden-right)');
+  const slide = document.createElement('div');
+  slide.className = 'wz-slide hidden-right';
+  slide.innerHTML = WZ_RENDERS[WZ_STEPS[idx].id]();
+  stage.appendChild(slide);
+  requestAnimationFrame(() => {
+    if (existing) existing.classList.add(wzPrevDir > 0 ? 'hidden-left' : 'hidden-right');
+    slide.classList.remove('hidden-right', 'hidden-left');
+    setTimeout(() => existing && existing.remove(), 420);
+  });
+  if (idx === 3) startMagicAnim();
+  document.getElementById('wz-step-label').textContent = `Step ${idx+1} of ${WZ_STEPS.length}`;
+  document.getElementById('wz-back').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  document.getElementById('wz-next').textContent = idx === WZ_STEPS.length - 1 ? '✓ Done' : 'Next →';
+  buildWizardProgress();
+}
+
+function wizardNav(dir) {
+  wzPrevDir = dir;
+  const next = wzStep + dir;
+  if (next < 0 || next > WZ_STEPS.length - 1) return;
+  wzStep = next;
+  renderWzSlide(wzStep);
+}
+
+function startMagicAnim() {
+  const steps = ['Analyzing topic…','Structuring outline…','Generating draft…','Polishing sentences…','Adding final touches…','Done! ✓'];
+  let i = 0;
+  const bar = () => document.getElementById('wz-prog');
+  const stat = () => document.getElementById('wz-status');
+  const run = () => {
+    if (!bar()) return;
+    const pct = Math.min(100, (i / (steps.length - 1)) * 100);
+    bar().style.width = pct + '%';
+    stat().textContent = steps[i];
+    if (++i < steps.length) setTimeout(run, 600);
+  };
+  setTimeout(run, 200);
+}
+
+// ─── WORKFLOWS ────────────────────────────────────────────────────────────────
+function buildWorkflowGrid() {
+  document.getElementById('wf-grid').innerHTML = WORKFLOWS.map(w =>
+    `<div class="wf-card ${w.id === activeWf.id ? 'active' : ''}" onclick="selectWorkflow('${w.id}')">
+      <div class="wf-icon">${w.icon}</div>
+      <div class="wf-name">${w.name}</div>
+    </div>`).join('');
+}
+
+function selectWorkflow(id) {
+  activeWf = WORKFLOWS.find(w => w.id === id);
+  buildWorkflowGrid();
+  renderWorkflow();
+}
+
+function renderWorkflow() {
+  document.getElementById('wf-content').innerHTML = `
+    <div class="breadcrumb">
+      <span>Workflows</span><span class="bc-sep">›</span><span class="bc-cur">${activeWf.name}</span>
+    </div>
+    <div class="wf-steps">
+      ${activeWf.steps.map((s, i) => `
+        <div class="wf-step-card" id="wfs-${i}">
+          <div class="wf-step-header" onclick="toggleWfStep(${i})">
+            <div class="step-num">${i + 1}</div>
+            <div class="step-title">${s.title}</div>
+            <div class="step-chevron">▼</div>
+          </div>
+          <div class="wf-step-body">
+            <p>${s.body}</p>
+            ${s.input === 'text' ? `<input type="text" placeholder="${s.placeholder}">` :
+              s.input === 'textarea' ? `<textarea placeholder="${s.placeholder}"></textarea>` : ''}
+            <div class="owl-tip">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <ellipse cx="16" cy="20" rx="10" ry="9" fill="#1a1d27" stroke="#fbbf24" stroke-width="1.5"/>
+                <circle cx="12" cy="18" r="3.5" fill="#fbbf24" opacity=".9"/>
+                <circle cx="20" cy="18" r="3.5" fill="#fbbf24" opacity=".9"/>
+                <circle cx="12" cy="18" r="1.5" fill="#0a0b0f"/>
+                <circle cx="20" cy="18" r="1.5" fill="#0a0b0f"/>
+                <path d="M14 23 Q16 25 18 23" stroke="#fbbf24" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M10 12 L8 7 L12 10" fill="#fbbf24" opacity=".7"/>
+                <path d="M22 12 L24 7 L20 10" fill="#fbbf24" opacity=".7"/>
+              </svg>
+              <p><strong style="color:var(--warning)">Pro tip:</strong> ${s.owl}</p>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  toggleWfStep(0);
+}
+
+function toggleWfStep(i) {
+  document.getElementById('wfs-' + i).classList.toggle('open');
+}
+
+// ─── SANDBOX ──────────────────────────────────────────────────────────────────
+function buildSandbox() {
+  const presetSel = document.getElementById('preset-select');
+  PRESETS.forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = p.label;
+    presetSel.appendChild(opt);
+  });
+  const area = document.getElementById('ctrl-area');
+  area.innerHTML = SANDBOX_CTRLS.map(c => `
+    <div class="ctrl-group">
+      <div class="ctrl-label">
+        <span>${c.label}</span>
+        <span class="ctrl-val" id="val-${c.id}">${c.labels[c.val]}</span>
+      </div>
+      <div class="ctrl-row">
+        <input type="range" min="${c.min}" max="${c.max}" value="${c.val}" id="ctrl-${c.id}"
+          oninput="handleSlider('${c.id}',this.value)">
+        <button class="explain-btn" onclick="showExplain('${c.id}')">Explain</button>
+      </div>
+    </div>`).join('');
+}
+
+function handleSlider(id, v) {
+  const ctrl = SANDBOX_CTRLS.find(c => c.id === id);
+  ctrl.val = parseInt(v);
+  document.getElementById('val-' + id).textContent = ctrl.labels[ctrl.val];
+  updatePreview();
+}
+
+function showExplain(id) {
+  const p = document.getElementById('explain-panel');
+  const ctrl = SANDBOX_CTRLS.find(c => c.id === id);
+  p.textContent = ctrl.explain;
+  p.classList.toggle('visible', true);
+  setTimeout(() => p.classList.remove('visible'), 4000);
+}
+
+function loadPreset(idx) {
+  if (idx === '') return;
+  const p = PRESETS[idx];
+  document.getElementById('sb-topic').value = p.topic;
+  SANDBOX_CTRLS.forEach(c => {
+    c.val = p[c.id];
+    const el = document.getElementById('ctrl-' + c.id);
+    if (el) { el.value = c.val; document.getElementById('val-' + c.id).textContent = c.labels[c.val]; }
+  });
+  updatePreview();
+}
+
+const TONE_WORDS = ['Therefore, it is imperative to','Thus, one must','This means','This is great because','So basically,'];
+const LENGTH_TEXTS = [
+  t => `${t}: quick win.`,
+  t => `${t} matters. Start simple, iterate quickly, and measure results.`,
+  t => `${t} is a topic worth exploring. Breaking it down into manageable steps helps teams adopt it without disruption. The key insight is that small consistent actions compound over time.`,
+  t => `When teams invest in ${t}, they often discover benefits beyond the immediate goal. The first phase involves assessment and planning. The second phase focuses on execution. The third phase measures impact. Iteration then improves outcomes across all phases.`,
+  t => `${t} represents one of the most impactful areas for modern practitioners. Research consistently shows that structured approaches yield better outcomes than ad hoc methods. This analysis examines the historical context, current best practices, emerging patterns, implementation considerations, and measurement frameworks necessary for sustainable success.`
+];
+const COMPLEX_PFX = ['Simply put: ','In plain words: ','','In technical terms: ','For domain experts: '];
+
+function updatePreview() {
+  const topic = document.getElementById('sb-topic').value.trim() || 'your topic';
+  const tone = SANDBOX_CTRLS.find(c => c.id === 'tone').val;
+  const len = SANDBOX_CTRLS.find(c => c.id === 'length').val;
+  const cx = SANDBOX_CTRLS.find(c => c.id === 'complexity').val;
+  const preview = document.getElementById('sb-preview');
+  preview.classList.add('updating');
+  clearTimeout(sbDebounce);
+  sbDebounce = setTimeout(() => {
+    const text = COMPLEX_PFX[cx] + TONE_WORDS[tone] + ' ' + LENGTH_TEXTS[len](topic);
+    preview.textContent = text;
+    preview.classList.remove('updating');
+    const meta = document.getElementById('sb-meta');
+    meta.innerHTML = `
+      <span class="meta-pill">~${[50,150,400,800,1500][len]} words</span>
+      <span class="meta-pill">${['Formal','Professional','Neutral','Friendly','Casual'][tone]}</span>
+      <span class="meta-pill">${['ELI5','Simple','Standard','Technical','Expert'][cx]}</span>`;
+  }, 220);
+}
+
+// ─── LEARN BY DOING ───────────────────────────────────────────────────────────
+function buildLbd() {
+  const diffs = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+  document.getElementById('diff-filters').innerHTML = diffs.map(d =>
+    `<button class="diff-btn ${d === activeFilter ? 'active' : ''}" onclick="filterTasks('${d}')">${d}</button>`).join('');
+  renderTasks();
+  updateLbdProgress();
+}
+
+function filterTasks(d) {
+  activeFilter = d;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.textContent === d));
+  renderTasks();
+}
+
+function renderTasks() {
+  const visible = TASKS.filter(t => activeFilter === 'All' || t.diff === activeFilter);
+  document.getElementById('tasks-grid').innerHTML = visible.map(t => `
+    <div class="task-card fade-up ${completedTasks.has(t.id) ? 'completed' : ''}" data-diff="${t.diff}" id="tc-${t.id}">
+      <div class="task-header">
+        <span class="diff-badge">${t.diff}</span>
+        <span class="task-title">${t.title}</span>
+        <div class="task-done-check">${completedTasks.has(t.id) ? '✓' : ''}</div>
+      </div>
+      <p class="task-obj">${t.objective}</p>
+      <button class="hints-toggle" onclick="toggleHints('${t.id}')">💡 Show Hints</button>
+      <div class="hints-body"><ul>${t.hints.map(h => `<li>${h}</li>`).join('')}</ul></div>
+      <ul class="criteria">${t.criteria.map(c => `<li>${c}</li>`).join('')}</ul>
+      <div class="task-actions">
+        ${!completedTasks.has(t.id) ? `
+          <button class="btn-sm btn-show" onclick="autoFillTask('${t.id}')">Show me how</button>
+          <button class="btn-sm btn-success" onclick="completeTask('${t.id}')">Mark Complete ✓</button>` :
+          `<span style="color:var(--success);font-size:.82rem;font-weight:600">✓ Completed!</span>`}
+      </div>
+    </div>`).join('');
+  observeFadeUps();
+}
+
+function toggleHints(id) {
+  const card = document.getElementById('tc-' + id);
+  card.classList.toggle('hints-open');
+  const btn = card.querySelector('.hints-toggle');
+  btn.textContent = card.classList.contains('hints-open') ? '💡 Hide Hints' : '💡 Show Hints';
+}
+
+function autoFillTask(id) {
+  const task = TASKS.find(t => t.id === id);
+  const af = task.autofill;
+  // Switch to sandbox tab and fill values
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab=sandbox]').classList.add('active');
+  document.getElementById('tab-sandbox').classList.add('active');
+  document.getElementById('sb-topic').value = af.topic;
+  SANDBOX_CTRLS.forEach(c => {
+    if (af[c.id] !== undefined) {
+      c.val = af[c.id];
+      const el = document.getElementById('ctrl-' + c.id);
+      if (el) { el.value = c.val; document.getElementById('val-' + c.id).textContent = c.labels[c.val]; }
+    }
+  });
+  updatePreview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function completeTask(id) {
+  completedTasks.add(id);
+  localStorage.setItem('tut_done', JSON.stringify([...completedTasks]));
+  renderTasks();
+  updateLbdProgress();
+  launchConfetti();
+}
+
+function updateLbdProgress() {
+  const pct = Math.round((completedTasks.size / TASKS.length) * 100);
+  document.getElementById('lbd-count').textContent = `${completedTasks.size}/${TASKS.length} done`;
+  document.getElementById('lbd-bar-fill').style.width = pct + '%';
+}
+
+// ─── CONFETTI ─────────────────────────────────────────────────────────────────
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const particles = Array.from({length: 80}, () => ({
+    x: Math.random() * canvas.width, y: -10,
+    vx: (Math.random() - .5) * 4, vy: Math.random() * 4 + 2,
+    color: ['#6384ff','#a855f7','#ec4899','#34d399','#fbbf24'][Math.floor(Math.random()*5)],
+    r: Math.random() * 5 + 3, rot: Math.random() * 360, rotV: (Math.random()-.5)*6
+  }));
+  let frame = 0;
+  const anim = () => {
+    if (++frame > 120) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.rotV; p.vy += .05;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, 1 - frame/120);
+      ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r); ctx.restore();
+    });
+    requestAnimationFrame(anim);
+  };
+  anim();
+}
+
+// ─── SCROLL OBSERVER ─────────────────────────────────────────────────────────
+function observeFadeUps() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: .1 });
+  document.querySelectorAll('.fade-up:not(.visible)').forEach(el => io.observe(el));
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderWzSlide(0);
+buildWorkflowGrid();
+renderWorkflow();
+buildSandbox();
+buildLbd();
+observeFadeUps();
+</script>
+</body>
+</html>

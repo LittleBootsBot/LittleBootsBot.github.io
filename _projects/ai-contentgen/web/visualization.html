@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualization & Education — AI Content Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+  <style>
+    /* ── Page shell ── */
+    .viz-page { max-width: 1280px; margin: 0 auto; padding: 24px 24px 80px; position: relative; z-index: 1; }
+    .viz-hero { text-align: center; padding: 48px 0 40px; }
+    .viz-hero .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,132,255,.12); border: 1px solid rgba(99,132,255,.25); color: #6384ff; font-size: 12px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; padding: 5px 14px; border-radius: 99px; margin-bottom: 18px; }
+    .viz-hero h1 { font-size: clamp(28px,5vw,46px); font-weight: 800; letter-spacing: -.5px; background: linear-gradient(135deg,#6384ff,#a855f7,#ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
+    .viz-hero p { color: var(--text-secondary); font-size: 16px; max-width: 600px; margin: 0 auto; }
+
+    /* ── Tab nav ── */
+    .tab-nav { display: flex; gap: 4px; background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 6px; margin-bottom: 40px; overflow-x: auto; scrollbar-width: none; }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .tab-btn { flex: none; display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 11px; border: none; background: transparent; color: var(--text-secondary); font-family: var(--font,inherit); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 200ms; white-space: nowrap; }
+    .tab-btn svg { opacity: .7; }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,.05); }
+    .tab-btn.active { background: linear-gradient(135deg,#6384ff,#a855f7); color: #fff; box-shadow: 0 4px 16px rgba(99,132,255,.3); }
+    .tab-btn.active svg { opacity: 1; }
+
+    /* ── Section wrapper ── */
+    .tab-section { display: none; animation: fadeUp .35s ease both; }
+    .tab-section.active { display: block; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── Section headings ── */
+    .section-head { margin-bottom: 28px; }
+    .section-head h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .section-head p { color: var(--text-secondary); font-size: 14px; }
+
+    /* ── Cards ── */
+    .card { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 20px; overflow: hidden; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.05); background: rgba(255,255,255,.02); }
+    .card-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; }
+    .card-body { padding: 24px; }
+
+    /* ══════════════════════════════════════════
+       SECTION 1 — PROCESS DIAGRAMS
+    ══════════════════════════════════════════ */
+    .pipeline-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .pipeline-tab { padding: 7px 16px; border-radius: 99px; border: 1px solid rgba(255,255,255,.08); background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 180ms; }
+    .pipeline-tab.active { border-color: #6384ff; background: rgba(99,132,255,.15); color: #6384ff; }
+
+    .pipeline-wrap { position: relative; background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 20px; overflow: hidden; }
+    .pipeline-toolbar { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .play-btn { display: flex; align-items: center; gap: 7px; padding: 8px 18px; border-radius: 99px; border: none; background: linear-gradient(135deg,#6384ff,#a855f7); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 180ms; }
+    .play-btn:hover { opacity: .85; }
+    .reset-btn { padding: 8px 14px; border-radius: 99px; border: 1px solid rgba(255,255,255,.1); background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 180ms; }
+    .reset-btn:hover { border-color: rgba(255,255,255,.2); color: var(--text); }
+    .pipeline-speed { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12px; color: var(--text-secondary); }
+    .pipeline-speed select { background: var(--bg-elevated); border: 1px solid rgba(255,255,255,.08); border-radius: 8px; color: var(--text); font-size: 12px; padding: 4px 8px; font-family: inherit; }
+
+    #pipeline-svg-wrap { width: 100%; overflow-x: auto; }
+    #pipeline-svg { display: block; min-width: 900px; }
+
+    .pipe-node { cursor: pointer; transition: transform .2s; }
+    .pipe-node:hover .node-rect { filter: brightness(1.2); }
+    .pipe-node.active .node-rect { filter: drop-shadow(0 0 8px rgba(99,132,255,.7)); }
+    .pipe-node.active .node-label { fill: #fff; }
+    .node-rect { transition: all .3s; }
+
+    .detail-panel { margin: 0 20px 20px; background: var(--bg-elevated); border: 1px solid rgba(99,132,255,.2); border-radius: 14px; padding: 20px; display: none; animation: fadeUp .25s ease both; }
+    .detail-panel.show { display: block; }
+    .detail-panel h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #6384ff; }
+    .detail-panel .detail-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.6; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:700px){ .detail-grid { grid-template-columns: 1fr; } }
+    .detail-box { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px; }
+    .detail-box h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); margin-bottom: 8px; }
+    .detail-box pre { font-family: var(--font-mono,'monospace'); font-size: 11px; color: #a5b4fc; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+    .timing-bar-wrap { margin-top: 6px; }
+    .timing-bar { height: 6px; border-radius: 99px; background: linear-gradient(90deg,#6384ff,#a855f7); transition: width .8s cubic-bezier(.16,1,.3,1); }
+    .timing-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ══════════════════════════════════════════
+       SECTION 2 — CLI FLOWCHARTS
+    ══════════════════════════════════════════ */
+    .cli-input-row { display: flex; gap: 10px; margin-bottom: 24px; }
+    .cli-input { flex: 1; background: var(--bg-elevated); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; color: var(--text); font-family: var(--font-mono,'monospace'); font-size: 13px; padding: 10px 14px; outline: none; transition: border-color 200ms; }
+    .cli-input:focus { border-color: rgba(99,132,255,.5); }
+    .cli-trace-btn { padding: 10px 20px; border-radius: 10px; border: none; background: #6384ff; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 180ms; white-space: nowrap; }
+    .cli-trace-btn:hover { opacity: .85; }
+    .cli-flow-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .cli-flow-tab { padding: 7px 16px; border-radius: 99px; border: 1px solid rgba(255,255,255,.08); background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 180ms; }
+    .cli-flow-tab.active { border-color: #34d399; background: rgba(52,211,153,.12); color: #34d399; }
+    .cli-chart-wrap { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; overflow-x: auto; padding: 20px; }
+    #cli-svg { display: block; min-width: 700px; margin: 0 auto; }
+    .cli-legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 12px 20px; border-top: 1px solid rgba(255,255,255,.05); font-size: 12px; color: var(--text-secondary); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle; }
+
+    /* ══════════════════════════════════════════
+       SECTION 3 — BEFORE/AFTER
+    ══════════════════════════════════════════ */
+    .ba-filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .ba-filter { padding: 7px 16px; border-radius: 99px; border: 1px solid rgba(255,255,255,.08); background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 180ms; }
+    .ba-filter.active { border-color: #a855f7; background: rgba(168,85,247,.12); color: #a855f7; }
+    .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:900px){ .ba-grid { grid-template-columns: 1fr; } }
+    .ba-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; overflow: hidden; }
+    .ba-card-head { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.05); display: flex; align-items: center; gap: 10px; }
+    .ba-tag { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: .4px; }
+    .ba-tag.blog { background: rgba(99,132,255,.15); color: #6384ff; }
+    .ba-tag.social { background: rgba(251,191,36,.12); color: #fbbf24; }
+    .ba-tag.readme { background: rgba(52,211,153,.12); color: #34d399; }
+    .ba-tag.marketing { background: rgba(236,72,153,.12); color: #ec4899; }
+    .ba-tag.seo { background: rgba(168,85,247,.12); color: #a855f7; }
+    .ba-card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .ba-slider-wrap { position: relative; overflow: hidden; }
+    .ba-content-row { display: grid; grid-template-columns: 1fr 1fr; }
+    .ba-side { padding: 14px 16px; font-size: 12px; line-height: 1.7; color: var(--text-secondary); min-height: 160px; }
+    .ba-side.before { border-right: 1px solid rgba(255,255,255,.05); }
+    .ba-side-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; color: var(--text-muted); }
+    .ba-side.before .ba-side-label { color: #f87171; }
+    .ba-side.after .ba-side-label { color: #34d399; }
+    .ba-add { background: rgba(52,211,153,.08); border-left: 2px solid #34d399; padding: 2px 6px; border-radius: 0 4px 4px 0; display: inline; }
+    .ba-improve { background: rgba(99,132,255,.08); border-left: 2px solid #6384ff; padding: 2px 6px; border-radius: 0 4px 4px 0; display: inline; }
+    .ba-restructure { background: rgba(168,85,247,.08); border-left: 2px solid #a855f7; padding: 2px 6px; border-radius: 0 4px 4px 0; display: inline; }
+    .ba-expand-btn { width: 100%; padding: 9px; border: none; background: rgba(255,255,255,.03); color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; border-top: 1px solid rgba(255,255,255,.05); transition: all 180ms; }
+    .ba-expand-btn:hover { background: rgba(255,255,255,.06); color: var(--text); }
+    .ba-learn { padding: 14px 16px; font-size: 12px; color: var(--text-secondary); border-top: 1px solid rgba(255,255,255,.05); background: rgba(255,255,255,.01); display: none; line-height: 1.7; }
+    .ba-learn.show { display: block; animation: fadeUp .2s ease; }
+    .ba-learn ul { padding-left: 18px; margin-top: 6px; }
+    .ba-learn li { margin-bottom: 4px; }
+    .ba-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; font-size: 12px; }
+    .ba-legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+    .ba-legend-swatch { width: 12px; height: 12px; border-radius: 2px; }
+
+    /* ══════════════════════════════════════════
+       SECTION 4 — STATS DASHBOARD
+    ══════════════════════════════════════════ */
+    .stats-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+    .range-tabs { display: flex; gap: 4px; background: var(--bg-elevated); border-radius: 10px; padding: 4px; }
+    .range-tab { padding: 6px 14px; border-radius: 7px; border: none; background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 180ms; }
+    .range-tab.active { background: var(--bg-card); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+
+    .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    @media(max-width:800px){ .summary-cards { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:500px){ .summary-cards { grid-template-columns: 1fr; } }
+    .summary-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 20px; }
+    .summary-card .sc-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); margin-bottom: 8px; }
+    .summary-card .sc-value { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+    .summary-card .sc-trend { display: flex; align-items: center; gap: 5px; font-size: 12px; margin-top: 6px; }
+    .trend-up { color: #34d399; }
+    .trend-down { color: #f87171; }
+
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:900px){ .charts-grid { grid-template-columns: 1fr; } }
+    .chart-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; overflow: hidden; }
+    .chart-card-head { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .chart-card-head h3 { font-size: 13px; font-weight: 600; color: var(--text); }
+    .chart-card-head p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .chart-body { padding: 20px; }
+    .chart-canvas-wrap { position: relative; }
+    canvas { display: block; }
+    .heatmap-wrap { overflow-x: auto; }
+    .heatmap-row { display: flex; gap: 3px; margin-bottom: 3px; align-items: center; }
+    .heatmap-label { font-size: 10px; color: var(--text-muted); width: 28px; text-align: right; margin-right: 4px; flex-shrink: 0; }
+    .heatmap-cell { width: 18px; height: 18px; border-radius: 3px; transition: transform .15s; cursor: default; }
+    .heatmap-cell:hover { transform: scale(1.3); }
+    .heatmap-hours { display: flex; gap: 3px; padding-left: 32px; margin-bottom: 4px; }
+    .heatmap-hour { width: 18px; font-size: 9px; color: var(--text-muted); text-align: center; }
+
+    /* ══════════════════════════════════════════
+       SECTION 5 — QUALITY ANALYZER
+    ══════════════════════════════════════════ */
+    .qa-layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
+    @media(max-width:1000px){ .qa-layout { grid-template-columns: 1fr; } }
+    .qa-input-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; overflow: hidden; }
+    .qa-textarea { width: 100%; min-height: 240px; background: transparent; border: none; color: var(--text); font-family: var(--font,'Inter',sans-serif); font-size: 14px; line-height: 1.7; padding: 20px; resize: vertical; outline: none; }
+    .qa-actions { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.05); }
+    .qa-analyze-btn { padding: 9px 20px; border-radius: 10px; border: none; background: linear-gradient(135deg,#6384ff,#a855f7); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 180ms; }
+    .qa-analyze-btn:hover { opacity: .85; }
+    .qa-export-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 180ms; }
+    .qa-export-btn:hover { border-color: rgba(255,255,255,.2); color: var(--text); }
+    .qa-word-count { margin-left: auto; font-size: 12px; color: var(--text-muted); }
+
+    .qa-scores { display: flex; flex-direction: column; gap: 16px; }
+    .score-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: 14px; overflow: hidden; }
+    .score-card-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; transition: background 180ms; }
+    .score-card-head:hover { background: rgba(255,255,255,.03); }
+    .score-ring-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+    .score-ring-wrap svg { display: block; }
+    .score-ring-val { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .score-info { flex: 1; }
+    .score-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .score-desc { font-size: 11px; color: var(--text-muted); }
+    .score-chevron { color: var(--text-muted); transition: transform 200ms; }
+    .score-card.expanded .score-chevron { transform: rotate(180deg); }
+    .score-detail { display: none; padding: 0 16px 14px; border-top: 1px solid rgba(255,255,255,.05); }
+    .score-card.expanded .score-detail { display: block; animation: fadeUp .2s ease; }
+    .score-detail-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.03); font-size: 12px; }
+    .score-detail-item:last-child { border-bottom: none; }
+    .score-detail-item span:first-child { color: var(--text-secondary); }
+    .score-detail-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+    .badge-good { background: rgba(52,211,153,.15); color: #34d399; }
+    .badge-ok { background: rgba(251,191,36,.12); color: #fbbf24; }
+    .badge-bad { background: rgba(248,113,113,.12); color: #f87171; }
+    .suggestions-wrap { margin-top: 10px; }
+    .suggestion-item { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.03); font-size: 12px; color: var(--text-secondary); }
+    .suggestion-item:last-child { border-bottom: none; }
+    .sug-priority { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-top: 1px; }
+    .sug-high { background: rgba(248,113,113,.15); color: #f87171; }
+    .sug-med { background: rgba(251,191,36,.12); color: #fbbf24; }
+    .sug-low { background: rgba(99,132,255,.12); color: #6384ff; }
+    .qa-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; color: var(--text-muted); gap: 10px; }
+    .qa-placeholder svg { opacity: .3; }
+    .qa-placeholder p { font-size: 13px; }
+    .optimize-btn { width: 100%; margin-top: 12px; padding: 9px; border-radius: 9px; border: 1px solid rgba(99,132,255,.3); background: rgba(99,132,255,.08); color: #6384ff; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 180ms; }
+    .optimize-btn:hover { background: rgba(99,132,255,.15); }
+    .avg-compare { margin-top: 12px; padding: 10px 12px; background: var(--bg-elevated); border-radius: 9px; font-size: 12px; color: var(--text-secondary); }
+    .avg-compare strong { color: var(--text); }
+
+    /* scroll-reveal */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+<div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<div id="toast-container"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <span class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </span>
+      <span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
+    </a>
+    <div class="nav-actions">
+      <a href="index.html" style="color:var(--text-secondary);font-size:13px;font-weight:500;text-decoration:none;transition:color 150ms;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-secondary)'">← Back to Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="viz-page">
+  <!-- Hero -->
+  <div class="viz-hero">
+    <div class="badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Educational Resource
+    </div>
+    <h1>How ContentGenAI Works</h1>
+    <p>Interactive visualizations, live charts, and quality tools to understand every aspect of AI-powered content generation.</p>
+  </div>
+
+  <!-- Tab Nav -->
+  <div class="tab-nav" role="tablist">
+    <button class="tab-btn active" onclick="switchTab('pipeline',this)" role="tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8l4 4-4 4"/></svg>
+      Process Diagrams
+    </button>
+    <button class="tab-btn" onclick="switchTab('cli',this)" role="tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      CLI Flowcharts
+    </button>
+    <button class="tab-btn" onclick="switchTab('compare',this)" role="tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/></svg>
+      Before / After
+    </button>
+    <button class="tab-btn" onclick="switchTab('stats',this)" role="tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Stats Dashboard
+    </button>
+    <button class="tab-btn" onclick="switchTab('quality',this)" role="tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Quality Analyzer
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       TAB 1 — PROCESS DIAGRAMS
+  ═══════════════════════════════════════ -->
+  <div id="tab-pipeline" class="tab-section active">
+    <div class="section-head reveal">
+      <h2>Content Generation Pipeline</h2>
+      <p>Click any stage to explore what happens, or press Play to animate the full pipeline.</p>
+    </div>
+    <div class="pipeline-tabs reveal">
+      <button class="pipeline-tab active" onclick="setPipelineType('blog',this)">Blog Post</button>
+      <button class="pipeline-tab" onclick="setPipelineType('social',this)">Social Media</button>
+      <button class="pipeline-tab" onclick="setPipelineType('readme',this)">README</button>
+      <button class="pipeline-tab" onclick="setPipelineType('email',this)">Email</button>
+    </div>
+    <div class="pipeline-wrap reveal">
+      <div class="pipeline-toolbar">
+        <button class="play-btn" id="play-btn" onclick="playPipeline()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Play Animation
+        </button>
+        <button class="reset-btn" onclick="resetPipeline()">Reset</button>
+        <div class="pipeline-speed">
+          Speed:
+          <select id="pipeline-speed" onchange="pipelineSpeedMs=+this.value">
+            <option value="800">Fast</option>
+            <option value="1400" selected>Normal</option>
+            <option value="2200">Slow</option>
+          </select>
+        </div>
+      </div>
+      <div id="pipeline-svg-wrap">
+        <svg id="pipeline-svg" height="200" viewBox="0 0 920 200" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div id="detail-panel" class="detail-panel"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       TAB 2 — CLI FLOWCHARTS
+  ═══════════════════════════════════════ -->
+  <div id="tab-cli" class="tab-section">
+    <div class="section-head reveal">
+      <h2>CLI Command Flow</h2>
+      <p>Trace any command through the decision tree. Type a command below or select a flow to explore.</p>
+    </div>
+    <div class="cli-input-row reveal">
+      <input class="cli-input" id="cli-cmd-input" type="text" placeholder="e.g. contentgen blog --topic 'AI trends' --length 1000 --tone professional" value="contentgen blog --topic 'AI trends' --length 1000">
+      <button class="cli-trace-btn" onclick="traceCLI()">Trace →</button>
+    </div>
+    <div class="cli-flow-tabs reveal">
+      <button class="cli-flow-tab active" onclick="setCLIFlow('basic',this)">Basic Usage</button>
+      <button class="cli-flow-tab" onclick="setCLIFlow('advanced',this)">Advanced Options</button>
+      <button class="cli-flow-tab" onclick="setCLIFlow('bulk',this)">Bulk Operations</button>
+      <button class="cli-flow-tab" onclick="setCLIFlow('config',this)">Configuration</button>
+    </div>
+    <div class="cli-chart-wrap reveal">
+      <svg id="cli-svg" height="520" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="cli-legend reveal">
+      <span><span class="legend-dot" style="background:#6384ff"></span>Command / Action</span>
+      <span><span class="legend-dot" style="background:#fbbf24"></span>Decision</span>
+      <span><span class="legend-dot" style="background:#34d399"></span>Success Output</span>
+      <span><span class="legend-dot" style="background:#f87171"></span>Error / Validation Fail</span>
+      <span><span class="legend-dot" style="background:#a855f7"></span>Config / Option</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       TAB 3 — BEFORE / AFTER
+  ═══════════════════════════════════════ -->
+  <div id="tab-compare" class="tab-section">
+    <div class="section-head reveal">
+      <h2>Before / After Transformations</h2>
+      <p>See exactly how raw input becomes polished content. Click highlights to learn what changed and why.</p>
+    </div>
+    <div class="ba-legend reveal">
+      <div class="ba-legend-item"><div class="ba-legend-swatch" style="background:rgba(52,211,153,.4);border-left:3px solid #34d399"></div> Added</div>
+      <div class="ba-legend-item"><div class="ba-legend-swatch" style="background:rgba(99,132,255,.4);border-left:3px solid #6384ff"></div> Improved</div>
+      <div class="ba-legend-item"><div class="ba-legend-swatch" style="background:rgba(168,85,247,.4);border-left:3px solid #a855f7"></div> Restructured</div>
+    </div>
+    <div class="ba-filters reveal">
+      <button class="ba-filter active" onclick="filterBA('all',this)">All</button>
+      <button class="ba-filter" onclick="filterBA('blog',this)">Blog</button>
+      <button class="ba-filter" onclick="filterBA('social',this)">Social</button>
+      <button class="ba-filter" onclick="filterBA('readme',this)">README</button>
+      <button class="ba-filter" onclick="filterBA('marketing',this)">Marketing</button>
+      <button class="ba-filter" onclick="filterBA('seo',this)">SEO</button>
+    </div>
+    <div class="ba-grid" id="ba-grid"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       TAB 4 — STATS DASHBOARD
+  ═══════════════════════════════════════ -->
+  <div id="tab-stats" class="tab-section">
+    <div class="stats-toolbar reveal">
+      <div class="section-head" style="margin-bottom:0">
+        <h2>Impact Metrics</h2>
+        <p>Usage analytics and content statistics</p>
+      </div>
+      <div class="range-tabs">
+        <button class="range-tab active" onclick="setRange(7,this)">7d</button>
+        <button class="range-tab" onclick="setRange(30,this)">30d</button>
+        <button class="range-tab" onclick="setRange(90,this)">90d</button>
+        <button class="range-tab" onclick="setRange(365,this)">All</button>
+      </div>
+    </div>
+    <div class="summary-cards reveal" id="summary-cards"></div>
+    <div class="charts-grid">
+      <div class="chart-card reveal"><div class="chart-card-head"><h3>Content Generated Over Time</h3><p>Daily pieces created</p></div><div class="chart-body"><canvas id="chart-line" width="520" height="200"></canvas></div></div>
+      <div class="chart-card reveal"><div class="chart-card-head"><h3>Word Count Distribution</h3><p>Pieces by length range</p></div><div class="chart-body"><canvas id="chart-bar" width="520" height="200"></canvas></div></div>
+      <div class="chart-card reveal"><div class="chart-card-head"><h3>Content Type Breakdown</h3><p>By category</p></div><div class="chart-body" style="display:flex;align-items:center;gap:24px"><canvas id="chart-donut" width="180" height="180"></canvas><div id="donut-legend" style="font-size:12px;line-height:2"></div></div></div>
+      <div class="chart-card reveal"><div class="chart-card-head"><h3>Quality Score Trends</h3><p>Rolling average over time</p></div><div class="chart-body"><canvas id="chart-sparkline" width="520" height="200"></canvas></div></div>
+      <div class="chart-card reveal" style="grid-column:1/-1"><div class="chart-card-head"><h3>Peak Productivity Hours</h3><p>Content created by hour and day of week</p></div><div class="chart-body heatmap-wrap" id="heatmap-wrap"></div></div>
+      <div class="chart-card reveal" style="grid-column:1/-1"><div class="chart-card-head"><h3>Most Used Templates</h3><p>Template popularity ranking</p></div><div class="chart-body"><canvas id="chart-hbar" width="1040" height="220"></canvas></div></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       TAB 5 — QUALITY ANALYZER
+  ═══════════════════════════════════════ -->
+  <div id="tab-quality" class="tab-section">
+    <div class="section-head reveal">
+      <h2>Content Quality Analyzer</h2>
+      <p>Paste any text to get a detailed breakdown across five quality dimensions.</p>
+    </div>
+    <div class="qa-layout">
+      <div>
+        <div class="qa-input-card reveal">
+          <textarea class="qa-textarea" id="qa-text" placeholder="Paste your content here to analyze quality…&#10;&#10;Try a blog post, social caption, product description, or any text you want to evaluate." oninput="updateWordCount()"></textarea>
+          <div class="qa-actions">
+            <button class="qa-analyze-btn" onclick="analyzeQuality()">Analyze Quality</button>
+            <button class="qa-export-btn" onclick="exportReport()">Export Report</button>
+            <span class="qa-word-count" id="qa-wc">0 words</span>
+          </div>
+        </div>
+        <div id="qa-optimize-wrap" style="display:none;margin-top:16px" class="reveal">
+          <div class="card" style="padding:18px">
+            <h3 style="font-size:14px;font-weight:700;margin-bottom:8px">AI Optimization Preview</h3>
+            <div id="qa-optimize-text" style="font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap"></div>
+          </div>
+        </div>
+      </div>
+      <div class="qa-scores" id="qa-scores">
+        <div class="qa-placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <p>Enter some text and click<br><strong style="color:var(--text)">Analyze Quality</strong> to see scores</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /viz-page -->
+
+<script>
+/* ================================================================
+   GLOBAL UTILITIES
+================================================================ */
+function showToast(msg, type='info') {
+  const tc = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast toast-'+type;
+  t.textContent = msg;
+  t.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:12px 18px;border-radius:12px;font-size:13px;font-weight:500;z-index:9999;animation:fadeUp .3s ease;box-shadow:0 8px 32px rgba(0,0,0,.4)';
+  tc.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// Scroll-reveal
+const revealObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  // Re-observe reveal elements
+  document.querySelectorAll('#tab-'+id+' .reveal').forEach(el=>{
+    if(!el.classList.contains('visible')) revealObs.observe(el);
+  });
+  if(id==='stats') setTimeout(drawAllCharts,100);
+}
+
+/* ================================================================
+   TAB 1 — PIPELINE
+================================================================ */
+const pipelineNodes = [
+  { id:'input',   label:'User Input',      icon:'M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z', color:'#6384ff', desc:'Parse and validate all user inputs including topic, tone, length, and format preferences.', example:'Topic: "AI trends"\nTone: professional\nLength: 1000 words\nFormat: blog', code:'parse_args(sys.argv[1:])\nvalidate_inputs(args)', ms:120 },
+  { id:'analysis', label:'Content Analysis', icon:'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z', color:'#a855f7', desc:'Analyze the topic for context, sentiment, related concepts, and optimal structure.', example:'entities: [AI, ML, GPT]\nsentiment: neutral\nstruct: how-to blog\nkeywords: 14 found', code:'nlp.analyze(topic)\nextract_entities(text)\nsuggest_structure()', ms:340 },
+  { id:'template', label:'Template Matching', icon:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', color:'#ec4899', desc:'Select the best template from the library based on content type, tone, and length.', example:'matched: blog_professional_v3\nconfidence: 0.94\nsections: [intro,3×body,cta]', code:'matcher.find(type, tone)\ntemplate.load(match.id)\nscaffold.build(template)', ms:180 },
+  { id:'gen',     label:'AI Generation',   icon:'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', color:'#6384ff', desc:'Send structured prompt to Claude AI and stream the generated content back.', example:'prompt_tokens: 842\ncompletion: streaming...\noutput_tokens: 1,247', code:'claude.stream(\n  prompt=build_prompt(),\n  max_tokens=2048\n)', ms:2100 },
+  { id:'quality', label:'Quality Check',   icon:'M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4 12 14.01l-3-3', color:'#34d399', desc:'Score the output against readability, SEO, engagement, and brand voice metrics.', example:'readability: 76/100\nSEO score: 81/100\nengagement: 88/100\n→ PASS', code:'score = quality.check(\n  text, metrics=ALL\n)\nassert score > threshold', ms:290 },
+  { id:'format',  label:'Formatting',      icon:'M4 6h16M4 12h16M4 18h7', color:'#fbbf24', desc:'Apply markdown formatting, headings, code blocks, lists, and output-specific structure.', example:'## heading applied\n**bold** keywords\n- bullet lists\n→ markdown clean', code:'formatter.apply(\n  text, style="markdown"\n)\nrender.preview(output)', ms:85 },
+  { id:'output',  label:'Output',          icon:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12', color:'#34d399', desc:'Deliver the final content via stdout, file write, clipboard, or API response.', example:'→ stdout: blog_post.md\n→ clipboard: ✓ copied\n→ time: 3.1s total', code:'output.write(formatted)\nclipboard.copy(text)\nprint(f"Done in {t:.1f}s")', ms:60 },
+];
+
+const pipelineTypeData = {
+  blog:    { timings: [120,340,180,2100,290,85,60] },
+  social:  { timings: [80,210,90,800,180,50,40] },
+  readme:  { timings: [100,280,150,1600,240,120,55] },
+  email:   { timings: [90,190,110,950,200,70,45] },
+};
+let currentPipelineType = 'blog';
+let pipelineSpeedMs = 1400;
+let pipelineAnim = null;
+let activeNodeIdx = -1;
+
+function drawPipelineSVG(activeIdx=-1) {
+  const svg = document.getElementById('pipeline-svg');
+  const W = 920, H = 200;
+  const nodeW = 100, nodeH = 60, gap = 32;
+  const totalW = pipelineNodes.length * nodeW + (pipelineNodes.length-1)*gap;
+  const startX = (W - totalW)/2;
+  let html = '';
+
+  // Draw connector lines
+  pipelineNodes.forEach((n,i)=>{
+    if(i===pipelineNodes.length-1) return;
+    const x1 = startX + i*(nodeW+gap) + nodeW;
+    const x2 = startX + (i+1)*(nodeW+gap);
+    const y = H/2;
+    const isActive = activeIdx > i;
+    const isCurrent = activeIdx === i;
+    html += `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${isActive?'#6384ff':'rgba(255,255,255,.08)'}" stroke-width="${isActive?'2.5':'1.5'}" stroke-dasharray="${isCurrent?'6,4':'none'}">`;
+    if(isCurrent) html += `<animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.6s" repeatCount="indefinite"/>`;
+    html += `</line>`;
+    // Arrow
+    const ax = x2 - 6, ay = y;
+    html += `<polygon points="${ax},${ay-4} ${ax+8},${ay} ${ax},${ay+4}" fill="${isActive?'#6384ff':'rgba(255,255,255,.12)'}"/>`;
+  });
+
+  // Draw nodes
+  pipelineNodes.forEach((n,i)=>{
+    const x = startX + i*(nodeW+gap);
+    const y = (H - nodeH)/2;
+    const cx = x + nodeW/2, cy = y + nodeH/2;
+    const isActive = activeIdx >= i;
+    const isCurrent = activeIdx === i;
+    const fill = isActive ? n.color+'22' : 'rgba(26,29,39,1)';
+    const stroke = isActive ? n.color : 'rgba(255,255,255,.08)';
+    const glow = isCurrent ? `filter:drop-shadow(0 0 8px ${n.color}88)` : '';
+    html += `<g class="pipe-node ${isCurrent?'active':''}" onclick="clickNode(${i})" style="${glow}">`;
+    html += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="12" fill="${fill}" stroke="${stroke}" stroke-width="${isCurrent?'2':'1'}"/>`;
+    // Icon
+    html += `<svg x="${cx-8}" y="${y+8}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${isActive?n.color:'#5c6078'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${n.icon}"/></svg>`;
+    // Label
+    const words = n.label.split(' ');
+    if(words.length===1) {
+      html += `<text x="${cx}" y="${y+nodeH-12}" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" font-weight="600" fill="${isActive?n.color:'#5c6078'}">${n.label}</text>`;
+    } else {
+      html += `<text x="${cx}" y="${y+nodeH-20}" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" font-weight="600" fill="${isActive?n.color:'#5c6078'}">${words.slice(0,-1).join(' ')}</text>`;
+      html += `<text x="${cx}" y="${y+nodeH-8}" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" font-weight="600" fill="${isActive?n.color:'#5c6078'}">${words[words.length-1]}</text>`;
+    }
+    // Step num
+    html += `<circle cx="${x+10}" cy="${y+10}" r="8" fill="${isActive?n.color:'rgba(255,255,255,.05)'}"/>`;
+    html += `<text x="${x+10}" y="${y+14}" text-anchor="middle" font-size="9" font-family="Inter,sans-serif" font-weight="700" fill="${isActive?'#fff':'#5c6078'}">${i+1}</text>`;
+    html += `</g>`;
+  });
+  svg.innerHTML = html;
+}
+
+function clickNode(i) {
+  activeNodeIdx = i;
+  drawPipelineSVG(i);
+  showNodeDetail(i);
+}
+
+function showNodeDetail(i) {
+  const n = pipelineNodes[i];
+  const timings = pipelineTypeData[currentPipelineType].timings;
+  const ms = timings[i];
+  const maxMs = Math.max(...timings);
+  const pct = Math.round((ms/maxMs)*100);
+  const panel = document.getElementById('detail-panel');
+  panel.className = 'detail-panel show';
+  panel.innerHTML = `
+    <h3>${n.label}</h3>
+    <p class="detail-desc">${n.desc}</p>
+    <div class="detail-grid">
+      <div class="detail-box"><h4>Example Data</h4><pre>${n.example}</pre></div>
+      <div class="detail-box"><h4>Module Code</h4><pre>${n.code}</pre></div>
+      <div class="detail-box"><h4>Typical Duration</h4>
+        <div class="timing-bar-wrap">
+          <div class="timing-bar" style="width:0%" id="tbar-${i}"></div>
+          <div class="timing-label">${ms}ms (step ${i+1} of ${pipelineNodes.length})</div>
+        </div>
+      </div>
+      <div class="detail-box"><h4>Stage Output</h4><pre style="color:#34d399">✓ ${n.label} complete\n→ passing to next stage</pre></div>
+    </div>`;
+  setTimeout(()=>{ const b=document.getElementById('tbar-'+i); if(b) b.style.width=pct+'%'; },50);
+}
+
+function playPipeline() {
+  resetPipeline();
+  const btn = document.getElementById('play-btn');
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Playing…';
+  btn.disabled = true;
+  let i = 0;
+  function step() {
+    if(i >= pipelineNodes.length) {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play Again';
+      btn.disabled = false;
+      btn.onclick = ()=>{ resetPipeline(); playPipeline(); };
+      return;
+    }
+    clickNode(i);
+    i++;
+    const timings = pipelineTypeData[currentPipelineType].timings;
+    const delay = Math.min(timings[i-1] * (pipelineSpeedMs/1400), pipelineSpeedMs);
+    pipelineAnim = setTimeout(step, delay + 300);
+  }
+  step();
+}
+
+function resetPipeline() {
+  if(pipelineAnim) clearTimeout(pipelineAnim);
+  activeNodeIdx = -1;
+  drawPipelineSVG(-1);
+  document.getElementById('detail-panel').className = 'detail-panel';
+  const btn = document.getElementById('play-btn');
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play Animation';
+  btn.disabled = false;
+  btn.onclick = playPipeline;
+}
+
+function setPipelineType(type, btn) {
+  currentPipelineType = type;
+  document.querySelectorAll('.pipeline-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  resetPipeline();
+}
+
+// Init pipeline
+drawPipelineSVG(-1);
+
+/* ================================================================
+   TAB 2 — CLI FLOWCHARTS
+================================================================ */
+const cliFlows = {
+  basic: {
+    nodes: [
+      {id:0,x:300,y:20,w:140,h:36,label:'contentgen <cmd>',type:'cmd'},
+      {id:1,x:220,y:100,w:120,h:36,label:'blog',type:'cmd'},
+      {id:2,x:360,y:100,w:120,h:36,label:'social',type:'cmd'},
+      {id:3,x:220,y:180,w:160,h:36,label:'--topic required?',type:'dec'},
+      {id:4,x:360,y:180,w:160,h:36,label:'--platform?',type:'dec'},
+      {id:5,x:140,y:270,w:130,h:36,label:'Error: no topic',type:'err'},
+      {id:6,x:290,y:270,w:130,h:36,label:'Validate flags',type:'cmd'},
+      {id:7,x:450,y:270,w:130,h:36,label:'Default: twitter',type:'opt'},
+      {id:8,x:290,y:360,w:140,h:36,label:'Build prompt',type:'cmd'},
+      {id:9,x:450,y:360,w:140,h:36,label:'Build prompt',type:'cmd'},
+      {id:10,x:370,y:450,w:140,h:36,label:'✓ Generate & Output',type:'ok'},
+    ],
+    edges:[
+      {from:0,to:1,label:'blog'},{from:0,to:2,label:'social'},
+      {from:1,to:3},{from:2,to:4},
+      {from:3,to:5,label:'no'},{from:3,to:6,label:'yes'},
+      {from:4,to:7,label:'omitted'},{from:4,to:9,label:'provided'},
+      {from:6,to:8},{from:7,to:9},{from:8,to:10},{from:9,to:10},
+    ]
+  },
+  advanced: {
+    nodes: [
+      {id:0,x:280,y:20,w:160,h:36,label:'contentgen blog',type:'cmd'},
+      {id:1,x:280,y:100,w:160,h:36,label:'Parse all flags',type:'opt'},
+      {id:2,x:190,y:180,w:130,h:36,label:'--length valid?',type:'dec'},
+      {id:3,x:390,y:180,w:130,h:36,label:'--tone valid?',type:'dec'},
+      {id:4,x:130,y:270,w:110,h:36,label:'Clamp 100–5000',type:'opt'},
+      {id:5,x:260,y:270,w:120,h:36,label:'Use default',type:'opt'},
+      {id:6,x:390,y:270,w:120,h:36,label:'Normalize tone',type:'opt'},
+      {id:7,x:510,y:270,w:110,h:36,label:'Err: bad tone',type:'err'},
+      {id:8,x:280,y:360,w:160,h:36,label:'--output flag?',type:'dec'},
+      {id:9,x:160,y:440,w:120,h:36,label:'Write to file',type:'ok'},
+      {id:10,x:300,y:440,w:120,h:36,label:'Print stdout',type:'ok'},
+      {id:11,x:440,y:440,w:120,h:36,label:'Copy clipboard',type:'ok'},
+    ],
+    edges:[
+      {from:0,to:1},{from:1,to:2},{from:1,to:3},
+      {from:2,to:4,label:'out of range'},{from:2,to:5,label:'omitted'},
+      {from:3,to:6,label:'known'},{from:3,to:7,label:'unknown'},
+      {from:4,to:8},{from:5,to:8},{from:6,to:8},
+      {from:8,to:9,label:'--file'},{from:8,to:10,label:'default'},{from:8,to:11,label:'--clip'},
+    ]
+  },
+  bulk: {
+    nodes: [
+      {id:0,x:270,y:20,w:180,h:36,label:'contentgen bulk',type:'cmd'},
+      {id:1,x:270,y:100,w:180,h:36,label:'--input CSV/JSON?',type:'dec'},
+      {id:2,x:160,y:180,w:130,h:36,label:'Error: no input',type:'err'},
+      {id:3,x:320,y:180,w:130,h:36,label:'Parse rows',type:'cmd'},
+      {id:4,x:320,y:260,w:130,h:36,label:'Validate each row',type:'dec'},
+      {id:5,x:180,y:340,w:130,h:36,label:'Skip + log warn',type:'opt'},
+      {id:6,x:340,y:340,w:130,h:36,label:'Queue for gen',type:'cmd'},
+      {id:7,x:340,y:420,w:160,h:36,label:'--concurrency N',type:'opt'},
+      {id:8,x:340,y:500,w:160,h:36,label:'✓ Batch complete',type:'ok'},
+    ],
+    edges:[
+      {from:0,to:1},{from:1,to:2,label:'missing'},{from:1,to:3,label:'provided'},
+      {from:3,to:4},{from:4,to:5,label:'invalid'},{from:4,to:6,label:'valid'},
+      {from:5,to:6},{from:6,to:7},{from:7,to:8},
+    ]
+  },
+  config: {
+    nodes: [
+      {id:0,x:270,y:20,w:180,h:36,label:'contentgen config',type:'cmd'},
+      {id:1,x:180,y:100,w:130,h:36,label:'--set KEY=VAL',type:'opt'},
+      {id:2,x:330,y:100,w:130,h:36,label:'--get KEY',type:'opt'},
+      {id:3,x:460,y:100,w:130,h:36,label:'--reset',type:'opt'},
+      {id:4,x:180,y:190,w:130,h:36,label:'Key valid?',type:'dec'},
+      {id:5,x:100,y:270,w:120,h:36,label:'Error: unknown key',type:'err'},
+      {id:6,x:240,y:270,w:120,h:36,label:'Write ~/.contentgen',type:'ok'},
+      {id:7,x:330,y:190,w:130,h:36,label:'Print value',type:'ok'},
+      {id:8,x:460,y:190,w:130,h:36,label:'Confirm reset?',type:'dec'},
+      {id:9,x:540,y:270,w:110,h:36,label:'Reset defaults',type:'ok'},
+      {id:10,x:420,y:270,w:110,h:36,label:'Cancelled',type:'opt'},
+    ],
+    edges:[
+      {from:0,to:1},{from:0,to:2},{from:0,to:3},
+      {from:1,to:4},{from:4,to:5,label:'no'},{from:4,to:6,label:'yes'},
+      {from:2,to:7},{from:3,to:8},{from:8,to:9,label:'yes'},{from:8,to:10,label:'no'},
+    ]
+  }
+};
+
+let currentCLIFlow = 'basic';
+let tracedPath = [];
+
+function nodeCenter(n) { return {x: n.x + n.w/2, y: n.y + n.h/2}; }
+function nodeColor(type) {
+  return {cmd:'#6384ff',dec:'#fbbf24',ok:'#34d399',err:'#f87171',opt:'#a855f7'}[type]||'#6384ff';
+}
+
+function drawCLISVG(highlightPath=[]) {
+  const flow = cliFlows[currentCLIFlow];
+  const svg = document.getElementById('cli-svg');
+  let html = '';
+  const defs = `<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="rgba(255,255,255,.2)"/></marker>
+  <marker id="arr-a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6384ff"/></marker></defs>`;
+  html += defs;
+
+  // Edges
+  flow.edges.forEach(e=>{
+    const from = flow.nodes.find(n=>n.id===e.from);
+    const to = flow.nodes.find(n=>n.id===e.to);
+    if(!from||!to) return;
+    const fc = nodeCenter(from), tc = nodeCenter(to);
+    const isHL = highlightPath.includes(e.from) && highlightPath.includes(e.to) &&
+                 Math.abs(highlightPath.indexOf(e.from)-highlightPath.indexOf(e.to))===1;
+    const stroke = isHL ? '#6384ff' : 'rgba(255,255,255,.15)';
+    const marker = isHL ? 'url(#arr-a)' : 'url(#arr)';
+    const mx = (fc.x+tc.x)/2, my = (fc.y+tc.y)/2;
+    html += `<line x1="${fc.x}" y1="${fc.y+18}" x2="${tc.x}" y2="${tc.y-18}" stroke="${stroke}" stroke-width="${isHL?2:1}" marker-end="${marker}"/>`;
+    if(e.label) html += `<text x="${mx}" y="${my}" text-anchor="middle" font-size="10" fill="${isHL?'#6384ff':'#5c6078'}" font-family="Inter,sans-serif">${e.label}</text>`;
+  });
+
+  // Nodes
+  flow.nodes.forEach(n=>{
+    const col = nodeColor(n.type);
+    const isHL = highlightPath.includes(n.id);
+    const fill = isHL ? col+'22' : 'rgba(19,21,28,1)';
+    const stroke = isHL ? col : 'rgba(255,255,255,.07)';
+    const rx = n.type==='dec' ? 4 : 10;
+    const shape = n.type==='dec'
+      ? `<polygon points="${n.x+n.w/2},${n.y} ${n.x+n.w},${n.y+n.h/2} ${n.x+n.w/2},${n.y+n.h} ${n.x},${n.y+n.h/2}" fill="${fill}" stroke="${stroke}" stroke-width="${isHL?2:1}"/>`
+      : `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${rx}" fill="${fill}" stroke="${stroke}" stroke-width="${isHL?2:1}"/>`;
+    const cx = n.x + n.w/2, cy = n.y + n.h/2 + 4;
+    html += `<g>${shape}<text x="${cx}" y="${cy}" text-anchor="middle" font-size="11" font-weight="600" fill="${isHL?col:'#8b8fa4'}" font-family="Inter,sans-serif">${n.label}</text></g>`;
+  });
+
+  svg.innerHTML = html;
+  // Adjust height
+  const maxY = Math.max(...flow.nodes.map(n=>n.y+n.h)) + 30;
+  svg.setAttribute('height', maxY);
+  svg.setAttribute('viewBox', `0 0 700 ${maxY}`);
+}
+
+function setCLIFlow(type, btn) {
+  currentCLIFlow = type;
+  tracedPath = [];
+  document.querySelectorAll('.cli-flow-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  drawCLISVG([]);
+}
+
+function traceCLI() {
+  const cmd = document.getElementById('cli-cmd-input').value.trim();
+  const flow = cliFlows[currentCLIFlow];
+  // Simple trace: always highlight a success path
+  tracedPath = [];
+  const successPath = [];
+  // BFS to find path from node 0 to a 'ok' node
+  const adj = {};
+  flow.edges.forEach(e=>{ if(!adj[e.from]) adj[e.from]=[]; adj[e.from].push(e.to); });
+  function dfs(id, path) {
+    path.push(id);
+    const n = flow.nodes.find(x=>x.id===id);
+    if(n && n.type==='ok') { successPath.push(...path); return true; }
+    for(const next of (adj[id]||[])) { if(!path.includes(next) && dfs(next,[...path])) return true; }
+    return false;
+  }
+  dfs(0,[]);
+  tracedPath = successPath;
+  let i=0;
+  function step() {
+    drawCLISVG(tracedPath.slice(0,i+1));
+    if(i<tracedPath.length-1) { i++; setTimeout(step,400); }
+    else showToast('Command traced: '+cmd.split(' ').slice(0,2).join(' '),'info'); }
+  step();
+}
+
+// Init CLI
+drawCLISVG([]);
+
+/* ================================================================
+   TAB 3 — BEFORE / AFTER
+================================================================ */
+const baData = [
+  {
+    cat:'blog', title:'Raw Notes → Polished Blog Post',
+    tag:'blog',
+    before:`title: ai stuff
+- models getting better
+- chat gpt popular
+- businesses using it
+- also some risks
+- conclusion: ai is here`,
+    after:`<span class="ba-restructure">## The AI Revolution: What Every Business Needs to Know in 2025</span>\n\n<span class="ba-add">The landscape of artificial intelligence has shifted dramatically.</span> <span class="ba-improve">Language models have evolved from research curiosities into production-ready tools powering real business outcomes.</span>\n\n<span class="ba-add">### Why Businesses Are Moving Fast\n\nFrom automating customer support to generating marketing copy at scale, AI adoption is accelerating across every vertical.</span>\n\n<span class="ba-improve">### The Risks You Can't Ignore\n\nWith great capability comes significant responsibility — bias, hallucination, and data privacy remain active concerns.</span>\n\n<span class="ba-add">**The takeaway:** AI isn't coming — it's already here. The question is whether you're leading or following.</span>`,
+    learn: ['Added compelling headline with year for SEO','Restructured bullet points into proper H2/H3 sections','Added transition sentences for flow','Introduced concrete examples and business framing','Added strong CTA closing statement']
+  },
+  {
+    cat:'social', title:'Basic Tweet → Engaging Social Post',
+    tag:'social',
+    before:`just released a new version of our tool. it has some new features. check it out`,
+    after:`<span class="ba-add">🚀</span> <span class="ba-restructure">Big drop today.</span>\n\n<span class="ba-improve">ContentGenAI v2.4 is live — and it's the fastest release yet.</span>\n\n<span class="ba-add">What's new:\n→ 3× faster generation\n→ Bulk mode for 100+ pieces\n→ Custom tone profiles\n→ Direct CMS export</span>\n\n<span class="ba-restructure">The tool 4,000+ creators already use just got significantly better.</span>\n\n<span class="ba-add">Thread below with demos 👇</span>`,
+    learn: ['Opened with a hook, not a statement','Used visual formatting (arrows, emoji) for scannability','Added specific metrics (3×, 100+, 4,000+) for credibility','Ended with a CTA that drives engagement','Restructured from passive to active voice throughout']
+  },
+  {
+    cat:'readme', title:'Bullet Points → Complete README',
+    tag:'readme',
+    before:`- install with pip
+- run contentgen blog
+- has flags
+- need api key
+- works on mac and linux`,
+    after:`<span class="ba-restructure"># ContentGenAI\n\n> AI-powered content generation from the command line.</span>\n\n<span class="ba-add">[![PyPI](https://img.shields.io/pypi/v/contentgen)](https://pypi.org/project/contentgen)\n\n## Quick Start\n\n\`\`\`bash\npip install contentgen\nexport ANTHROPIC_API_KEY=sk-...\ncontentgen blog --topic "Your Topic"\n\`\`\`</span>\n\n<span class="ba-improve">## Installation\n\nRequires Python 3.9+ on macOS or Linux.</span>\n\n<span class="ba-add">## Usage\n\n| Flag | Default | Description |\n|------|---------|-------------|\n| --topic | required | Content subject |\n| --length | 800 | Word count |\n| --tone | neutral | Writing style |</span>`,
+    learn: ['Added badges for immediate credibility signal','Restructured into standard README sections','Added working code block for Quick Start','Converted vague "has flags" into a proper options table','Specified Python version requirement']
+  },
+  {
+    cat:'marketing', title:'Product Specs → Marketing Copy',
+    tag:'marketing',
+    before:`product: ContentGenAI
+speed: fast
+output: text
+input: command line
+price: free tier available`,
+    after:`<span class="ba-restructure">Stop spending hours writing. Start shipping in minutes.</span>\n\n<span class="ba-improve">ContentGenAI turns a single command into publication-ready content</span> — <span class="ba-add">blog posts, social copy, READMEs, emails, and more — all tuned to your brand voice.</span>\n\n<span class="ba-add">**Generate your first piece free.** No credit card. No setup time. Just results.\n\n✓ 10× faster than writing from scratch\n✓ Consistent brand voice across every channel  \n✓ Works inside your existing workflow</span>\n\n<span class="ba-restructure">Join 4,000+ creators already saving 8 hours a week.</span>`,
+    learn: ['Opened with a pain point, not a feature list','Transformed spec attributes into concrete benefits','Added social proof numbers for trust','Used "free" prominently to reduce friction','Included specific time-saving metric (8 hrs/week)']
+  },
+  {
+    cat:'seo', title:'Draft → SEO-Optimized Version',
+    tag:'seo',
+    before:`How to use AI for content
+
+AI is useful. You can use it to write things. There are many tools. Some are good and some are not. You should try them and see which one works.`,
+    after:`<span class="ba-restructure">## How to Use AI for Content Creation in 2025 (Step-by-Step Guide)</span>\n\n<span class="ba-improve">AI content creation tools have transformed how marketers, developers, and creators produce high-quality content at scale.</span> <span class="ba-add">In this guide, you'll learn exactly how to use AI writing tools effectively — from choosing the right platform to publishing polished, SEO-ready copy.</span>\n\n<span class="ba-add">**Key takeaway:** The best AI content tools combine speed with quality controls, producing output that reads as well as human-written content.</span>\n\n<span class="ba-improve">Whether you're writing blog posts, product descriptions, or social media content, AI writing assistants can cut production time by 70% or more.</span>`,
+    learn: ['Added year and "step-by-step" to title for long-tail SEO','Replaced vague pronouns with specific audiences (marketers, developers)','Added a keyword-rich meta-sentence in the first 100 words','Introduced a bold "Key takeaway" for featured snippet eligibility','Added specific statistic (70%) for E-E-A-T signals']
+  },
+  {
+    cat:'blog', title:'Interview Notes → Published Profile',
+    tag:'blog',
+    before:`talked to sarah. she works at a startup. does ml stuff. been coding since 16. likes the challenge. team of 5. raised seed.`,
+    after:`<span class="ba-restructure">## Sarah Chen Is Building the ML Infrastructure Startups Forgot to Build</span>\n\n<span class="ba-improve">At 28, Sarah Chen leads a five-person team that has quietly become the machine learning backbone for over 40 Series A startups.</span> <span class="ba-add">But the journey started much earlier.</span>\n\n<span class="ba-add">"I wrote my first neural network at 16," she says. "It was terrible. But I was hooked."</span>\n\n<span class="ba-improve">That obsession turned into a seed-backed company solving a problem most founders discover too late: production ML is nothing like research ML.</span>\n\n<span class="ba-add">The team's recent raise signals that the market agrees.</span>`,
+    learn: ['Transformed notes into narrative journalism style','Invented a specific pull quote from raw interview notes','Added specific details (28, five-person, 40 startups) for credibility','Used em-dashes and sentence fragments for editorial voice','Ended on a forward hook to continue reading']
+  },
+  {
+    cat:'marketing', title:'Feature List → Landing Page Hero',
+    tag:'marketing',
+    before:`features:
+- fast api
+- multiple formats
+- customizable
+- cli tool
+- open source`,
+    after:`<span class="ba-restructure">The Content Engine Your Team Has Been Waiting For</span>\n\n<span class="ba-improve">One command. Any format. Your voice.</span>\n\n<span class="ba-add">ContentGenAI is the open-source CLI that generates blog posts, social copy, emails, and documentation — all in under 3 seconds.</span>\n\n<span class="ba-restructure">Built for developers who value automation over busy work.</span>\n\n<span class="ba-add">→ Fully customizable to your brand\n→ Every major format supported\n→ Open source and self-hostable\n→ Integrates with any pipeline</span>\n\n**[Get Started Free →]**`,
+    learn: ['Led with a desire-based headline, not a feature list','Used a three-part rhythm ("One command. Any format. Your voice.") for memorability','Added specific performance metric (3 seconds)','Ended each bullet with a benefit, not a feature name','Added a clear primary CTA']
+  },
+  {
+    cat:'social', title:'Announcement Draft → Viral Thread Opener',
+    tag:'social',
+    before:`we added a new feature today. bulk generation is now available. you can do many posts at once. its faster now.`,
+    after:`<span class="ba-restructure">I just ran ContentGenAI bulk mode for the first time.</span>\n\n<span class="ba-improve">100 social posts.</span>\n<span class="ba-add">3 minutes and 47 seconds.\n$0.11 in API costs.</span>\n\n<span class="ba-restructure">Here's what happened (and what surprised me) 🧵</span>`,
+    learn: ['Switched from brand voice to personal/narrative voice for authenticity','Used specific numbers (100, 3:47, $0.11) to create instant curiosity','Formatted for thread structure — hooks readers into clicking "show more"','Added tension ("what surprised me") to drive engagement','Stripped all adjectives — let numbers do the convincing']
+  },
+];
+
+function filterBA(cat, btn) {
+  document.querySelectorAll('.ba-filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBAGrid(cat);
+}
+
+function renderBAGrid(cat='all') {
+  const grid = document.getElementById('ba-grid');
+  const items = cat==='all' ? baData : baData.filter(d=>d.cat===cat);
+  grid.innerHTML = items.map((d,i)=>`
+    <div class="ba-card">
+      <div class="ba-card-head">
+        <span class="ba-tag ${d.tag}">${d.tag}</span>
+        <span class="ba-card-title">${d.title}</span>
+      </div>
+      <div class="ba-content-row">
+        <div class="ba-side before">
+          <div class="ba-side-label">Before</div>
+          <div style="white-space:pre-wrap">${escHtml(d.before)}</div>
+        </div>
+        <div class="ba-side after">
+          <div class="ba-side-label">After</div>
+          <div style="white-space:pre-wrap">${d.after}</div>
+        </div>
+      </div>
+      <button class="ba-expand-btn" onclick="toggleBALearn(${i})">Learn what changed ▾</button>
+      <div class="ba-learn" id="ba-learn-${i}">
+        <strong style="font-size:12px;color:var(--text)">Transformations applied:</strong>
+        <ul>${d.learn.map(l=>`<li>${l}</li>`).join('')}</ul>
+      </div>
+    </div>`).join('');
+}
+
+function toggleBALearn(i) {
+  const el = document.getElementById('ba-learn-'+i);
+  el.classList.toggle('show');
+}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+renderBAGrid('all');
+
+/* ================================================================
+   TAB 4 — STATS CHARTS
+================================================================ */
+let currentRange = 7;
+const CHART_BG = '#0a0b0f';
+
+function seededRand(seed) {
+  let s = seed;
+  return function() { s = (s*9301+49297)%233280; return s/233280; };
+}
+
+function genTimeSeries(days, seed=42) {
+  const r = seededRand(seed);
+  const base = 12;
+  return Array.from({length:days},(_,i)=>Math.round(base + r()*10 + Math.sin(i/7*Math.PI)*4 + i*0.1));
+}
+
+function setRange(days, btn) {
+  currentRange = days;
+  document.querySelectorAll('.range-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  drawAllCharts();
+}
+
+function animCounter(el, target, duration=800) {
+  const start = performance.now();
+  const from = 0;
+  function tick(now) {
+    const p = Math.min((now-start)/duration,1);
+    const ease = 1-Math.pow(1-p,3);
+    el.textContent = Math.round(from + (target-from)*ease).toLocaleString();
+    if(p<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function renderSummaryCards(days) {
+  const r = seededRand(days);
+  const cards = [
+    {label:'Total Pieces',value:Math.round(days*4.2+r()*20),suffix:'',trend:'+12%',up:true,color:'#6384ff'},
+    {label:'Total Words',value:Math.round(days*4.2*847),suffix:'',trend:'+8%',up:true,color:'#a855f7'},
+    {label:'Avg Quality',value:Math.round(74+r()*12),suffix:'/100',trend:'-2%',up:false,color:'#34d399'},
+    {label:'Day Streak',value:Math.round(days*0.7+r()*5),suffix:' days',trend:'+3',up:true,color:'#fbbf24'},
+  ];
+  const wrap = document.getElementById('summary-cards');
+  wrap.innerHTML = cards.map(c=>`
+    <div class="summary-card">
+      <div class="sc-label">${c.label}</div>
+      <div class="sc-value" style="color:${c.color}" data-target="${c.value}">0</div>
+      <div class="sc-trend ${c.up?'trend-up':'trend-down'}">
+        ${c.up?'↑':'↓'} ${c.trend} vs prev period
+      </div>
+    </div>`).join('');
+  wrap.querySelectorAll('.sc-value').forEach(el=>animCounter(el,+el.dataset.target));
+}
+
+function drawLineChart(canvasId, days) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const data = genTimeSeries(days, 7);
+  const pad = {t:20,r:20,b:30,l:36};
+  const gW = W-pad.l-pad.r, gH = H-pad.t-pad.b;
+  const maxV = Math.max(...data)+2, minV = 0;
+  ctx.clearRect(0,0,W,H);
+
+  function px(i) { return pad.l + (i/(data.length-1))*gW; }
+  function py(v) { return pad.t + (1-(v-minV)/(maxV-minV))*gH; }
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.04)';
+  ctx.lineWidth=1;
+  for(let i=0;i<=4;i++) {
+    const y=pad.t+i*gH/4;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+gW,y);ctx.stroke();
+    const v=Math.round(maxV-(i/4)*(maxV-minV));
+    ctx.fillStyle='#5c6078';ctx.font='10px Inter';ctx.textAlign='right';
+    ctx.fillText(v,pad.l-4,y+4);
+  }
+
+  // Gradient fill
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+gH);
+  grad.addColorStop(0,'rgba(99,132,255,.3)');
+  grad.addColorStop(1,'rgba(99,132,255,.0)');
+  ctx.beginPath();
+  ctx.moveTo(px(0),py(data[0]));
+  data.forEach((_,i)=>{ if(i>0) ctx.lineTo(px(i),py(data[i])); });
+  ctx.lineTo(px(data.length-1),pad.t+gH);
+  ctx.lineTo(px(0),pad.t+gH);
+  ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle='#6384ff';ctx.lineWidth=2;
+  ctx.lineJoin='round';
+  data.forEach((v,i)=>{ i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)); });
+  ctx.stroke();
+
+  // Dots at every nth
+  const step=Math.max(1,Math.floor(data.length/8));
+  data.forEach((v,i)=>{
+    if(i%step===0||i===data.length-1) {
+      ctx.beginPath();ctx.arc(px(i),py(v),3,0,Math.PI*2);
+      ctx.fillStyle='#6384ff';ctx.fill();
+    }
+  });
+
+  // X labels
+  ctx.fillStyle='#5c6078';ctx.font='10px Inter';ctx.textAlign='center';
+  const xStep=Math.max(1,Math.floor(data.length/6));
+  data.forEach((_,i)=>{
+    if(i%xStep===0) ctx.fillText('D'+(i+1),px(i),H-8);
+  });
+}
+
+function drawBarChart(canvasId, days) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const r = seededRand(days+1);
+  const buckets = ['<300','300-600','600-1k','1k-2k','2k-5k','>5k'];
+  const vals = [r()*15+5,r()*30+20,r()*40+25,r()*25+15,r()*15+8,r()*8+2].map(Math.round);
+  const maxV = Math.max(...vals);
+  const pad={t:20,r:20,b:30,l:40};
+  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
+  const barW=gW/buckets.length*0.55, spacing=gW/buckets.length;
+  const colors=['#6384ff','#7c8fff','#9aa3ff','#a855f7','#c084fc','#e879f9'];
+
+  for(let i=0;i<=4;i++) {
+    const y=pad.t+i*gH/4;
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+gW,y);ctx.stroke();
+    ctx.fillStyle='#5c6078';ctx.font='10px Inter';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxV*(1-i/4)),pad.l-4,y+4);
+  }
+
+  vals.forEach((v,i)=>{
+    const x=pad.l+i*spacing+(spacing-barW)/2;
+    const bH=(v/maxV)*gH;
+    const y=pad.t+gH-bH;
+    const grad=ctx.createLinearGradient(0,y,0,y+bH);
+    grad.addColorStop(0,colors[i]);
+    grad.addColorStop(1,colors[i]+'44');
+    ctx.fillStyle=grad;
+    ctx.beginPath();
+    ctx.roundRect(x,y,barW,bH,4);
+    ctx.fill();
+    ctx.fillStyle='#8b8fa4';ctx.font='10px Inter';ctx.textAlign='center';
+    ctx.fillText(buckets[i],x+barW/2,H-8);
+  });
+}
+
+function drawDonutChart(canvasId, legendId, days) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const r=seededRand(days+2);
+  const data=[
+    {label:'Blog',val:Math.round(r()*30+20),color:'#6384ff'},
+    {label:'Social',val:Math.round(r()*25+15),color:'#a855f7'},
+    {label:'README',val:Math.round(r()*15+8),color:'#34d399'},
+    {label:'Email',val:Math.round(r()*12+6),color:'#fbbf24'},
+    {label:'Marketing',val:Math.round(r()*10+4),color:'#ec4899'},
+  ];
+  const total=data.reduce((a,d)=>a+d.val,0);
+  const cx=W/2,cy=H/2,outer=76,inner=50;
+  let angle=-Math.PI/2;
+  data.forEach(d=>{
+    const sweep=(d.val/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(angle)*inner,cy+Math.sin(angle)*inner);
+    ctx.arc(cx,cy,outer,angle,angle+sweep);
+    ctx.arc(cx,cy,inner,angle+sweep,angle,true);
+    ctx.closePath();
+    ctx.fillStyle=d.color;ctx.fill();
+    angle+=sweep;
+  });
+  // Center text
+  ctx.fillStyle='#e8eaf0';ctx.font='bold 22px Inter';ctx.textAlign='center';
+  ctx.fillText(total,cx,cy+4);
+  ctx.fillStyle='#5c6078';ctx.font='10px Inter';
+  ctx.fillText('pieces',cx,cy+18);
+
+  const leg=document.getElementById(legendId);
+  if(leg) leg.innerHTML=data.map(d=>`<div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:${d.color};display:inline-block"></span>${d.label}: <strong>${d.val}</strong></div>`).join('');
+}
+
+function drawSparkline(canvasId, days) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const r=seededRand(days+3);
+  const data=Array.from({length:days},(_, i)=>65+r()*20+Math.sin(i/5)*8);
+  const pad={t:20,r:20,b:30,l:40};
+  const gW=W-pad.l-pad.r,gH=H-pad.t-pad.b;
+  const maxV=100,minV=50;
+  function px(i){return pad.l+(i/(data.length-1))*gW;}
+  function py(v){return pad.t+(1-(v-minV)/(maxV-minV))*gH;}
+
+  // Color zones
+  [[50,65,'rgba(248,113,113,.06)'],[65,80,'rgba(251,191,36,.06)'],[80,100,'rgba(52,211,153,.06)']].forEach(([lo,hi,col])=>{
+    ctx.fillStyle=col;
+    ctx.fillRect(pad.l,py(hi),gW,py(lo)-py(hi));
+  });
+
+  for(let i=0;i<=4;i++){
+    const y=pad.t+i*gH/4;
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+gW,y);ctx.stroke();
+    ctx.fillStyle='#5c6078';ctx.font='10px Inter';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxV-(i/4)*(maxV-minV)),pad.l-4,y+4);
+  }
+
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+gH);
+  grad.addColorStop(0,'rgba(52,211,153,.2)');grad.addColorStop(1,'rgba(52,211,153,.0)');
+  ctx.beginPath();ctx.moveTo(px(0),py(data[0]));
+  data.forEach((_,i)=>{if(i>0)ctx.lineTo(px(i),py(data[i]));});
+  ctx.lineTo(px(data.length-1),pad.t+gH);ctx.lineTo(px(0),pad.t+gH);
+  ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+
+  ctx.beginPath();ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.lineJoin='round';
+  data.forEach((v,i)=>{i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v));});
+  ctx.stroke();
+}
+
+function drawHeatmap() {
+  const wrap = document.getElementById('heatmap-wrap');
+  if(!wrap) return;
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const hours=Array.from({length:24},(_,i)=>i);
+  const r=seededRand(99);
+  // Hours header
+  let html='<div class="heatmap-hours"><div style="width:28px"></div>';
+  hours.forEach(h=>{
+    html+=`<div class="heatmap-hour">${h%6===0?h:''}</div>`;
+  });
+  html+='</div>';
+  days.forEach(day=>{
+    html+=`<div class="heatmap-row"><span class="heatmap-label">${day}</span>`;
+    hours.forEach(h=>{
+      const peakBias = (h>=9&&h<=11)||(h>=14&&h<=17) ? 0.6 : 0.1;
+      const wkndBias = (day==='Sat'||day==='Sun') ? 0.3 : 1;
+      const val = Math.min(1, r()*0.5 + peakBias*wkndBias);
+      const alpha = val;
+      const col = val<0.3 ? `rgba(99,132,255,${alpha})` : val<0.6 ? `rgba(168,85,247,${alpha})` : `rgba(236,72,153,${alpha})`;
+      html+=`<div class="heatmap-cell" style="background:${col}" title="${day} ${h}:00 — ${Math.round(val*15)} pieces"></div>`;
+    });
+    html+='</div>';
+  });
+  wrap.innerHTML=html;
+}
+
+function drawHBar(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const templates=[
+    {name:'Blog: How-To Guide',val:342,color:'#6384ff'},
+    {name:'Social: Thread Opener',val:289,color:'#a855f7'},
+    {name:'Blog: Opinion/Take',val:241,color:'#ec4899'},
+    {name:'README: OSS Project',val:198,color:'#34d399'},
+    {name:'Email: Product Update',val:176,color:'#fbbf24'},
+    {name:'Marketing: Landing Hero',val:154,color:'#6384ff'},
+    {name:'Social: Product Launch',val:132,color:'#a855f7'},
+  ];
+  const maxV=templates[0].val;
+  const rowH=H/templates.length;
+  const labelW=220,pad=16;
+  const barArea=W-labelW-pad*2-60;
+  templates.forEach((t,i)=>{
+    const y=i*rowH+rowH*0.2;
+    const bH=rowH*0.55;
+    ctx.fillStyle='#5c6078';ctx.font='11px Inter';ctx.textAlign='right';
+    ctx.fillText(t.name,labelW-8,y+bH*0.65);
+    const bW=(t.val/maxV)*barArea;
+    const grad=ctx.createLinearGradient(labelW,0,labelW+bW,0);
+    grad.addColorStop(0,t.color);grad.addColorStop(1,t.color+'66');
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.roundRect(labelW,y,bW,bH,3);ctx.fill();
+    ctx.fillStyle='#8b8fa4';ctx.font='10px Inter';ctx.textAlign='left';
+    ctx.fillText(t.val,labelW+bW+6,y+bH*0.65);
+  });
+}
+
+function drawAllCharts() {
+  renderSummaryCards(currentRange);
+  drawLineChart('chart-line', currentRange);
+  drawBarChart('chart-bar', currentRange);
+  drawDonutChart('chart-donut','donut-legend', currentRange);
+  drawSparkline('chart-sparkline', currentRange);
+  drawHeatmap();
+  drawHBar('chart-hbar');
+}
+
+// Observe stats tab to draw on first scroll
+const statsObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting && document.getElementById('tab-stats').classList.contains('active')) drawAllCharts(); });
+},{threshold:0.1});
+statsObs.observe(document.getElementById('tab-stats'));
+
+/* ================================================================
+   TAB 5 — QUALITY ANALYZER
+================================================================ */
+function updateWordCount() {
+  const text = document.getElementById('qa-text').value;
+  const wc = text.trim() ? text.trim().split(/\s+/).length : 0;
+  document.getElementById('qa-wc').textContent = wc.toLocaleString() + ' words';
+}
+
+function analyzeQuality() {
+  const text = document.getElementById('qa-text').value.trim();
+  if(!text) { showToast('Please enter some text to analyze','info'); return; }
+  const scores = computeScores(text);
+  renderScores(scores, text);
+  // Save to localStorage
+  const hist = JSON.parse(localStorage.getItem('qa-history')||'[]');
+  hist.push({ts:Date.now(), scores, len:text.split(/\s+/).length});
+  if(hist.length>50) hist.shift();
+  localStorage.setItem('qa-history',JSON.stringify(hist));
+}
+
+function computeScores(text) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const sentences = text.split(/[.!?]+/).filter(s=>s.trim().length>3);
+  const avgSentLen = words.length / Math.max(sentences.length,1);
+  const syllables = words.reduce((a,w)=>a+countSyllables(w),0);
+  const fleschKincaid = Math.max(0,Math.min(100,206.835 - 1.015*(words.length/Math.max(sentences.length,1)) - 84.6*(syllables/Math.max(words.length,1))));
+
+  const headings = (text.match(/^#{1,3}\s/gm)||[]).length;
+  const boldKw = (text.match(/\*\*[^*]+\*\*/g)||[]).length;
+  const links = (text.match(/\[.+?\]\(.+?\)/g)||[]).length;
+  const seoScore = Math.min(100, fleschKincaid*0.4 + headings*8 + boldKw*5 + links*4 + (words.length>300?10:0) + (words.length>600?10:0));
+
+  const hasQuestion = (text.match(/\?/g)||[]).length > 0;
+  const hasCTA = /click|read|learn|download|try|start|get|join|sign/i.test(text);
+  const hasNumbers = /\d+/.test(text);
+  const engScore = Math.min(100, fleschKincaid*0.3 + (hasQuestion?15:0) + (hasCTA?20:0) + (hasNumbers?10:0) + Math.min(sentences.length*2,20));
+
+  const passiveCount = (text.match(/\b(is|are|was|were|be|been|being)\s+\w+ed\b/gi)||[]).length;
+  const jargon = (text.match(/\b(leverage|synergy|paradigm|utilize|facilitate|robust|scalable|holistic)\b/gi)||[]).length;
+  const clarityScore = Math.min(100, 80 - avgSentLen*0.8 - passiveCount*4 - jargon*5 + 20);
+
+  const uniqueRatio = new Set(words.map(w=>w.toLowerCase())).size / Math.max(words.length,1);
+  const origScore = Math.min(100, uniqueRatio*100*0.7 + 30);
+
+  return {
+    readability: Math.round(fleschKincaid),
+    seo: Math.round(Math.max(0,seoScore)),
+    engagement: Math.round(Math.max(0,engScore)),
+    clarity: Math.round(Math.max(0,clarityScore)),
+    originality: Math.round(origScore),
+    meta: { avgSentLen: avgSentLen.toFixed(1), passiveCount, jargon, hasQuestion, hasCTA, hasNumbers, headings, boldKw, wordCount: words.length, uniqueRatio: (uniqueRatio*100).toFixed(0) }
+  };
+}
+
+function countSyllables(word) {
+  word = word.toLowerCase().replace(/[^a-z]/g,'');
+  if(!word) return 0;
+  const vowels = word.match(/[aeiouy]+/g)||[];
+  return Math.max(1, vowels.length - (word.endsWith('e')?1:0));
+}
+
+function scoreColor(v) {
+  if(v>=75) return '#34d399';
+  if(v>=50) return '#fbbf24';
+  return '#f87171';
+}
+
+function renderScores(scores, text) {
+  const items = [
+    {key:'readability',label:'Readability',icon:'M4 6h16M4 10h16M4 14h8',
+     detail:[
+       {k:'Avg sentence length',v:scores.meta.avgSentLen+' words',b:scores.meta.avgSentLen<20?'good':'bad'},
+       {k:'Word count',v:scores.meta.wordCount,b:scores.meta.wordCount>300?'good':'ok'},
+       {k:'Flesch-Kincaid',v:scores.readability+'/100',b:scores.readability>=65?'good':'ok'},
+     ],
+     suggestions:[
+       {p:'high',t:'Break sentences over 25 words into two shorter ones'},
+       {p:'med',t:'Replace multi-syllable words with simpler alternatives'},
+     ]},
+    {key:'seo',label:'SEO Score',icon:'M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0',
+     detail:[
+       {k:'Headings found',v:scores.meta.headings,b:scores.meta.headings>0?'good':'bad'},
+       {k:'Bold keywords',v:scores.meta.boldKw,b:scores.meta.boldKw>0?'good':'ok'},
+       {k:'Links',v:scores.meta.headings,b:scores.meta.headings>0?'good':'ok'},
+     ],
+     suggestions:[
+       {p:'high',t:'Add an H1 heading that includes your primary keyword'},
+       {p:'med',t:'Include 2-3 internal or external links for authority'},
+       {p:'low',t:'Bold the first mention of your primary keyword'},
+     ]},
+    {key:'engagement',label:'Engagement',icon:'M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z',
+     detail:[
+       {k:'Contains question',v:scores.meta.hasQuestion?'Yes':'No',b:scores.meta.hasQuestion?'good':'bad'},
+       {k:'Has CTA',v:scores.meta.hasCTA?'Yes':'No',b:scores.meta.hasCTA?'good':'bad'},
+       {k:'Uses numbers',v:scores.meta.hasNumbers?'Yes':'No',b:scores.meta.hasNumbers?'good':'ok'},
+     ],
+     suggestions:[
+       {p:'high',t:'Open with a direct question to hook the reader'},
+       {p:'high',t:'Add a clear call-to-action in the closing paragraph'},
+       {p:'med',t:'Include at least one specific statistic or data point'},
+     ]},
+    {key:'clarity',label:'Clarity',icon:'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z',
+     detail:[
+       {k:'Passive voice uses',v:scores.meta.passiveCount,b:scores.meta.passiveCount===0?'good':scores.meta.passiveCount<3?'ok':'bad'},
+       {k:'Jargon words',v:scores.meta.jargon,b:scores.meta.jargon===0?'good':scores.meta.jargon<3?'ok':'bad'},
+       {k:'Vocabulary diversity',v:scores.meta.uniqueRatio+'%',b:+scores.meta.uniqueRatio>60?'good':'ok'},
+     ],
+     suggestions:[
+       {p:'med',t:'Replace passive voice ("was created") with active ("we created")'},
+       {p:'low',t:'Swap jargon like "leverage" for plain English like "use"'},
+     ]},
+    {key:'originality',label:'Originality',icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+     detail:[
+       {k:'Vocabulary diversity',v:scores.meta.uniqueRatio+'%',b:+scores.meta.uniqueRatio>60?'good':'ok'},
+       {k:'Word count',v:scores.meta.wordCount,b:scores.meta.wordCount>200?'good':'ok'},
+     ],
+     suggestions:[
+       {p:'low',t:'Vary sentence length and structure for a more distinctive voice'},
+     ]},
+  ];
+
+  const hist = JSON.parse(localStorage.getItem('qa-history')||'[]');
+  const avgScore = hist.length > 1
+    ? Math.round(hist.slice(-10).reduce((a,h)=>{
+        const avg = (h.scores.readability+h.scores.seo+h.scores.engagement+h.scores.clarity+h.scores.originality)/5;
+        return a+avg;
+      },0)/Math.min(hist.length,10))
+    : null;
+
+  const wrap = document.getElementById('qa-scores');
+  wrap.innerHTML = items.map((item,i)=>{
+    const val = scores[item.key];
+    const col = scoreColor(val);
+    const circumference = 2*Math.PI*22;
+    const offset = circumference*(1-val/100);
+    const badgeClass = val>=75?'badge-good':val>=50?'badge-ok':'badge-bad';
+    return `
+    <div class="score-card" id="sc-${i}">
+      <div class="score-card-head" onclick="toggleScore(${i})">
+        <div class="score-ring-wrap">
+          <svg width="52" height="52" viewBox="0 0 52 52">
+            <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="4"/>
+            <circle cx="26" cy="26" r="22" fill="none" stroke="${col}" stroke-width="4"
+              stroke-dasharray="${circumference}" stroke-dashoffset="${circumference}"
+              stroke-linecap="round" transform="rotate(-90 26 26)"
+              style="transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)"
+              data-target="${offset}" id="ring-${i}"/>
+          </svg>
+          <div class="score-ring-val" style="color:${col}">${val}</div>
+        </div>
+        <div class="score-info">
+          <div class="score-name">${item.label}</div>
+          <div class="score-desc">${val>=75?'Good — well above threshold':val>=50?'Average — room to improve':'Needs work — see suggestions below'}</div>
+        </div>
+        <svg class="score-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="score-detail">
+        ${item.detail.map(d=>`<div class="score-detail-item"><span>${d.k}</span><span class="score-detail-badge ${d.b==='good'?'badge-good':d.b==='ok'?'badge-ok':'badge-bad'}">${d.v}</span></div>`).join('')}
+        <div class="suggestions-wrap">
+          ${item.suggestions.map(s=>`<div class="suggestion-item"><span class="sug-priority sug-${s.p}">${s.p}</span>${s.t}</div>`).join('')}
+        </div>
+        <button class="optimize-btn" onclick="showOptimize()">Show AI Optimization Preview</button>
+        ${avgScore!==null?`<div class="avg-compare">Your avg: <strong>${avgScore}/100</strong> · This piece: <strong style="color:${col}">${Math.round((scores.readability+scores.seo+scores.engagement+scores.clarity+scores.originality)/5)}/100</strong></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Animate rings
+  requestAnimationFrame(()=>{
+    items.forEach((_,i)=>{
+      const ring=document.getElementById('ring-'+i);
+      if(ring) { const t=ring.dataset.target; setTimeout(()=>ring.style.strokeDashoffset=t,100+i*80); }
+    });
+  });
+}
+
+function toggleScore(i) {
+  const card = document.getElementById('sc-'+i);
+  card.classList.toggle('expanded');
+}
+
+function showOptimize() {
+  const text = document.getElementById('qa-text').value.trim();
+  const wrap = document.getElementById('qa-optimize-wrap');
+  const out = document.getElementById('qa-optimize-text');
+  if(!text) return;
+  // Simulated optimization
+  let improved = text;
+  improved = improved.replace(/\b(utilize)\b/gi,'use');
+  improved = improved.replace(/\b(leverage)\b/gi,'use');
+  improved = improved.replace(/\b(synergy)\b/gi,'collaboration');
+  improved = improved.replace(/\b(paradigm)\b/gi,'approach');
+  if(!improved.match(/^#/m) && improved.length>100) improved='## '+improved.split('\n')[0]+'\n\n'+improved.split('\n').slice(1).join('\n');
+  if(!improved.match(/\?/)) improved=improved.replace(/\.\s*$/,'?\n\nWhat do you think?');
+  out.textContent = improved.trim();
+  wrap.style.display='block';
+  showToast('Optimization preview generated','info');
+}
+
+function exportReport() {
+  const text = document.getElementById('qa-text').value.trim();
+  if(!text) { showToast('Analyze some text first','info'); return; }
+  const scores = computeScores(text);
+  const total = Math.round((scores.readability+scores.seo+scores.engagement+scores.clarity+scores.originality)/5);
+  const report = `ContentGenAI — Quality Report
+Generated: ${new Date().toLocaleString()}
+${'─'.repeat(40)}
+
+OVERALL SCORE: ${total}/100
+
+Readability:  ${scores.readability}/100
+SEO:          ${scores.seo}/100
+Engagement:   ${scores.engagement}/100
+Clarity:      ${scores.clarity}/100
+Originality:  ${scores.originality}/100
+
+${'─'.repeat(40)}
+Word count: ${scores.meta.wordCount}
+Avg sentence length: ${scores.meta.avgSentLen} words
+Passive voice uses: ${scores.meta.passiveCount}
+Jargon detected: ${scores.meta.jargon} terms
+Vocabulary diversity: ${scores.meta.uniqueRatio}%
+`;
+  const blob = new Blob([report],{type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='quality-report.txt'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Report exported','info');
+}
+</script>
+</body>
+</html>
