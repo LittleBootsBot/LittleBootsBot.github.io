@@ -1,1574 +1,714 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLI Visualization — AI Content Generator</title>
+  <title>AI Content Generator — CLI Visualizer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
-  <style>
-    /* ============================================================
-       CLI Viz Page — Inline Styles
-    ============================================================ */
-    .viz-page { max-width: 1200px; margin: 0 auto; padding: var(--space-xl); position: relative; z-index: 1; }
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0b0f;--bg-card:#13151c;--bg-elevated:#1a1d27;--bg-input:#161921;
+  --text:#e8eaf0;--text-secondary:#8b8fa4;--text-muted:#5c6078;
+  --primary:#6384ff;--gradient:linear-gradient(135deg,#6384ff 0%,#a855f7 50%,#ec4899 100%);
+  --success:#34d399;--warning:#fbbf24;--error:#f87171;
+  --border:rgba(255,255,255,0.06);--glass-bg:rgba(19,21,28,0.7);--glass-blur:blur(20px);
+  --ease:cubic-bezier(0.16,1,0.3,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;
+  --nav-h:64px;
+}
+[data-theme="light"]{
+  --bg:#f5f5f9;--bg-card:#fff;--bg-elevated:#f0f1f5;--bg-input:#e8e9f0;
+  --text:#1a1d27;--text-secondary:#5c6078;--text-muted:#8b8fa4;
+  --border:rgba(0,0,0,0.08);--glass-bg:rgba(255,255,255,0.7);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+code,kbd,.mono{font-family:'JetBrains Mono',monospace}
 
-    /* Back link */
-    .module-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: var(--space-lg); transition: color 150ms; text-decoration: none; }
-    .module-back:hover { color: var(--accent); }
+/* Ambient */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.15;animation:orbF 20s ease-in-out infinite}
+.orb-1{width:600px;height:600px;background:#6384ff;top:-200px;left:-100px}
+.orb-2{width:500px;height:500px;background:#a855f7;bottom:-150px;right:-100px;animation-delay:-7s}
+.orb-3{width:400px;height:400px;background:#ec4899;top:50%;left:50%;animation-delay:-14s}
+@keyframes orbF{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-50px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
 
-    /* Page Hero */
-    .viz-hero { text-align: center; margin-bottom: 56px; }
-    .viz-hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-soft); border: 1px solid rgba(99,132,255,0.2); border-radius: 99px; padding: 6px 16px; font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px; }
-    .viz-hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.15; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 16px; }
-    .viz-hero p { font-size: 17px; color: var(--text-secondary); max-width: 560px; margin: 0 auto; }
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:1000;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:1.1rem;color:var(--text)}
+.nav-brand span{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-back{color:var(--text-secondary);text-decoration:none;font-size:.85rem;margin-left:24px;padding:6px 12px;border-radius:var(--radius-sm);transition:all .2s var(--ease)}
+.nav-back:hover{background:var(--bg-elevated);color:var(--text)}
+.nav-links{display:flex;gap:4px;margin-left:auto;align-items:center}
+.nav-link{padding:8px 16px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:500;color:var(--text-secondary);text-decoration:none;transition:all .2s var(--ease);cursor:pointer;white-space:nowrap;border:none;background:none;font-family:inherit}
+.nav-link:hover{color:var(--text);background:var(--bg-elevated)}
+.nav-link.active{color:var(--primary);background:rgba(99,132,255,.1)}
+.theme-toggle{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .2s var(--ease);margin-left:8px}
+.theme-toggle:hover{color:var(--text);border-color:var(--primary)}
 
-    /* Section nav pills */
-    .section-nav { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
-    .section-pill { background: var(--bg-card); border: 1px solid var(--border); border-radius: 99px; padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 200ms; text-decoration: none; }
-    .section-pill:hover, .section-pill.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+main{position:relative;z-index:1;padding-top:var(--nav-h)}
+.section{padding:64px 32px;max-width:1200px;margin:0 auto}
+.section-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--primary);margin-bottom:8px}
+.section-title{font-size:2rem;font-weight:800;margin-bottom:8px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-desc{color:var(--text-secondary);max-width:600px;margin-bottom:32px}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
 
-    /* ---- SECTION WRAPPERS ---- */
-    .viz-section { margin-bottom: 80px; scroll-margin-top: 80px; }
-    .viz-section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
-    .viz-section-num { width: 36px; height: 36px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: white; flex-shrink: 0; }
-    .viz-section-head h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
-    .viz-section-head p { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+/* Terminal */
+.term-ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.term-ctrls label{font-size:.8rem;color:var(--text-secondary)}
+.t-select,.t-btn{font-family:'Inter',sans-serif;font-size:.8rem;padding:6px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-card);color:var(--text);cursor:pointer;transition:all .2s var(--ease)}
+.t-select:hover,.t-btn:hover{border-color:var(--primary)}
+.t-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.demos{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.demo-btn{font-family:'Inter',sans-serif;font-size:.75rem;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;transition:all .2s var(--spring);white-space:nowrap}
+.demo-btn:hover{border-color:var(--primary);color:var(--text);transform:translateY(-1px)}
+.demo-btn.running{background:rgba(99,132,255,.15);border-color:var(--primary);color:var(--primary);pointer-events:none}
+.terminal{background:#1e1e2e;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.4);font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.7}
+.t-bar{height:40px;background:rgba(0,0,0,.3);display:flex;align-items:center;padding:0 16px;gap:8px;border-bottom:1px solid rgba(255,255,255,.05);user-select:none}
+.t-dot{width:12px;height:12px;border-radius:50%}
+.t-dot.r{background:#ff5f57}.t-dot.y{background:#febc2e}.t-dot.g{background:#28c840}
+.t-bar-text{margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.3)}
+.t-body{padding:16px;min-height:350px;max-height:500px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+.t-body::-webkit-scrollbar{width:6px}
+.t-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.tl{white-space:pre-wrap;word-break:break-all}
+.tp{color:#89b4fa}.tc{color:#cdd6f4}.to{color:#a6adc8}.ts{color:#a6e3a1}.tw{color:#f9e2af}.te{color:#f38ba8}.ti{color:#89b4fa}.ta{color:#cba6f7}.tb{font-weight:600}.td{opacity:.5}
+.t-cursor{display:inline-block;width:8px;height:16px;background:#cdd6f4;animation:blink 1s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{50%{opacity:0}}
+.t-input-line{display:flex;align-items:center;padding:0 16px 12px}
+.t-input{flex:1;background:0 0;border:none;outline:none;color:#cdd6f4;font-family:'JetBrains Mono',monospace;font-size:.82rem;caret-color:#cdd6f4}
+.ac-popup{position:absolute;bottom:100%;left:0;background:#1e1e2e;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:4px 0;display:none;min-width:300px;box-shadow:0 -8px 24px rgba(0,0,0,.3);z-index:10}
+.ac-popup.show{display:block}
+.ac-i{padding:6px 12px;cursor:pointer;font-size:.78rem;color:#a6adc8;transition:background .1s}
+.ac-i:hover,.ac-i.sel{background:rgba(99,132,255,.15);color:#cdd6f4}
+.ac-i .ac-c{color:#89b4fa}.ac-i .ac-d{color:#6c7086;margin-left:8px}
+.copy-btn{position:absolute;top:48px;right:12px;padding:4px 10px;font-size:.7rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s var(--ease);z-index:5;font-family:'Inter',sans-serif}
+.copy-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+/* Terminal themes */
+.terminal.dracula{background:#282a36}.terminal.dracula .tp{color:#bd93f9}.terminal.dracula .ts{color:#50fa7b}.terminal.dracula .te{color:#ff5555}.terminal.dracula .tw{color:#f1fa8c}.terminal.dracula .ti{color:#8be9fd}.terminal.dracula .ta{color:#ff79c6}
+.terminal.monokai{background:#272822}.terminal.monokai .tp{color:#66d9ef}.terminal.monokai .ts{color:#a6e22e}.terminal.monokai .te{color:#f92672}.terminal.monokai .tw{color:#e6db74}.terminal.monokai .ti{color:#66d9ef}
+.terminal.github-dark{background:#0d1117}.terminal.github-dark .tp{color:#58a6ff}.terminal.github-dark .ts{color:#3fb950}.terminal.github-dark .te{color:#f85149}
+.terminal.solarized{background:#002b36}.terminal.solarized .tp{color:#268bd2}.terminal.solarized .ts{color:#859900}.terminal.solarized .te{color:#dc322f}
+.terminal.nord{background:#2e3440}.terminal.nord .tp{color:#88c0d0}.terminal.nord .ts{color:#a3be8c}.terminal.nord .te{color:#bf616a}
 
-    /* ====================================================
-       1. ANIMATED TERMINAL EMULATOR
-    ==================================================== */
-    .terminal-wrapper { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg), 0 0 60px rgba(99,132,255,0.08); }
-    .terminal-controls-bar { display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: #1a1d27; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-    .terminal-title-bar { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
-    .term-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
-    .term-dot-red { background: #ff5f57; }
-    .term-dot-yellow { background: #ffbd2e; }
-    .term-dot-green { background: #28ca41; }
-    .term-title { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); margin-left: 8px; }
-    .term-select { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 10px; font-size: 12px; color: var(--text); font-family: var(--font); cursor: pointer; }
-    .term-btn { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 150ms; display: flex; align-items: center; gap: 5px; }
-    .term-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .term-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-    .speed-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
-    .speed-wrap input[type=range] { width: 80px; accent-color: var(--accent); }
-    .terminal-screen { background: #0d1117; padding: 20px 24px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; min-height: 320px; max-height: 440px; overflow-y: auto; }
-    .terminal-screen::-webkit-scrollbar { width: 6px; }
-    .terminal-screen::-webkit-scrollbar-track { background: transparent; }
-    .terminal-screen::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-    .term-line { display: block; white-space: pre-wrap; word-break: break-all; }
-    .term-prompt { color: #28ca41; }
-    .term-cmd { color: #e8eaf0; }
-    .term-flag { color: #6384ff; }
-    .term-string { color: #fbbf24; }
-    .term-comment { color: #5c6078; font-style: italic; }
-    .term-output { color: #a8b3cf; }
-    .term-success { color: #34d399; }
-    .term-error { color: #f87171; }
-    .term-accent { color: #a855f7; }
-    .term-cursor { display: inline-block; width: 8px; height: 15px; background: #28ca41; margin-left: 2px; animation: termBlink 1s step-end infinite; vertical-align: middle; }
-    @keyframes termBlink { 0%,100%{opacity:1} 50%{opacity:0} }
-    .term-spinner { display: inline-block; color: #6384ff; }
-    .term-theme-green .terminal-screen { background: #0a1a0a; }
-    .term-theme-green .term-prompt { color: #00ff41; }
-    .term-theme-green .term-cmd { color: #b0ffb0; }
-    .term-theme-green .term-cursor { background: #00ff41; }
+/* Walkthroughs */
+.wt-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+.wt-tab{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-size:.8rem;font-family:'Inter',sans-serif;transition:all .2s var(--spring);display:flex;align-items:center;gap:6px}
+.wt-tab:hover{border-color:var(--primary);color:var(--text)}
+.wt-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.wt-badge{font-size:.65rem;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,.15)}
+.wt-tab.active .wt-badge{background:rgba(255,255,255,.25)}
+.wt-progress{display:flex;align-items:center;gap:0;margin-bottom:32px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.wt-progress::-webkit-scrollbar{display:none}
+.wt-si{display:flex;flex-direction:column;align-items:center;min-width:80px;cursor:pointer;position:relative}
+.wt-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;color:var(--text-muted);background:var(--bg-card);transition:all .3s var(--spring);position:relative;z-index:2}
+.wt-si.active .wt-dot{border-color:var(--primary);color:#fff;background:var(--primary);transform:scale(1.1)}
+.wt-si.done .wt-dot{border-color:var(--success);color:#fff;background:var(--success)}
+.wt-sl{font-size:.65rem;color:var(--text-muted);margin-top:6px;text-align:center;max-width:80px}
+.wt-si.active .wt-sl{color:var(--primary)}
+.wt-conn{height:2px;width:40px;background:var(--border);flex-shrink:0}
+.wt-conn.done{background:var(--success)}
+.wt-content{display:grid;grid-template-columns:1fr 1fr;gap:24px;background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--border)}
+.wt-explain{padding:16px;background:var(--bg-elevated);border-radius:var(--radius-md)}
+.wt-explain h4{font-size:1rem;margin-bottom:8px}
+.wt-explain p{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px}
+.wt-ann{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:rgba(99,132,255,.08);border-radius:var(--radius-sm);margin-bottom:8px;border-left:3px solid var(--primary);font-size:.8rem;color:var(--text-secondary)}
+.wt-ann .arrow{color:var(--primary);font-weight:700;flex-shrink:0}
+.wt-nav{display:flex;justify-content:space-between;margin-top:16px}
+.wt-nbtn{padding:8px 20px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-card);color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;font-size:.85rem;transition:all .2s var(--ease);display:flex;align-items:center;gap:6px}
+.wt-nbtn:hover{border-color:var(--primary)}
+.wt-nbtn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+.wt-nbtn:disabled{opacity:.3;pointer-events:none}
 
-    /* ====================================================
-       2. PIPELINE VISUALIZER
-    ==================================================== */
-    .pipeline-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 32px; overflow: hidden; }
-    .pipeline-stages { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; margin-bottom: 32px; }
-    .pipeline-stages::-webkit-scrollbar { height: 4px; }
-    .pipeline-stages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-    .pipeline-stage { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: transform 200ms; position: relative; }
-    .pipeline-stage:hover { transform: translateY(-3px); }
-    .stage-node { width: 72px; height: 72px; border-radius: 18px; background: var(--bg-elevated); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 26px; transition: all 300ms; position: relative; overflow: hidden; }
-    .stage-node::after { content: ''; position: absolute; inset: 0; border-radius: 16px; background: var(--gradient); opacity: 0; transition: opacity 300ms; }
-    .stage-node.active { border-color: var(--accent); box-shadow: 0 0 24px rgba(99,132,255,0.4); }
-    .stage-node.active::after { opacity: 0.15; }
-    .stage-node.done { border-color: #34d399; box-shadow: 0 0 16px rgba(52,211,153,0.3); }
-    .stage-node.done::after { opacity: 0.1; background: linear-gradient(135deg,#34d399,#059669); }
-    @keyframes stagePulse { 0%,100%{box-shadow:0 0 16px rgba(99,132,255,0.3)} 50%{box-shadow:0 0 32px rgba(99,132,255,0.6)} }
-    .stage-node.pulsing { animation: stagePulse 1s infinite; }
-    .stage-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-align: center; transition: color 300ms; max-width: 80px; }
-    .stage-node.active + .stage-label, .pipeline-stage:hover .stage-label { color: var(--accent); }
-    .pipeline-arrow { width: 48px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; height: 72px; }
-    .arrow-line { width: 100%; height: 2px; position: relative; overflow: hidden; }
-    .arrow-track { width: 100%; height: 2px; background: var(--border); border-radius: 1px; }
-    .arrow-particle { position: absolute; top: 0; height: 2px; width: 12px; background: var(--gradient); border-radius: 1px; animation: particleFlow 1.2s linear infinite; opacity: 0; }
-    .arrow-particle.flowing { opacity: 1; }
-    @keyframes particleFlow { 0%{left:-12px;opacity:0} 20%{opacity:1} 80%{opacity:1} 100%{left:100%;opacity:0} }
-    .arrow-head { width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid var(--text-muted); position: absolute; right: 0; top: 50%; transform: translateY(-50%); transition: border-left-color 300ms; }
-    .arrow-line.active .arrow-head { border-left-color: var(--accent); }
+/* Before/After */
+.ba-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+.ba-f{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;transition:all .2s var(--ease)}
+.ba-f:hover{border-color:var(--primary)}.ba-f.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.ba-card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;margin-bottom:24px;transition:all .3s var(--ease)}
+.ba-card.hidden{display:none}
+.ba-hdr{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ba-hdr h4{font-size:.95rem}
+.ba-score{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text-secondary)}
+.ba-sb{width:100px;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden}
+.ba-sf{height:100%;border-radius:3px;transition:width 1s var(--ease)}
+.ba-sf.bef{background:var(--error)}.ba-sf.aft{background:var(--success)}
+.ba-split{display:flex;position:relative;min-height:180px}
+.ba-pane{flex:1;padding:20px;font-size:.85rem;line-height:1.8;overflow:auto}
+.ba-pane.bef{background:rgba(248,113,113,.03);border-right:1px solid var(--border)}
+.ba-pane.aft{background:rgba(52,211,153,.03)}
+.ba-pl{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ba-pane.bef .ba-pl{color:var(--error)}.ba-pane.aft .ba-pl{color:var(--success)}
+.hl-add{background:rgba(52,211,153,.15);border-radius:3px;padding:0 2px}
+.hl-del{background:rgba(248,113,113,.15);text-decoration:line-through;border-radius:3px;padding:0 2px}
+.ba-div{width:4px;background:var(--border);cursor:col-resize;flex-shrink:0;z-index:3;transition:background .2s}
+.ba-div:hover,.ba-div.dragging{background:var(--primary)}
+.ba-anns{padding:12px 20px 16px;border-top:1px solid var(--border)}
+.ba-ai{display:inline-flex;align-items:center;gap:4px;font-size:.75rem;color:var(--text-secondary);padding:4px 10px;background:var(--bg-elevated);border-radius:20px;margin:3px;cursor:default;position:relative}
+.ba-ai .dot{width:6px;height:6px;border-radius:50%}
+.dot.grn{background:var(--success)}.dot.blu{background:var(--primary)}.dot.ylw{background:var(--warning)}
+.ba-ai:hover .ba-tip{display:block}
+.ba-tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.75rem;width:200px;margin-bottom:6px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:10;color:var(--text)}
 
-    /* Stage detail panel */
-    .stage-detail { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; transition: all 300ms; min-height: 160px; }
-    .stage-detail h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .stage-detail p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 12px; }
-    .stage-params { display: flex; flex-wrap: wrap; gap: 8px; }
-    .param-chip { background: var(--accent-soft); border: 1px solid rgba(99,132,255,0.2); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-family: var(--font-mono); color: var(--accent); }
-    .pipeline-run-btn { display: flex; align-items: center; gap: 8px; background: var(--gradient); color: white; border: none; border-radius: var(--radius-md); padding: 10px 24px; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 200ms, transform 150ms; margin-bottom: 24px; }
-    .pipeline-run-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+/* Flowcharts */
+.fc-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.fc-tab{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-size:.8rem;font-family:'Inter',sans-serif;transition:all .2s var(--spring)}
+.fc-tab:hover{border-color:var(--primary)}.fc-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.fc-box{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;position:relative}
+.fc-ctrls{position:absolute;top:12px;right:12px;display:flex;gap:4px;z-index:5}
+.fc-cbtn{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--glass-bg);backdrop-filter:var(--glass-blur);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s var(--ease)}
+.fc-cbtn:hover{color:var(--text);border-color:var(--primary)}
+.fc-vp{width:100%;min-height:400px;overflow:auto;position:relative;cursor:grab}
+.fc-vp:active{cursor:grabbing}
+.fc-canvas{min-width:900px;padding:48px;position:relative}
+.fc-node{position:absolute;padding:14px 20px;border-radius:var(--radius-md);border:2px solid var(--border);background:var(--bg-elevated);cursor:pointer;transition:all .3s var(--spring);text-align:center;min-width:120px;z-index:2}
+.fc-node:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.fc-node.active{border-color:var(--primary);box-shadow:0 0 20px rgba(99,132,255,.3)}
+.fc-node.type-input{border-color:#6384ff}.fc-node.type-process{border-color:#a855f7}.fc-node.type-output{border-color:#ec4899}
+.fc-ni{font-size:1.3rem;margin-bottom:4px}
+.fc-nl{font-size:.8rem;font-weight:600}
+.fc-pulse{position:absolute;inset:-4px;border-radius:inherit;border:2px solid var(--primary);opacity:0;animation:nPulse 2s ease-in-out infinite}
+@keyframes nPulse{0%,100%{opacity:0;transform:scale(1)}50%{opacity:.5;transform:scale(1.05)}}
+.fc-detail{position:absolute;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;width:250px;box-shadow:0 12px 32px rgba(0,0,0,.4);z-index:10;display:none;font-size:.8rem}
+.fc-detail.show{display:block;animation:fadeUp .2s var(--ease)}
+.fc-detail h5{font-size:.9rem;margin-bottom:6px}.fc-detail p{color:var(--text-secondary);margin-bottom:8px}
+.fc-detail ul{list-style:none;padding:0}.fc-detail li{padding:3px 0;color:var(--text-secondary);font-size:.78rem}
+.fc-detail li::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--primary);margin-right:8px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.fc-svg{position:absolute;inset:0;pointer-events:none;z-index:1}
+.fc-edge{fill:none;stroke:var(--border);stroke-width:2}
+.fc-particle{fill:var(--primary);opacity:.8}
 
-    /* ====================================================
-       3. STEP-BY-STEP WALKTHROUGH
-    ==================================================== */
-    .walkthrough-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
-    .walkthrough-header { padding: 20px 28px; border-bottom: 1px solid var(--border); background: var(--bg-elevated); }
-    .wt-progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
-    .wt-progress-fill { height: 100%; background: var(--gradient); border-radius: 2px; transition: width 400ms var(--ease-out); }
-    .wt-steps-dots { display: flex; gap: 8px; flex-wrap: wrap; }
-    .wt-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg-card); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 200ms; }
-    .wt-dot.done { background: rgba(52,211,153,0.15); border-color: #34d399; color: #34d399; }
-    .wt-dot.current { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-    .wt-dot:hover { border-color: var(--accent); }
-    .walkthrough-body { display: grid; grid-template-columns: 280px 1fr; min-height: 420px; }
-    @media(max-width:800px){ .walkthrough-body { grid-template-columns: 1fr; } }
-    .wt-sidebar { border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 4px; background: var(--bg-elevated); }
-    .wt-sidebar-item { padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 150ms; display: flex; align-items: center; gap: 8px; }
-    .wt-sidebar-item:hover { background: var(--accent-soft); color: var(--text); }
-    .wt-sidebar-item.active { background: var(--accent-soft); color: var(--accent); border-left: 2px solid var(--accent); }
-    .wt-sidebar-item .wt-step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-    .wt-content { padding: 28px; position: relative; }
-    .wt-slide { display: none; animation: slideIn 300ms var(--ease-out); }
-    .wt-slide.visible { display: block; }
-    @keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
-    .wt-slide h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
-    .wt-slide .wt-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }
-    .wt-cmd-box { background: #0d1117; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; font-family: var(--font-mono); font-size: 13px; margin-bottom: 20px; position: relative; }
-    .wt-cmd-annotation { position: absolute; background: var(--bg-card); border: 1px solid var(--accent); border-radius: var(--radius-sm); padding: 6px 10px; font-family: var(--font); font-size: 11px; color: var(--accent); white-space: nowrap; animation: annotationPop 300ms var(--ease-spring); z-index: 2; }
-    @keyframes annotationPop { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:none} }
-    .wt-annotation-line { position: absolute; border-left: 2px dashed rgba(99,132,255,0.4); }
-    .wt-flags-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-    .wt-flag-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; background: var(--bg-elevated); border-radius: var(--radius-sm); border-left: 3px solid var(--accent); }
-    .wt-flag-name { font-family: var(--font-mono); font-size: 12px; color: var(--accent); font-weight: 600; white-space: nowrap; min-width: 140px; }
-    .wt-flag-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-    .wt-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; gap: 12px; }
-    .wt-btn { display: flex; align-items: center; gap: 6px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 150ms; }
-    .wt-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .wt-btn.primary { background: var(--gradient); color: white; border: none; }
-    .wt-btn.primary:hover { opacity: 0.9; transform: translateY(-1px); }
-    .wt-try-btn { background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3); color: #34d399; border-radius: var(--radius-md); padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 150ms; display: inline-flex; align-items: center; gap: 6px; }
-    .wt-try-btn:hover { background: rgba(52,211,153,0.2); }
+/* Keyboard */
+.kb-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+.kb-cb{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;transition:all .2s var(--ease)}
+.kb-cb:hover{border-color:var(--primary)}.kb-cb.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.kb-cb[data-cat="nav"].active{background:#6384ff;border-color:#6384ff}
+.kb-cb[data-cat="gen"].active{background:#a855f7;border-color:#a855f7}
+.kb-cb[data-cat="edit"].active{background:#ec4899;border-color:#ec4899}
+.kb-cb[data-cat="export"].active{background:#34d399;border-color:#34d399}
+.kb-wrap{background:var(--bg-card);border-radius:var(--radius-lg);padding:32px;border:1px solid var(--border);overflow-x:auto}
+.keyboard{display:flex;flex-direction:column;gap:6px;min-width:700px;margin:0 auto;max-width:850px}
+.kb-row{display:flex;gap:4px;justify-content:center}
+.kb-key{height:44px;min-width:44px;border-radius:6px;border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:500;cursor:pointer;transition:all .15s var(--ease);position:relative;font-family:'JetBrains Mono',monospace;user-select:none}
+.kb-key:hover{border-color:var(--text-muted);color:var(--text);transform:translateY(-1px)}
+.kb-key.glow{border-color:var(--primary);color:#fff;box-shadow:0 0 15px rgba(99,132,255,.4),inset 0 0 15px rgba(99,132,255,.1);background:rgba(99,132,255,.15);transform:translateY(-2px)}
+.kb-key.glow-gen{border-color:#a855f7;box-shadow:0 0 15px rgba(168,85,247,.4);background:rgba(168,85,247,.15);color:#fff;transform:translateY(-2px)}
+.kb-key.glow-edit{border-color:#ec4899;box-shadow:0 0 15px rgba(236,72,153,.4);background:rgba(236,72,153,.15);color:#fff;transform:translateY(-2px)}
+.kb-key.glow-export{border-color:#34d399;box-shadow:0 0 15px rgba(52,211,153,.4);background:rgba(52,211,153,.15);color:#fff;transform:translateY(-2px)}
+.kb-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:.7rem;white-space:nowrap;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.3);color:var(--text);font-family:'Inter',sans-serif}
+.kb-key:hover .kb-tip{display:block}
+.w-tab{min-width:70px}.w-caps{min-width:80px}.w-shift{min-width:105px}.w-ctrl{min-width:60px}.w-alt{min-width:50px}.w-space{min-width:260px}.w-enter{min-width:90px}.w-bs{min-width:80px}
+.kb-demo-wrap{display:flex;align-items:center;gap:8px;margin-top:16px;justify-content:center}
+.kb-demo-wrap button{padding:8px 20px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-family:'Inter',sans-serif;font-size:.8rem;transition:all .2s var(--ease)}
+.kb-demo-wrap button:hover{border-color:var(--primary);color:var(--text)}
+.kb-demo-wrap button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.kb-ref{margin-top:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.kb-ri{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg-elevated);border-radius:var(--radius-sm);font-size:.8rem}
+.kb-ri kbd{padding:2px 6px;border-radius:4px;background:var(--bg-card);border:1px solid var(--border);font-size:.7rem;font-family:'JetBrains Mono',monospace;margin:0 2px}
+.kb-ri .act{color:var(--text-secondary);font-size:.78rem}
 
-    /* ====================================================
-       4. KEYBOARD SHORTCUT VISUALIZER
-    ==================================================== */
-    .kbd-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 32px; }
-    .kbd-categories { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .kbd-cat-btn { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 99px; padding: 6px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 150ms; }
-    .kbd-cat-btn:hover, .kbd-cat-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-    .kbd-layout { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-bottom: 28px; }
-    .kbd-row { display: flex; gap: 6px; }
-    .key { display: flex; align-items: center; justify-content: center; background: #1a1d27; border: 1px solid rgba(255,255,255,0.12); border-bottom: 3px solid rgba(255,255,255,0.06); border-radius: 7px; min-width: 38px; height: 38px; padding: 0 6px; font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); cursor: pointer; transition: all 100ms; user-select: none; white-space: nowrap; }
-    .key:hover { border-color: rgba(99,132,255,0.4); color: var(--text); }
-    .key.pressed { transform: translateY(2px); border-bottom-width: 1px; background: var(--accent-soft); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px rgba(99,132,255,0.3); }
-    .key.wide { min-width: 60px; }
-    .key.wider { min-width: 80px; }
-    .key.widest { min-width: 200px; }
-    .key.highlight { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 8px rgba(99,132,255,0.2); }
-    .kbd-shortcut-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-bottom: 24px; }
-    .kbd-shortcut-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: all 150ms; }
-    .kbd-shortcut-item:hover { border-color: var(--accent); }
-    .kbd-shortcut-item .keys { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-    .kbd-shortcut-item .keys .key { min-width: 0; padding: 0 8px; font-size: 11px; height: 26px; cursor: default; }
-    .kbd-shortcut-item .kbd-plus { color: var(--text-muted); font-size: 12px; }
-    .kbd-shortcut-item .kbd-desc { font-size: 12px; color: var(--text-secondary); }
-    .kbd-practice { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
-    .kbd-practice h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-    .kbd-practice p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
-    .kbd-challenge { font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .kbd-feedback { font-size: 14px; font-weight: 600; min-height: 24px; transition: color 300ms; }
-    .kbd-feedback.correct { color: #34d399; }
-    .kbd-feedback.wrong { color: #f87171; }
-
-    /* ====================================================
-       5. INPUT → PROCESSING → OUTPUT ANIMATION
-    ==================================================== */
-    .ipo-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
-    .ipo-grid { display: grid; grid-template-columns: 1fr 1.2fr 1fr; min-height: 420px; }
-    @media(max-width:900px){ .ipo-grid { grid-template-columns: 1fr; } }
-    .ipo-col { padding: 28px 24px; display: flex; flex-direction: column; gap: 16px; }
-    .ipo-col-input { background: var(--bg-elevated); border-right: 1px solid var(--border); }
-    .ipo-col-proc { background: #0d1117; position: relative; overflow: hidden; border-right: 1px solid var(--border); }
-    .ipo-col-output { background: var(--bg-elevated); }
-    .ipo-col-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-    .ipo-col-label .ipo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gradient); }
-    .ipo-input-field { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; font-size: 13px; font-family: var(--font); color: var(--text); resize: none; min-height: 100px; transition: border-color 200ms; width: 100%; }
-    .ipo-input-field:focus { outline: none; border-color: var(--accent); }
-    .ipo-input-option { display: flex; align-items: center; justify-content: space-between; }
-    .ipo-input-option label { font-size: 12px; color: var(--text-secondary); }
-    .ipo-input-option select { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 8px; font-size: 12px; color: var(--text); }
-    .ipo-run-btn { background: var(--gradient); color: white; border: none; border-radius: var(--radius-md); padding: 10px 20px; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 200ms, transform 150ms; }
-    .ipo-run-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
-    .ipo-run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* Processing visuals */
-    .ipo-proc-canvas { position: absolute; inset: 0; }
-    .ipo-proc-label-overlay { position: relative; z-index: 2; }
-    .gear-container { display: flex; align-items: center; justify-content: center; gap: 16px; margin: auto 0; position: relative; z-index: 2; padding: 20px 0; }
-    .gear { transition: transform 600ms; }
-    .gear.spinning { animation: gearSpin 1.5s linear infinite; }
-    .gear.spinning-rev { animation: gearSpin 1.5s linear infinite reverse; }
-    @keyframes gearSpin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    .neural-nodes { display: flex; flex-direction: column; gap: 8px; align-items: center; position: relative; z-index: 2; }
-    .neural-row { display: flex; gap: 12px; }
-    .n-node { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); opacity: 0.3; transition: all 200ms; }
-    .n-node.lit { opacity: 1; box-shadow: 0 0 8px var(--accent); }
-    .proc-status { font-family: var(--font-mono); font-size: 12px; color: #34d399; text-align: center; position: relative; z-index: 2; min-height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-    .proc-spinner { font-size: 20px; display: inline-block; }
-    .proc-spinner.spin { animation: spinnerRot 0.8s steps(8) infinite; }
-    @keyframes spinnerRot { to{transform:rotate(360deg)} }
-
-    /* Output */
-    .ipo-output-text { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; font-size: 13px; color: var(--text); line-height: 1.75; flex: 1; min-height: 120px; font-family: var(--font); overflow-y: auto; }
-    .ipo-output-text:empty::before { content: 'Output will appear here...'; color: var(--text-muted); font-style: italic; }
-    .ipo-output-meta { display: flex; gap: 8px; flex-wrap: wrap; }
-    .ipo-meta-chip { background: var(--success-soft); border: 1px solid rgba(52,211,153,0.2); border-radius: 6px; padding: 3px 10px; font-size: 11px; color: #34d399; font-weight: 600; }
-    .particle-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-
-    /* Scroll reveal */
-    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out); }
-    .reveal.visible { opacity: 1; transform: none; }
-  </style>
+@media(max-width:768px){
+  .section{padding:48px 16px}.nav{padding:0 16px}.nav-links .nav-link{display:none}.section-title{font-size:1.5rem}
+  .wt-content{grid-template-columns:1fr}.ba-split{flex-direction:column}.ba-div{width:100%;height:4px;cursor:row-resize}.ba-pane.bef{border-right:none;border-bottom:1px solid var(--border)}
+}
+@media print{.nav,.ambient,.theme-toggle{display:none}body{background:#fff;color:#000}}
+</style>
 </head>
 <body>
-  <div class="ambient-bg">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+<div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><span>ContentGenAI</span></a>
+  <a href="index.html" class="nav-back">&larr; Back</a>
+  <div class="nav-links">
+    <button class="nav-link active" data-section="sec-term">Terminal</button>
+    <button class="nav-link" data-section="sec-wt">Walkthroughs</button>
+    <button class="nav-link" data-section="sec-ba">Before/After</button>
+    <button class="nav-link" data-section="sec-fc">Flowcharts</button>
+    <button class="nav-link" data-section="sec-kb">Shortcuts</button>
+    <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">&#9790;</button>
   </div>
-  <div id="toast-container"></div>
+</nav>
+<main>
 
-  <!-- Nav -->
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-brand">
-        <span class="brand-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-          </svg>
-        </span>
-        <span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
-      </a>
-      <div class="nav-actions">
-        <a href="index.html" class="nav-btn" style="text-decoration:none;font-size:13px;font-weight:600;">Dashboard</a>
-        <div class="nav-tier" id="user-tier">
-          <span class="tier-badge">Free</span>
-          <a href="../pricing.html" class="upgrade-link">Upgrade</a>
-        </div>
+<!-- 1. TERMINAL -->
+<section id="sec-term" class="section reveal">
+  <div class="section-label">Interactive Demo</div>
+  <h2 class="section-title">Animated Terminal Emulator</h2>
+  <p class="section-desc">Experience the CLI in action. Choose a demo or type your own commands.</p>
+  <div class="term-ctrls">
+    <label>Theme:</label>
+    <select class="t-select" id="tTheme"><option value="">Catppuccin</option><option value="dracula">Dracula</option><option value="monokai">Monokai</option><option value="github-dark">GitHub Dark</option><option value="solarized">Solarized</option><option value="nord">Nord</option></select>
+    <label style="margin-left:12px">Speed:</label>
+    <button class="t-btn active" data-speed="1">1x</button>
+    <button class="t-btn" data-speed="2">2x</button>
+    <button class="t-btn" data-speed="4">4x</button>
+  </div>
+  <div class="demos">
+    <button class="demo-btn" data-demo="blog">Generate a Blog Post</button>
+    <button class="demo-btn" data-demo="social">Create Social Media</button>
+    <button class="demo-btn" data-demo="seo">SEO Optimization</button>
+    <button class="demo-btn" data-demo="batch">Batch Generation</button>
+    <button class="demo-btn" data-demo="interactive">Interactive Mode</button>
+  </div>
+  <div style="position:relative">
+    <button class="copy-btn" id="copyBtn" title="Copy terminal output">Copy</button>
+    <div class="terminal" id="term">
+      <div class="t-bar"><div class="t-dot r"></div><div class="t-dot y"></div><div class="t-dot g"></div><span class="t-bar-text">ai-content-gen &mdash; bash</span></div>
+      <div class="t-body" id="tBody">
+        <div class="tl"><span class="ti">Welcome to AI Content Generator CLI v2.4.0</span></div>
+        <div class="tl"><span class="td">Type a command or choose a demo above.</span></div>
+        <div class="tl">&nbsp;</div>
+      </div>
+      <div class="t-input-line" style="position:relative">
+        <span class="tp">$ </span>
+        <input type="text" class="t-input" id="tInput" placeholder="Type a command..." autocomplete="off" aria-label="Terminal input">
+        <div class="ac-popup" id="acPop"></div>
       </div>
     </div>
-  </nav>
+  </div>
+</section>
 
-  <!-- Main -->
-  <div class="viz-page" style="margin-top:80px;">
-    <a href="index.html" class="module-back">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back to Dashboard
-    </a>
+<!-- 2. WALKTHROUGHS -->
+<section id="sec-wt" class="section reveal">
+  <div class="section-label">Step by Step</div>
+  <h2 class="section-title">Workflow Walkthroughs</h2>
+  <p class="section-desc">Follow guided tutorials to master every CLI feature.</p>
+  <div class="wt-tabs" id="wtTabs"></div>
+  <div class="wt-progress" id="wtProg"></div>
+  <div class="wt-content" id="wtCont">
+    <div id="wtTermP"></div>
+    <div class="wt-explain" id="wtExp"></div>
+  </div>
+  <div class="wt-nav">
+    <button class="wt-nbtn" id="wtPrev" disabled>&larr; Previous</button>
+    <button class="wt-nbtn pri" id="wtNext">Next &rarr;</button>
+  </div>
+</section>
 
-    <!-- Hero -->
-    <div class="viz-hero reveal">
-      <div class="viz-hero-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h0M10 10h0M14 10h0M18 10h0M8 14h8"/></svg>
-        CLI Interactive Tour
-      </div>
-      <h1>CLI Visualization &amp; Animation</h1>
-      <p>Watch the AI Content Generator CLI come alive — interactive terminal, pipeline walkthrough, and more.</p>
+<!-- 3. BEFORE/AFTER -->
+<section id="sec-ba" class="section reveal">
+  <div class="section-label">Quality Boost</div>
+  <h2 class="section-title">Before &amp; After Comparisons</h2>
+  <p class="section-desc">See how AI transforms mediocre content into compelling copy. Drag the divider to compare.</p>
+  <div class="ba-filters" id="baFilt"></div>
+  <div id="baCards"></div>
+</section>
+
+<!-- 4. FLOWCHARTS -->
+<section id="sec-fc" class="section reveal">
+  <div class="section-label">Architecture</div>
+  <h2 class="section-title">Process Flowcharts</h2>
+  <p class="section-desc">Explore animated pipelines showing how content generation works.</p>
+  <div class="fc-tabs" id="fcTabs"></div>
+  <div class="fc-box">
+    <div class="fc-ctrls">
+      <button class="fc-cbtn" id="fcZI" title="Zoom in">+</button>
+      <button class="fc-cbtn" id="fcZO" title="Zoom out">&minus;</button>
+      <button class="fc-cbtn" id="fcRst" title="Reset">&#8634;</button>
     </div>
+    <div class="fc-vp" id="fcVP">
+      <div class="fc-canvas" id="fcCvs"><svg class="fc-svg" id="fcSvg"></svg></div>
+    </div>
+    <div class="fc-detail" id="fcDet"></div>
+  </div>
+</section>
 
-    <!-- Section Nav -->
-    <nav class="section-nav" aria-label="Section navigation">
-      <a href="#terminal" class="section-pill active" data-target="terminal">Terminal Emulator</a>
-      <a href="#pipeline" class="section-pill" data-target="pipeline">Pipeline Visualizer</a>
-      <a href="#walkthrough" class="section-pill" data-target="walkthrough">CLI Walkthrough</a>
-      <a href="#keyboard" class="section-pill" data-target="keyboard">Keyboard Shortcuts</a>
-      <a href="#ipo" class="section-pill" data-target="ipo">Input→Output Flow</a>
-    </nav>
+<!-- 5. KEYBOARD -->
+<section id="sec-kb" class="section reveal">
+  <div class="section-label">Productivity</div>
+  <h2 class="section-title">Keyboard Shortcut Visualizer</h2>
+  <p class="section-desc">Hover keys or select a category to highlight shortcuts.</p>
+  <div class="kb-cats" id="kbCats">
+    <button class="kb-cb active" data-cat="all">All</button>
+    <button class="kb-cb" data-cat="nav">Navigation</button>
+    <button class="kb-cb" data-cat="gen">Generation</button>
+    <button class="kb-cb" data-cat="edit">Editing</button>
+    <button class="kb-cb" data-cat="export">Export</button>
+  </div>
+  <div class="kb-wrap">
+    <div class="keyboard" id="kb"></div>
+    <div class="kb-demo-wrap"><button id="kbDemo">Demo Mode</button></div>
+  </div>
+  <div class="kb-ref" id="kbRef"></div>
+</section>
+</main>
 
-    <!-- ======================================================
-         SECTION 1: TERMINAL EMULATOR
-    ====================================================== -->
-    <section class="viz-section reveal" id="terminal">
-      <div class="viz-section-head">
-        <div class="viz-section-num">1</div>
-        <div>
-          <h2>Animated Terminal Emulator</h2>
-          <p>Watch real CLI commands execute with syntax highlighting and spinner animations</p>
-        </div>
-      </div>
-      <div class="terminal-wrapper" id="term-wrapper">
-        <div class="terminal-controls-bar">
-          <div class="terminal-title-bar">
-            <span class="term-dot term-dot-red"></span>
-            <span class="term-dot term-dot-yellow"></span>
-            <span class="term-dot term-dot-green"></span>
-            <span class="term-title">terminal — contentgen</span>
-          </div>
-          <select class="term-select" id="term-scenario">
-            <option value="0">Demo: Blog Post</option>
-            <option value="1">Demo: Twitter Thread</option>
-            <option value="2">Demo: README File</option>
-            <option value="3">Demo: Email Campaign</option>
-            <option value="4">Demo: Advanced Pipeline</option>
-          </select>
-          <button class="term-btn active" id="btn-play" onclick="termPlay()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-            Play
-          </button>
-          <button class="term-btn" id="btn-pause" onclick="termPause()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-            Pause
-          </button>
-          <button class="term-btn" id="btn-step" onclick="termStep()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,4 15,12 5,20"/><line x1="19" y1="4" x2="19" y2="20"/></svg>
-            Step
-          </button>
-          <button class="term-btn" onclick="termClear()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-            Clear
-          </button>
-          <div class="speed-wrap">
-            <span>Speed</span>
-            <input type="range" id="term-speed" min="0.5" max="3" step="0.25" value="1" oninput="termSpeedChange(this.value)">
-            <span id="speed-label">1x</span>
-          </div>
-          <label style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:5px;cursor:pointer;">
-            <input type="checkbox" id="term-green" onchange="termToggleTheme(this.checked)" style="accent-color:var(--accent);">
-            Green Mode
-          </label>
-        </div>
-        <div class="terminal-screen" id="term-screen">
-          <span class="term-line term-comment"># AI Content Generator CLI — Interactive Demo</span>
-          <span class="term-line">&nbsp;</span>
-          <span class="term-cursor" id="term-cursor"></span>
-        </div>
-      </div>
-    </section>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+let speed=1;
+const d=ms=>wait(ms/speed);
 
-    <!-- ======================================================
-         SECTION 2: PIPELINE VISUALIZER
-    ====================================================== -->
-    <section class="viz-section reveal" id="pipeline">
-      <div class="viz-section-head">
-        <div class="viz-section-num">2</div>
-        <div>
-          <h2>Behind-the-Scenes Pipeline</h2>
-          <p>Click any stage to see what happens inside — data flows through each step</p>
-        </div>
-      </div>
-      <div class="pipeline-container">
-        <button class="pipeline-run-btn" id="pipeline-run-btn" onclick="pipelineRun()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-          Run Pipeline Animation
-        </button>
-        <div class="pipeline-stages" id="pipeline-stages">
-          <!-- Stages injected by JS -->
-        </div>
-        <div class="stage-detail" id="stage-detail">
-          <h3 id="sd-title">
-            <span id="sd-icon">📥</span>
-            <span>Click a stage to explore</span>
-          </h3>
-          <p id="sd-desc">Select any pipeline stage above to see a detailed breakdown of what happens during that processing step, including the data transformations and parameters involved.</p>
-          <div class="stage-params" id="sd-params"></div>
-        </div>
-      </div>
-    </section>
+/* Theme */
+const tb=$('#themeBtn');
+function setT(t){document.documentElement.setAttribute('data-theme',t);tb.textContent=t==='light'?'\u2600':'\u263E';localStorage.setItem('cv-t',t)}
+tb.onclick=()=>setT(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
+setT(localStorage.getItem('cv-t')||'dark');
 
-    <!-- ======================================================
-         SECTION 3: STEP-BY-STEP WALKTHROUGH
-    ====================================================== -->
-    <section class="viz-section reveal" id="walkthrough">
-      <div class="viz-section-head">
-        <div class="viz-section-num">3</div>
-        <div>
-          <h2>Step-by-Step CLI Walkthrough</h2>
-          <p>Interactive guide through every CLI feature — click &quot;Try it&quot; to run in the terminal above</p>
-        </div>
-      </div>
-      <div class="walkthrough-container">
-        <div class="walkthrough-header">
-          <div class="wt-progress-bar">
-            <div class="wt-progress-fill" id="wt-progress" style="width:7.7%"></div>
-          </div>
-          <div class="wt-steps-dots" id="wt-dots"></div>
-        </div>
-        <div class="walkthrough-body">
-          <aside class="wt-sidebar" id="wt-sidebar"></aside>
-          <div class="wt-content">
-            <div id="wt-slides"></div>
-          </div>
-        </div>
-      </div>
-    </section>
+/* Nav scroll + reveal */
+const nls=$$('.nav-link[data-section]');
+nls.forEach(l=>l.onclick=()=>{const e=document.getElementById(l.dataset.section);if(e)e.scrollIntoView({behavior:'smooth'})});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');nls.forEach(l=>l.classList.toggle('active',l.dataset.section===e.target.id))}})},{threshold:.15});
+$$('.section').forEach(s=>obs.observe(s));
 
-    <!-- ======================================================
-         SECTION 4: KEYBOARD SHORTCUT VISUALIZER
-    ====================================================== -->
-    <section class="viz-section reveal" id="keyboard">
-      <div class="viz-section-head">
-        <div class="viz-section-num">4</div>
-        <div>
-          <h2>Keyboard Shortcut Visualizer</h2>
-          <p>Hover shortcuts to see keys light up — or try Practice Mode</p>
-        </div>
-      </div>
-      <div class="kbd-container">
-        <div class="kbd-categories" id="kbd-cats"></div>
-        <div class="kbd-layout" id="kbd-layout"></div>
-        <div class="kbd-shortcut-list" id="kbd-list"></div>
-        <div class="kbd-practice">
-          <h4>Practice Mode</h4>
-          <p>Press the keyboard shortcut shown below. Test your muscle memory!</p>
-          <div class="kbd-challenge" id="kbd-challenge">
-            <span id="kbd-challenge-text">Press Start to begin</span>
-          </div>
-          <div class="kbd-feedback" id="kbd-feedback"></div>
-          <button class="wt-btn primary" onclick="kbdPracticeStart()" style="margin:12px auto 0;display:inline-flex;">Start Practice</button>
-        </div>
-      </div>
-    </section>
+/* ===== TERMINAL ===== */
+const tBody=$('#tBody'),tInput=$('#tInput'),term=$('#term'),acPop=$('#acPop');
+let cmdHist=[],histIdx=-1,running=false;
 
-    <!-- ======================================================
-         SECTION 5: INPUT → PROCESSING → OUTPUT
-    ====================================================== -->
-    <section class="viz-section reveal" id="ipo">
-      <div class="viz-section-head">
-        <div class="viz-section-num">5</div>
-        <div>
-          <h2>Input → Processing → Output</h2>
-          <p>Provide your own topic and watch the AI pipeline animate in real time</p>
-        </div>
-      </div>
-      <div class="ipo-container">
-        <div class="ipo-grid">
-          <!-- Input -->
-          <div class="ipo-col ipo-col-input">
-            <div class="ipo-col-label"><span class="ipo-dot"></span>Input</div>
-            <textarea class="ipo-input-field" id="ipo-input" placeholder="Enter a topic or prompt...&#10;e.g. 'The future of renewable energy'">The future of renewable energy</textarea>
-            <div class="ipo-input-option">
-              <label>Content Type</label>
-              <select id="ipo-type">
-                <option value="blog">Blog Post</option>
-                <option value="twitter">Twitter Thread</option>
-                <option value="readme">README</option>
-                <option value="email">Email</option>
-              </select>
-            </div>
-            <div class="ipo-input-option">
-              <label>Tone</label>
-              <select id="ipo-tone">
-                <option value="professional">Professional</option>
-                <option value="casual">Casual</option>
-                <option value="technical">Technical</option>
-                <option value="creative">Creative</option>
-              </select>
-            </div>
-            <button class="ipo-run-btn" id="ipo-run-btn" onclick="ipoRun()">Generate</button>
-          </div>
+$('#tTheme').onchange=e=>{term.className='terminal '+(e.target.value||'')};
+$$('.t-btn[data-speed]').forEach(b=>b.onclick=()=>{$$('.t-btn[data-speed]').forEach(x=>x.classList.remove('active'));b.classList.add('active');speed=+b.dataset.speed});
 
-          <!-- Processing -->
-          <div class="ipo-col ipo-col-proc">
-            <canvas class="particle-canvas" id="particle-canvas"></canvas>
-            <div class="ipo-proc-label-overlay">
-              <div class="ipo-col-label" style="color:#6384ff;"><span class="ipo-dot"></span>Processing</div>
-            </div>
-            <div class="gear-container" id="gear-container">
-              <svg class="gear" id="gear-1" width="56" height="56" viewBox="0 0 56 56" fill="none">
-                <path d="M28 18a10 10 0 100 20 10 10 0 000-20z" fill="#1a1d27" stroke="#6384ff" stroke-width="2"/>
-                <path d="M28 10v4M28 42v4M10 28h4M42 28h4M14.1 14.1l2.8 2.8M39.1 39.1l2.8 2.8M14.1 41.9l2.8-2.8M39.1 16.9l2.8-2.8" stroke="#6384ff" stroke-width="3" stroke-linecap="round"/>
-              </svg>
-              <svg class="gear" id="gear-2" width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <path d="M20 13a7 7 0 100 14 7 7 0 000-14z" fill="#1a1d27" stroke="#a855f7" stroke-width="2"/>
-                <path d="M20 5v4M20 31v4M5 20h4M31 20h4M9.4 9.4l2.8 2.8M27.8 27.8l2.8 2.8M9.4 30.6l2.8-2.8M27.8 12.2l2.8-2.8" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="neural-nodes" id="neural-nodes">
-              <div class="neural-row">
-                <div class="n-node" id="n0"></div>
-                <div class="n-node" id="n1"></div>
-              </div>
-              <div class="neural-row">
-                <div class="n-node" id="n2"></div>
-                <div class="n-node" id="n3"></div>
-                <div class="n-node" id="n4"></div>
-              </div>
-              <div class="neural-row">
-                <div class="n-node" id="n5"></div>
-                <div class="n-node" id="n6"></div>
-              </div>
-            </div>
-            <div class="proc-status" id="proc-status">
-              <span style="color:var(--text-muted);font-size:12px;">Ready — click Generate</span>
-            </div>
-          </div>
+function addL(html){const div=document.createElement('div');div.className='tl';div.innerHTML=html;tBody.appendChild(div);tBody.scrollTop=tBody.scrollHeight;return div}
+async function typeCmd(text){
+  const line=addL('<span class="tp">$ </span><span class="tc"></span>');
+  const sp=line.querySelector('.tc');
+  for(let i=0;i<text.length;i++){sp.textContent+=text[i];tBody.scrollTop=tBody.scrollHeight;await d(30+Math.random()*20)}
+}
+async function spin(text,dur){
+  const fr=['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
+  const line=addL('<span class="ta"></span>');const sp=line.querySelector('.ta');
+  const s=Date.now(),dd=dur/speed;let i=0;
+  while(Date.now()-s<dd){sp.textContent=fr[i%fr.length]+' '+text;i++;await wait(80)}
+  line.remove();
+}
+async function prog(label,steps){
+  const line=addL('<span class="ti"></span>');const sp=line.querySelector('.ti');
+  for(let i=0;i<=steps;i++){const p=Math.round(i/steps*100),f=Math.round(i/steps*30);sp.textContent=`${label} [${'█'.repeat(f)}${'░'.repeat(30-f)}] ${p}%`;tBody.scrollTop=tBody.scrollHeight;await d(60+Math.random()*40)}
+}
 
-          <!-- Output -->
-          <div class="ipo-col ipo-col-output">
-            <div class="ipo-col-label"><span class="ipo-dot"></span>Output</div>
-            <div class="ipo-output-text" id="ipo-output"></div>
-            <div class="ipo-output-meta" id="ipo-meta" style="display:none;">
-              <span class="ipo-meta-chip" id="ipo-meta-words">0 words</span>
-              <span class="ipo-meta-chip" id="ipo-meta-time">0ms</span>
-              <span class="ipo-meta-chip" id="ipo-meta-type">blog</span>
-            </div>
-            <button class="term-btn" id="ipo-copy-btn" onclick="ipoCopy()" style="display:none;align-self:flex-start;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-              Copy Output
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
+const demos={
+blog:{cmd:'ai-content-gen blog --topic "AI in Healthcare" --tone professional --length long',run:async()=>{
+  await spin('Analyzing topic relevance...',1200);addL('<span class="ts">✓</span> <span class="to">Topic analysis complete — Relevance: 94/100</span>');await d(300);
+  await spin('Researching current trends...',1500);addL('<span class="ts">✓</span> <span class="to">Found 12 relevant sources from 2026</span>');await d(300);
+  await prog('Generating content',20);addL('');
+  addL('<span class="ts tb">═══ Generated Blog Post ═══</span>');addL('');
+  addL('<span class="ta tb">Title:</span> <span class="to">The Transformative Power of AI in Modern Healthcare</span>');
+  addL('<span class="ta tb">Word Count:</span> <span class="to">2,847 words</span>');
+  addL('<span class="ta tb">Reading Time:</span> <span class="to">~12 minutes</span>');
+  addL('<span class="ta tb">SEO Score:</span> <span class="ts">92/100</span>');
+  addL('<span class="ta tb">Readability:</span> <span class="ts">Grade 10 (Professional)</span>');addL('');
+  addL('<span class="td">─────────────────────────────────────────</span>');
+  addL('<span class="to">## Introduction</span>');
+  addL('<span class="to">Artificial intelligence is revolutionizing healthcare delivery,</span>');
+  addL('<span class="to">from diagnostic imaging to personalized treatment plans...</span>');
+  addL('<span class="td">[...2,847 words generated]</span>');
+  addL('<span class="td">─────────────────────────────────────────</span>');addL('');
+  addL('<span class="ts">✓ Saved to ./output/ai-healthcare-blog.md</span>');
+  addL('<span class="ti">⏱  Total time: 4.2s</span>');
+}},
+social:{cmd:'ai-content-gen social --platform twitter --topic "Product Launch" --count 5',run:async()=>{
+  await spin('Analyzing platform best practices...',800);addL('<span class="ts">✓</span> <span class="to">Platform: Twitter/X — Optimal: 200-280 chars</span>');await d(200);
+  await prog('Generating tweets',15);addL('');addL('<span class="ta tb">Generated 5 tweets:</span>');addL('');
+  const tw=[
+    ["We've been building something incredible. Today, it's finally here. 🚀\nIntroducing [Product] — the future of content creation.\nThread 🧵👇","High"],
+    ["What if creating content took seconds, not hours?\nThat's not a hypothetical anymore.\n[Product] just launched.","Very High"],
+    ['3 months ago: "AI can\'t write good content."\nToday: 50,000+ pieces with 94% approval.\nThe results speak → [link]',"High"],
+    ["Your competitors are already using AI content tools.\nThe question isn't IF. It's WHEN.\nStart free → [link]","Medium-High"],
+    ['"This saved our team 20 hours/week." — Sarah K., Marketing Director\nJoin 10,000+ marketers → [link]',"High"]
+  ];
+  tw.forEach((t,i)=>{addL(`<span class="ti">[${i+1}/5]</span> <span class="to">${t[0].replace(/\n/g,'</span>\n<span class="to">')}</span>`);addL(`<span class="td">     Engagement: ${t[1]}</span>`);addL('')});
+  addL('<span class="ts">✓ Saved to ./output/twitter-product-launch.json</span>');
+}},
+seo:{cmd:'ai-content-gen optimize --url "example.com/blog" --keywords "AI, ML, automation"',run:async()=>{
+  await spin('Crawling page content...',1000);addL('<span class="ts">✓</span> <span class="to">Page fetched — 1,245 words analyzed</span>');await d(300);
+  await spin('Running SEO analysis...',1500);addL('');
+  addL('<span class="tw tb">═══ SEO Analysis Report ═══</span>');addL('');
+  addL('<span class="ta">Current Score:</span> <span class="te">34/100</span> → <span class="ta">Projected:</span> <span class="ts">89/100</span>');addL('');
+  addL('<span class="tb">Issues Found:</span>');
+  addL('<span class="te">  ✗ Missing meta description</span>');addL('<span class="te">  ✗ No H1 tag found</span>');
+  addL('<span class="tw">  ⚠ Keyword density too low (0.3% → target 1.5%)</span>');
+  addL('<span class="tw">  ⚠ No internal links</span>');addL('<span class="tw">  ⚠ Images missing alt text (3)</span>');
+  addL('<span class="ts">  ✓ Page load speed: Good</span>');addL('<span class="ts">  ✓ Mobile responsive</span>');addL('');
+  await prog('Generating optimized version',20);addL('');
+  addL('<span class="ts tb">Optimizations Applied:</span>');
+  addL('<span class="ts">  + Meta description (156 chars)</span>');addL('<span class="ts">  + Restructured headings (H1, 4xH2, 6xH3)</span>');
+  addL('<span class="ts">  + Keyword density → 1.4%</span>');addL('<span class="ts">  + 5 internal links</span>');addL('<span class="ts">  + Alt text for 3 images</span>');addL('');
+  addL('<span class="ts">✓ Saved to ./output/blog-optimized.html</span>');
+}},
+batch:{cmd:'ai-content-gen batch --config templates.yaml --output ./content/',run:async()=>{
+  await spin('Parsing configuration...',600);addL('<span class="ts">✓</span> <span class="to">Config loaded — 8 tasks found</span>');addL('');
+  const tasks=[['Homepage Hero Copy','1.2s'],['Product Descriptions (x12)','4.8s'],['Email Newsletter','2.1s'],['FAQ Section','1.9s'],['About Us Page','2.3s'],['Landing Page CTA','0.8s'],['Blog Outline (x5)','3.2s'],['Social Media Kit','2.6s']];
+  for(const[n,t]of tasks){await spin('Processing: '+n,600);addL(`<span class="ts">  ✓</span> <span class="to">${n}</span> <span class="td">(${t})</span>`)}
+  addL('');addL('<span class="ts tb">═══ Batch Complete ═══</span>');
+  addL('<span class="to">  Tasks: 8/8 successful</span>');addL('<span class="to">  Total items: 27 pieces</span>');
+  addL('<span class="to">  Total time: 18.9s</span>');addL('<span class="ts">✓ All files saved</span>');
+}},
+interactive:{cmd:'ai-content-gen --interactive',run:async()=>{
+  addL('<span class="ta tb">Welcome to Interactive Mode</span>');addL('<span class="td">Answer a few questions to generate tailored content.</span>');addL('');
+  const qa=[['What type of content? (blog/social/email/ad)','blog'],['Topic or subject?','Remote work productivity tips'],['Target audience?','Tech professionals, 25-40'],['Desired tone? (casual/professional/playful)','casual'],['Approximate word count?','1500'],['Include SEO optimization? (y/n)','y']];
+  for(const[q,a]of qa){addL(`<span class="ti">? </span><span class="tb">${q}</span>`);await d(400);addL(`<span class="ts">  › ${a}</span>`);await d(200)}
+  addL('');await spin('Generating personalized content...',2000);await prog('Writing',20);addL('');
+  addL('<span class="ts tb">✓ Content generated!</span>');
+  addL('<span class="to">  Type: Blog Post | Words: 1,523 | Tone: Casual ✓</span>');
+  addL('<span class="to">  SEO Score: 87/100 | File: ./output/remote-work-tips.md</span>');
+}}};
 
-  </div><!-- .viz-page -->
+async function runDemo(k){if(running)return;running=true;$$('.demo-btn').forEach(b=>b.classList.toggle('running',b.dataset.demo===k));await typeCmd(demos[k].cmd);addL('');await d(200);await demos[k].run();addL('');running=false;$$('.demo-btn').forEach(b=>b.classList.remove('running'))}
+$$('.demo-btn').forEach(b=>b.onclick=()=>runDemo(b.dataset.demo));
 
-  <script>
-  // ============================================================
-  //  UTILITIES
-  // ============================================================
-  function showToast(msg, type='success') {
-    const tc = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    if (type==='error') t.style.borderLeftColor = 'var(--error)';
-    tc.appendChild(t);
-    requestAnimationFrame(()=>{ t.classList.add('show'); });
-    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),400); }, 2800);
-  }
+const allCmds=[{c:'ai-content-gen blog',d:'Generate blog posts'},{c:'ai-content-gen social',d:'Social media content'},{c:'ai-content-gen optimize',d:'SEO optimization'},{c:'ai-content-gen batch',d:'Batch generation'},{c:'ai-content-gen --interactive',d:'Interactive Q&A'},{c:'ai-content-gen preview',d:'Preview content'},{c:'ai-content-gen export',d:'Export formats'},{c:'ai-content-gen help',d:'Show help'},{c:'clear',d:'Clear terminal'}];
+let acIdx=-1,acList=[];
+function updateAC(v){if(!v){acPop.classList.remove('show');return}acList=allCmds.filter(c=>c.c.startsWith(v));if(!acList.length||(acList.length===1&&acList[0].c===v)){acPop.classList.remove('show');return}acPop.innerHTML=acList.map((c,i)=>`<div class="ac-i${i===acIdx?' sel':''}" data-i="${i}"><span class="ac-c">${c.c}</span><span class="ac-d">${c.d}</span></div>`).join('');acPop.classList.add('show');acIdx=-1}
+tInput.oninput=()=>updateAC(tInput.value);
+tInput.onkeydown=e=>{
+  if(e.key==='Tab'&&acPop.classList.contains('show')&&acList.length){e.preventDefault();tInput.value=acList[Math.max(0,acIdx)>=0?acIdx:0].c;acPop.classList.remove('show')}
+  else if(e.key==='ArrowUp'){if(acPop.classList.contains('show')){e.preventDefault();acIdx=Math.max(0,acIdx-1);updateAC(tInput.value)}else{e.preventDefault();if(cmdHist.length&&histIdx<cmdHist.length-1){histIdx++;tInput.value=cmdHist[cmdHist.length-1-histIdx]}}}
+  else if(e.key==='ArrowDown'){if(acPop.classList.contains('show')){e.preventDefault();acIdx=Math.min(acList.length-1,acIdx+1);updateAC(tInput.value)}else{e.preventDefault();if(histIdx>0){histIdx--;tInput.value=cmdHist[cmdHist.length-1-histIdx]}else{histIdx=-1;tInput.value=''}}}
+  else if(e.key==='Enter'){acPop.classList.remove('show');const v=tInput.value.trim();if(!v||running)return;tInput.value='';cmdHist.push(v);histIdx=-1;if(v==='clear'){tBody.innerHTML='';return}const m=Object.entries(demos).find(([k,dm])=>v===dm.cmd||v.startsWith(dm.cmd.split(' ').slice(0,2).join(' ')));if(m)runDemo(m[0]);else{addL(`<span class="tp">$ </span><span class="tc">${v}</span>`);addL('<span class="te">Command not recognized. Try "ai-content-gen help" or choose a demo.</span>');addL('')}}
+  else if(e.key==='Escape')acPop.classList.remove('show');
+};
+acPop.onclick=e=>{const it=e.target.closest('.ac-i');if(it){tInput.value=acList[it.dataset.i].c;acPop.classList.remove('show');tInput.focus()}};
+$('#copyBtn').onclick=()=>{navigator.clipboard.writeText(tBody.innerText).then(()=>{const b=$('#copyBtn');b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1500)})};
 
-  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+/* ===== WALKTHROUGHS ===== */
+const WTS=[
+  {title:'Your First Blog Post',level:'Beginner',steps:[
+    {cmd:'npm install -g ai-content-gen',t:'Install the CLI',desc:'Install the AI Content Generator globally.',ann:['The -g flag installs globally for any directory.','Requires Node.js 18+.'],out:'<span class="ts">+ ai-content-gen@2.4.0\nadded 42 packages in 3.2s</span>'},
+    {cmd:'ai-content-gen init',t:'Initialize Project',desc:'Set up a new project with default config.',ann:['Creates .contentgen.yaml config file','Sets up output directory structure'],out:'<span class="ts">✓ Project initialized!\n  Created .contentgen.yaml\n  Created ./output/</span>'},
+    {cmd:'ai-content-gen config set api-key YOUR_KEY',t:'Set API Key',desc:'Configure your API key.',ann:['Stored securely in system keychain','Never commit keys to VCS'],out:'<span class="ts">✓ API key configured</span>'},
+    {cmd:'ai-content-gen blog --topic "Getting Started with AI"',t:'Generate a Post',desc:'Create your first blog post.',ann:['--topic sets the main subject','Default tone: professional, length: medium'],out:'<span class="ts">✓ Blog generated!\n  Title: Getting Started with AI\n  Words: 1,200\n  File: ./output/getting-started-ai.md</span>'},
+    {cmd:'ai-content-gen preview --file ./output/getting-started-ai.md',t:'Preview Output',desc:'Preview generated content in terminal.',ann:['Formatted preview in terminal','Use --browser to open in browser'],out:'<span class="ta">═══ Preview ═══\n# Getting Started with AI\nArtificial intelligence is transforming...</span>'},
+    {cmd:'ai-content-gen export --format html --file ./output/getting-started-ai.md',t:'Export Content',desc:'Export to HTML, PDF, or DOCX.',ann:['Supports: html, pdf, docx, markdown','Includes inline CSS for styled output'],out:'<span class="ts">✓ Exported to ./output/getting-started-ai.html</span>'}
+  ]},
+  {title:'SEO-Optimized Pipeline',level:'Intermediate',steps:[
+    {cmd:'ai-content-gen research --keyword "machine learning trends 2026"',t:'Keyword Research',desc:'Research trending keywords and search volume.',ann:['Pulls data from search APIs','Shows volume, difficulty, related terms'],out:'<span class="ti">Found 24 keywords\nTop: "ML trends" (12K/mo), "AI predictions" (8K/mo)</span>'},
+    {cmd:'ai-content-gen outline --keywords "ML trends,AI predictions" --depth 3',t:'Generate Outline',desc:'Create structured outline for target keywords.',ann:['--depth controls heading nesting','Suggests internal linking opportunities'],out:'<span class="ts">✓ Outline: 4 H2s, 12 H3s\n  Keyword coverage: 95%</span>'},
+    {cmd:'ai-content-gen blog --from-outline ./output/outline.yaml --seo',t:'Write from Outline',desc:'Generate full post with SEO optimization.',ann:['--seo enables automatic optimization','Maintains 1-2% keyword density'],out:'<span class="ts">✓ 2,400 words | SEO: 91/100 | Density: 1.4%</span>'},
+    {cmd:'ai-content-gen meta --file ./output/ml-trends.md',t:'Generate Meta Tags',desc:'Auto-generate optimized meta title and description.',ann:['Title kept under 60 chars','Description optimized at 155 chars'],out:'<span class="ts">Meta Title: ML Trends 2026 | 58 chars\nMeta Desc: Discover the machine... | 153 chars</span>'},
+    {cmd:'ai-content-gen score --file ./output/ml-trends.md --verbose',t:'SEO Scoring',desc:'Comprehensive SEO analysis.',ann:['Checks 30+ SEO factors','Actionable improvement suggestions'],out:'<span class="ts">Score: 91/100\n  ✓ Keywords 18/20 | ✓ Readability 19/20\n  ✓ Structure 17/20 | ✓ Meta 20/20</span>'},
+    {cmd:'ai-content-gen social --from-blog ./output/ml-trends.md --platforms twitter,linkedin',t:'Social Promotion',desc:'Generate social posts to promote the blog.',ann:['Platform-specific content','Extracts key quotes and stats'],out:'<span class="ts">✓ 3 tweets + 2 LinkedIn posts saved</span>'}
+  ]},
+  {title:'Brand Voice Setup',level:'Intermediate',steps:[
+    {cmd:'ai-content-gen voice analyze --samples ./brand-samples/',t:'Analyze Voice',desc:'Feed existing content to analyze brand voice.',ann:['Provide 5-10 samples for best results','Detects tone, vocabulary, sentence patterns'],out:'<span class="ta">Voice Profile:\n  Tone: Professional yet approachable\n  Complexity: Grade 8-10\n  Personality: Informative, encouraging</span>'},
+    {cmd:'ai-content-gen voice profile --save "our-brand"',t:'Save Profile',desc:'Save analyzed voice as reusable profile.',ann:['Stored in .contentgen/voices/','Multiple profiles for different audiences'],out:'<span class="ts">✓ "our-brand" saved\n  12 tone markers, 8 style rules</span>'},
+    {cmd:'ai-content-gen voice test --profile "our-brand" --text "Test input"',t:'Test Voice',desc:'Test the voice profile.',ann:['Compare original vs adapted output','Adjust settings based on results'],out:'<span class="ti">Original: "Test input"\nAdapted: "Let\'s give this a try"\nMatch: 94%</span>'},
+    {cmd:'ai-content-gen blog --topic "New Feature" --voice "our-brand"',t:'Generate with Voice',desc:'Generate content using custom brand voice.',ann:['All content matches your brand personality','Works with blog, social, email types'],out:'<span class="ts">✓ Blog generated with "our-brand" voice\n  Consistency: 96%</span>'},
+    {cmd:'ai-content-gen voice audit --dir ./content/ --profile "our-brand"',t:'Voice Audit',desc:'Audit existing content for consistency.',ann:['Scans all content files in directory','Highlights deviations from profile'],out:'<span class="tw">15 files audited:\n  12 consistent (>85%), 3 need adjustment</span>'},
+    {cmd:'ai-content-gen voice evolve --profile "our-brand" --feedback ./data.yaml',t:'Evolve Voice',desc:'Refine profile based on performance data.',ann:['Feed engagement data to optimize','Profile improves over time'],out:'<span class="ts">✓ Profile updated\n  +3 tone markers, refined formality\n  Expected engagement boost: ~12%</span>'}
+  ]},
+  {title:'Batch Content Generation',level:'Advanced',steps:[
+    {cmd:'ai-content-gen template create --name "product-page"',t:'Create Template',desc:'Define reusable content template with variables.',ann:['Handlebars-style {{variables}}','Conditional sections and loops'],out:'<span class="ts">✓ Template "product-page" created\n  Edit: .contentgen/templates/product-page.yaml</span>'},
+    {cmd:'ai-content-gen batch init --template "product-page" --data products.csv',t:'Configure Batch',desc:'Set up batch job from CSV data source.',ann:['CSV columns map to template variables','Supports CSV, JSON, YAML data'],out:'<span class="ti">Configured: 50 products | ~2 minutes</span>'},
+    {cmd:'ai-content-gen batch validate --config batch-config.yaml',t:'Validate Config',desc:'Check for errors before running.',ann:['Validates all variables mapped','Checks for missing/malformed data'],out:'<span class="ts">✓ 50/50 rows valid | All variables mapped</span>'},
+    {cmd:'ai-content-gen batch run --config batch-config.yaml --parallel 5',t:'Run Batch',desc:'Execute with parallel processing.',ann:['--parallel controls concurrency','Progress saved; resumable if interrupted'],out:'<span class="ts">✓ 50/50 generated | 1m 42s | ./content/products/</span>'},
+    {cmd:'ai-content-gen batch report --job latest',t:'View Report',desc:'Detailed analytics from batch run.',ann:['Quality scores per item','Flags items needing review'],out:'<span class="ti">Avg quality: 89/100 | Highest: 97/100\nFlagged: 2 items | Words: 45,200</span>'},
+    {cmd:'ai-content-gen batch export --job latest --format html --zip',t:'Export All',desc:'Export all content as zip archive.',ann:['Individual HTML files per item','Includes manifest.json for CMS import'],out:'<span class="ts">✓ batch-export.zip (50 files, 12.4 MB)</span>'}
+  ]},
+  {title:'API Integration Guide',level:'Advanced',steps:[
+    {cmd:'ai-content-gen api setup --port 3000',t:'Start API Server',desc:'Launch local API server for integration.',ann:['RESTful API with Swagger docs','Default port 3000, configurable'],out:'<span class="ts">✓ API at http://localhost:3000\n  Swagger: /docs | Health: /health</span>'},
+    {cmd:'curl -X POST localhost:3000/api/generate -H "Content-Type: application/json" -d \'{"type":"blog","topic":"AI"}\'',t:'Make API Call',desc:'Send generation request via REST.',ann:['POST /api/generate is main endpoint','Supports all content types'],out:'<span class="ts">{"id":"gen_abc123","status":"completed",\n "metadata":{"words":1200,"seoScore":88}}</span>'},
+    {cmd:'ai-content-gen webhook add --url "https://hooks.example.com" --events generate.complete',t:'Set Up Webhooks',desc:'Configure async notification webhooks.',ann:['Fire on generation events','Retry with exponential backoff'],out:'<span class="ts">✓ Webhook registered | ID: wh_xyz789</span>'},
+    {cmd:'ai-content-gen api keys create --name "production" --scope "generate,export"',t:'Manage API Keys',desc:'Create scoped API keys.',ann:['Scope limits endpoint access','Rotatable without downtime'],out:'<span class="ts">✓ Key: cgak_prod_***** | Scope: generate, export</span>'},
+    {cmd:'ai-content-gen api rate-limits --key "production"',t:'Rate Limiting',desc:'View and configure rate limits.',ann:['Default: 100 req/min, 10K req/day','Enterprise has higher limits'],out:'<span class="ti">Per min: 100 (used: 23)\nPer day: 10,000 (used: 847)\nBurst: 20 concurrent</span>'},
+    {cmd:'ai-content-gen api logs --tail --filter "status>=400"',t:'Monitor Logs',desc:'Stream logs with filtering.',ann:['Real-time with filters','Export to external monitoring'],out:'<span class="tw">14:23:01 POST /generate 429 "Rate limit"\n14:22:45 POST /generate 400 "Missing topic"</span>'}
+  ]}
+];
 
-  // ============================================================
-  //  SCROLL REVEAL
-  // ============================================================
-  const ro = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); ro.unobserve(e.target); } });
-  },{threshold:0.08});
-  document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+let wtW=0,wtS=0;
+function rWTTabs(){$('#wtTabs').innerHTML=WTS.map((w,i)=>`<button class="wt-tab${i===wtW?' active':''}" data-w="${i}">${w.title} <span class="wt-badge">${w.level}</span></button>`).join('');$$('.wt-tab').forEach(t=>t.onclick=()=>{wtW=+t.dataset.w;wtS=0;rWTTabs();rWTProg();rWTStep()})}
+function rWTProg(){const w=WTS[wtW];let h='';w.steps.forEach((s,i)=>{if(i>0)h+=`<div class="wt-conn${i<=wtS?' done':''}"></div>`;h+=`<div class="wt-si${i===wtS?' active':''}${i<wtS?' done':''}" data-s="${i}"><div class="wt-dot">${i<wtS?'✓':i+1}</div><div class="wt-sl">${s.t}</div></div>`});$('#wtProg').innerHTML=h;$$('.wt-si').forEach(el=>el.onclick=()=>{wtS=+el.dataset.s;rWTProg();rWTStep()})}
+function rWTStep(){const w=WTS[wtW],s=w.steps[wtS];
+  $('#wtTermP').innerHTML=`<div class="terminal" style="font-size:.78rem"><div class="t-bar"><div class="t-dot r"></div><div class="t-dot y"></div><div class="t-dot g"></div><span class="t-bar-text">Step ${wtS+1}/${w.steps.length}</span></div><div class="t-body" style="min-height:200px;max-height:300px"><div class="tl"><span class="tp">$ </span><span class="tc">${s.cmd}</span></div><div class="tl">&nbsp;</div><div class="tl">${s.out}</div></div></div>`;
+  $('#wtExp').innerHTML=`<h4>${s.t}</h4><p>${s.desc}</p>${s.ann.map(a=>`<div class="wt-ann"><span class="arrow">→</span><span>${a}</span></div>`).join('')}`;
+  $('#wtPrev').disabled=wtS===0;$('#wtNext').textContent=wtS===w.steps.length-1?'Done':'Next →';
+}
+$('#wtPrev').onclick=()=>{if(wtS>0){wtS--;rWTProg();rWTStep()}};
+$('#wtNext').onclick=()=>{if(wtS<WTS[wtW].steps.length-1){wtS++;rWTProg();rWTStep()}};
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const r=document.getElementById('sec-wt').getBoundingClientRect();if(r.top>window.innerHeight||r.bottom<0)return;if(e.key==='ArrowRight'){$('#wtNext').click();e.preventDefault()}if(e.key==='ArrowLeft'){$('#wtPrev').click();e.preventDefault()}});
+rWTTabs();rWTProg();rWTStep();
 
-  // Section nav active state
-  document.querySelectorAll('.section-pill').forEach(pill=>{
-    pill.addEventListener('click',function(){
-      document.querySelectorAll('.section-pill').forEach(p=>p.classList.remove('active'));
-      this.classList.add('active');
-    });
+/* ===== BEFORE/AFTER ===== */
+const BAD=[
+  {cat:'blog',title:'Blog Introduction',sb:32,sa:91,
+    bef:'AI is changing things in healthcare. There are many ways it is being used. This blog post will talk about some of them. AI can do a lot of things that humans used to do.',
+    aft:'In the last decade, artificial intelligence has emerged as a <span class="hl-add">transformative force in healthcare</span>, reshaping everything from <span class="hl-add">early disease detection</span> to <span class="hl-add">personalized treatment protocols</span>. Today, we explore the <span class="hl-add">five most impactful applications</span> saving lives and reducing costs.',
+    befM:'AI is changing things in healthcare. <span class="hl-del">There are many ways it is being used.</span> <span class="hl-del">This blog post will talk about some of them.</span> <span class="hl-del">AI can do a lot of things that humans used to do.</span>',
+    anns:[{t:'Specific hook added',c:'grn',tip:'Opening with timeframe and strong adjective creates engagement'},{t:'Concrete examples',c:'grn',tip:'Specific applications add credibility'},{t:'Clear value prop',c:'blu',tip:'Setting expectations reduces bounce rate'}]},
+  {cat:'product',title:'Product Description',sb:28,sa:87,
+    bef:'This is a good task management tool. It helps you manage your tasks. You can create tasks, set deadlines, and share with team members.',
+    aft:'<span class="hl-add">Take control of your workflow</span> with TaskFlow Pro. <span class="hl-add">Designed for teams that ship fast</span>, create, prioritize, and track tasks with <span class="hl-add">real-time collaboration</span>. <span class="hl-add">Join 50,000+ teams</span> who reduced delivery time by <span class="hl-add">40%</span>.',
+    befM:'<span class="hl-del">This is a good task management tool.</span> <span class="hl-del">It helps you manage your tasks.</span> You can create tasks, set deadlines, and share with team members.',
+    anns:[{t:'Action-oriented opening',c:'grn',tip:'Starting with a verb empowers the reader'},{t:'Social proof',c:'blu',tip:'Numbers build trust and credibility'},{t:'Benefit-focused',c:'grn',tip:'Outcomes over features'}]},
+  {cat:'email',title:'Email Subject Line',sb:15,sa:85,
+    bef:'Monthly Newsletter - March 2026',
+    aft:'<span class="hl-add">Your competitors read this last month</span> (March insights inside)',
+    befM:'<span class="hl-del">Monthly Newsletter - March 2026</span>',
+    anns:[{t:'Curiosity gap',c:'grn',tip:'Competitor mention drives opens'},{t:'Urgency via FOMO',c:'ylw',tip:'Others already saw this'},{t:'Parenthetical context',c:'blu',tip:'Adds info without cluttering hook'}]},
+  {cat:'social',title:'Social Media Post',sb:22,sa:88,
+    bef:'We just launched our new product. Check it out on our website. It has many great features. #launch #product #new',
+    aft:'<span class="hl-add">3 years of late nights.</span>\n<span class="hl-add">847 prototypes.</span>\n<span class="hl-add">1 product that changes everything.</span>\n\nToday we\'re launching <span class="hl-add">[Product]</span>.\n\n<span class="hl-add">First 100 signups get lifetime access.</span>\n<span class="hl-add">#ProductLaunch #Innovation</span>',
+    befM:'<span class="hl-del">We just launched our new product.</span> <span class="hl-del">Check it out on our website.</span> <span class="hl-del">It has many great features.</span> <span class="hl-del">#launch #product #new</span>',
+    anns:[{t:'Storytelling hook',c:'grn',tip:'Personal numbers create emotional connection'},{t:'Scarcity + CTA',c:'ylw',tip:'Limited offer drives immediate action'},{t:'Strategic hashtags',c:'blu',tip:'Fewer, relevant hashtags outperform spam'}]},
+  {cat:'readme',title:'README Overview',sb:20,sa:92,
+    bef:'This is a JavaScript library. It does authentication. Install it with npm.',
+    aft:'<span class="hl-add"># AuthGuard.js</span>\n\n<span class="hl-add">Drop-in authentication for Node.js.</span> OAuth 2.0, JWT, session auth in <span class="hl-add">under 5 minutes</span>.\n\n<span class="hl-add">npm install authguard</span>',
+    befM:'<span class="hl-del">This is a JavaScript library.</span> <span class="hl-del">It does authentication.</span> <span class="hl-del">Install it with npm.</span>',
+    anns:[{t:'Clear value prop',c:'grn',tip:'Devs need to know what and why in seconds'},{t:'Quick start snippet',c:'blu',tip:'Copy-paste install reduces friction'},{t:'Time-to-value',c:'grn',tip:'"Under 5 minutes" sets expectations'}]},
+  {cat:'cta',title:'CTA Button Text',sb:18,sa:82,
+    bef:'Submit',
+    aft:'<span class="hl-add">Start My Free Trial →</span>',
+    befM:'<span class="hl-del">Submit</span>',
+    anns:[{t:'First person "My"',c:'grn',tip:'"My" vs "Your" increases clicks up to 90%'},{t:'Value-focused',c:'blu',tip:'"Free Trial" communicates value vs work'},{t:'Directional cue',c:'grn',tip:'Arrow creates visual momentum'}]},
+  {cat:'meta',title:'Meta Description',sb:25,sa:90,
+    bef:'Welcome to our website. We sell products online. Visit us today.',
+    aft:'<span class="hl-add">Shop 10,000+ premium gadgets</span> with <span class="hl-add">free next-day delivery</span>. <span class="hl-add">Rated 4.9/5 by 50K+ customers</span>. <span class="hl-add">Save 20%</span> with code WELCOME20.',
+    befM:'<span class="hl-del">Welcome to our website.</span> <span class="hl-del">We sell products online.</span> <span class="hl-del">Visit us today.</span>',
+    anns:[{t:'Keyword-rich',c:'grn',tip:'Product count & delivery match search queries'},{t:'Social proof',c:'blu',tip:'Ratings build trust in SERPs'},{t:'Incentive + CTA',c:'ylw',tip:'Discount code drives click-through'}]},
+  {cat:'error',title:'Error Message',sb:30,sa:85,
+    bef:'Error 403: Forbidden. Access denied. Contact system administrator.',
+    aft:'<span class="hl-add">You don\'t have access to this page.</span>\n\n<span class="hl-add">This might be because:</span>\n<span class="hl-add">• Session expired — try signing in again</span>\n<span class="hl-add">• Need permissions — ask your team admin</span>\n\n<span class="hl-add">Need help? support@example.com</span>',
+    befM:'<span class="hl-del">Error 403: Forbidden.</span> <span class="hl-del">Access denied.</span> <span class="hl-del">Contact system administrator.</span>',
+    anns:[{t:'Human language',c:'grn',tip:'Plain language reduces frustration'},{t:'Actionable solutions',c:'blu',tip:'Specific fixes empower users'},{t:'Accessible contact',c:'grn',tip:'Direct email beats "system administrator"'}]}
+];
+const baCats=[{k:'all',l:'All'},{k:'blog',l:'Blog'},{k:'product',l:'Product'},{k:'email',l:'Email'},{k:'social',l:'Social'},{k:'readme',l:'README'},{k:'cta',l:'CTA'},{k:'meta',l:'Meta'},{k:'error',l:'Error'}];
+let baFilt='all';
+function rBAF(){$('#baFilt').innerHTML=baCats.map(c=>`<button class="ba-f${c.k===baFilt?' active':''}" data-c="${c.k}">${c.l}</button>`).join('');$$('.ba-f').forEach(b=>b.onclick=()=>{baFilt=b.dataset.c;rBAF();$$('.ba-card').forEach(c=>c.classList.toggle('hidden',baFilt!=='all'&&c.dataset.cat!==baFilt))})}
+function rBACards(){$('#baCards').innerHTML=BAD.map((d,i)=>`
+  <div class="ba-card" data-cat="${d.cat}"><div class="ba-hdr"><h4>${d.title}</h4><div class="ba-score"><span>${d.sb}</span><div class="ba-sb"><div class="ba-sf bef" style="width:${d.sb}%"></div></div><span>→</span><div class="ba-sb"><div class="ba-sf aft" style="width:${d.sa}%"></div></div><span style="color:var(--success);font-weight:600">${d.sa}</span></div></div>
+  <div class="ba-split"><div class="ba-pane bef" style="flex:1"><div class="ba-pl"><span style="font-size:1rem">●</span> Before</div><div>${d.befM}</div></div><div class="ba-div" data-i="${i}"></div><div class="ba-pane aft" style="flex:1"><div class="ba-pl"><span style="font-size:1rem">●</span> After</div><div>${d.aft}</div></div></div>
+  <div class="ba-anns">${d.anns.map(a=>`<span class="ba-ai"><span class="dot ${a.c}"></span>${a.t}<div class="ba-tip">${a.tip}</div></span>`).join('')}</div></div>`).join('');
+  $$('.ba-div').forEach(div=>{let drag=false;
+    div.onmousedown=e=>{drag=true;div.classList.add('dragging');e.preventDefault()};
+    document.addEventListener('mousemove',e=>{if(!drag)return;const sp=div.parentElement,r=sp.getBoundingClientRect(),p=Math.max(20,Math.min(80,((e.clientX-r.left)/r.width)*100));div.previousElementSibling.style.flex=`0 0 ${p}%`;div.nextElementSibling.style.flex=`0 0 ${100-p-.5}%`});
+    document.addEventListener('mouseup',()=>{drag=false;div.classList.remove('dragging')});
   });
-  // Scroll spy
-  const sectionIds = ['terminal','pipeline','walkthrough','keyboard','ipo'];
-  window.addEventListener('scroll', ()=>{
-    let cur='terminal';
-    sectionIds.forEach(id=>{
-      const el=document.getElementById(id);
-      if(el && el.getBoundingClientRect().top < 200) cur=id;
-    });
-    document.querySelectorAll('.section-pill').forEach(p=>{
-      p.classList.toggle('active', p.dataset.target===cur);
-    });
-  },{passive:true});
+}
+rBAF();rBACards();
 
-  // ============================================================
-  //  1. TERMINAL EMULATOR
-  // ============================================================
-  const BRAILLE_FRAMES = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
-
-  const SCENARIOS = [
-    // 0: Blog Post
-    {
-      title:'blog-post-demo',
-      steps:[
-        {type:'cmd', text:'contentgen blog --topic "AI Ethics in Modern Society" --tone professional --length 1200 --format markdown'},
-        {type:'spin', text:'Initializing content engine', duration:1200},
-        {type:'spin', text:'Fetching topic context', duration:900},
-        {type:'spin', text:'Selecting blog template', duration:700},
-        {type:'output', lines:[
-          {t:'output', v:'✓ Template: blog-professional-v2'},
-          {t:'output', v:'✓ Estimated tokens: 1,847'},
-          {t:'output', v:'✓ Model: claude-sonnet-4'},
-          {t:'blank'},
-        ]},
-        {type:'spin', text:'Generating content via Claude AI', duration:2000},
-        {type:'output', lines:[
-          {t:'success', v:'✓ Content generated successfully!'},
-          {t:'blank'},
-          {t:'accent', v:'# AI Ethics in Modern Society'},
-          {t:'blank'},
-          {t:'output', v:'As artificial intelligence continues to reshape industries and daily life,'},
-          {t:'output', v:'the question of ethics has moved from academic debate to urgent necessity...'},
-          {t:'blank'},
-          {t:'output', v:'## Key Considerations'},
-          {t:'output', v:'• Transparency and explainability in AI decision-making'},
-          {t:'output', v:'• Bias detection and mitigation strategies'},
-          {t:'output', v:'• Privacy and data sovereignty rights'},
-          {t:'blank'},
-          {t:'output', v:'[... 1,143 words generated]'},
-          {t:'blank'},
-          {t:'success', v:'✓ Saved to: ./output/ai-ethics-blog-2026-03-13.md'},
-          {t:'output', v:'  Words: 1,143 | Read time: ~5 min | Tokens used: 1,892'},
-        ]},
-      ]
-    },
-    // 1: Twitter
-    {
-      title:'twitter-thread-demo',
-      steps:[
-        {type:'cmd', text:'contentgen social --platform twitter --topic "10 CLI productivity tips" --count 8 --hashtags true'},
-        {type:'spin', text:'Loading social media templates', duration:900},
-        {type:'spin', text:'Optimizing for character limits', duration:600},
-        {type:'spin', text:'Generating Twitter thread', duration:1800},
-        {type:'output', lines:[
-          {t:'success', v:'✓ Twitter thread generated (8 tweets)'},
-          {t:'blank'},
-          {t:'accent', v:'Thread: 10 CLI Productivity Tips'},
-          {t:'blank'},
-          {t:'output', v:'[1/8] 🚀 Stop wasting time clicking — here are 10 CLI tips'},
-          {t:'output', v:'    that will 10x your dev productivity. A thread 🧵'},
-          {t:'blank'},
-          {t:'output', v:'[2/8] Use `!!` to repeat the last command. Never retype'},
-          {t:'output', v:'    sudo again. Just: sudo !! #DevTips #CLI'},
-          {t:'blank'},
-          {t:'output', v:'[3/8] Pipe to `pbcopy` (Mac) or `xclip` (Linux) to copy'},
-          {t:'output', v:'    command output directly to clipboard. 📋'},
-          {t:'blank'},
-          {t:'output', v:'[... 5 more tweets]'},
-          {t:'blank'},
-          {t:'success', v:'✓ Saved to: ./output/twitter-thread-2026-03-13.txt'},
-          {t:'output', v:'  Tweets: 8 | Avg chars: 187/280 | Hashtags: 12'},
-        ]},
-      ]
-    },
-    // 2: README
-    {
-      title:'readme-demo',
-      steps:[
-        {type:'cmd', text:'contentgen readme --project "my-awesome-api" --desc "REST API for task management" --tech node,express,postgres'},
-        {type:'spin', text:'Analyzing project structure', duration:800},
-        {type:'spin', text:'Building README template', duration:600},
-        {type:'spin', text:'Generating documentation', duration:1600},
-        {type:'output', lines:[
-          {t:'success', v:'✓ README.md generated!'},
-          {t:'blank'},
-          {t:'accent', v:'# my-awesome-api'},
-          {t:'blank'},
-          {t:'output', v:'> A robust REST API for task management built with'},
-          {t:'output', v:'> Node.js, Express, and PostgreSQL.'},
-          {t:'blank'},
-          {t:'output', v:'## 🚀 Quick Start'},
-          {t:'output', v:'```bash'},
-          {t:'output', v:'npm install'},
-          {t:'output', v:'npm run dev'},
-          {t:'output', v:'```'},
-          {t:'blank'},
-          {t:'output', v:'## 📋 API Endpoints'},
-          {t:'output', v:'| Method | Route        | Description        |'},
-          {t:'output', v:'|--------|------------- |--------------------|'},
-          {t:'output', v:'| GET    | /tasks       | List all tasks     |'},
-          {t:'output', v:'| POST   | /tasks       | Create a task      |'},
-          {t:'blank'},
-          {t:'success', v:'✓ Saved to: ./README.md'},
-          {t:'output', v:'  Sections: 8 | Badges: 4 | Tables: 2'},
-        ]},
-      ]
-    },
-    // 3: Email
-    {
-      title:'email-demo',
-      steps:[
-        {type:'cmd', text:'contentgen email --type newsletter --subject "Monthly Product Updates" --audience developers --cta "Read Changelog"'},
-        {type:'spin', text:'Loading email templates', duration:700},
-        {type:'spin', text:'Personalising for audience', duration:500},
-        {type:'spin', text:'Generating email content', duration:1500},
-        {type:'output', lines:[
-          {t:'success', v:'✓ Email content generated!'},
-          {t:'blank'},
-          {t:'accent', v:'Subject: Monthly Product Updates — March 2026'},
-          {t:'blank'},
-          {t:'output', v:'Hey [First Name],'},
-          {t:'blank'},
-          {t:'output', v:'March has been packed with improvements to the API.'},
-          {t:'output', v:'Here\'s what shipped this month:'},
-          {t:'blank'},
-          {t:'output', v:'  → 3x faster generation with streaming responses'},
-          {t:'output', v:'  → New --batch flag for bulk content creation'},
-          {t:'output', v:'  → VS Code extension (beta)'},
-          {t:'blank'},
-          {t:'output', v:'[CTA Button: Read Changelog →]'},
-          {t:'blank'},
-          {t:'success', v:'✓ Saved to: ./output/email-newsletter-2026-03-13.html'},
-          {t:'output', v:'  Words: 312 | CTA buttons: 1 | Spam score: 0.8/10 ✓'},
-        ]},
-      ]
-    },
-    // 4: Advanced
-    {
-      title:'advanced-pipeline-demo',
-      steps:[
-        {type:'cmd', text:'contentgen pipeline --config pipeline.yaml --parallel --watch'},
-        {type:'output', lines:[
-          {t:'accent', v:'ContentGen Pipeline v2.1.0'},
-          {t:'output', v:'Loading pipeline.yaml...'},
-          {t:'blank'},
-        ]},
-        {type:'spin', text:'Parsing 4 pipeline stages', duration:600},
-        {type:'output', lines:[
-          {t:'output', v:'Stage 1/4 → blog:ai-ethics  [QUEUED]'},
-          {t:'output', v:'Stage 2/4 → social:twitter  [QUEUED]'},
-          {t:'output', v:'Stage 3/4 → email:welcome   [QUEUED]'},
-          {t:'output', v:'Stage 4/4 → readme:core     [QUEUED]'},
-          {t:'blank'},
-        ]},
-        {type:'spin', text:'Running stages in parallel', duration:2500},
-        {type:'output', lines:[
-          {t:'success', v:'✓ Stage 1/4 blog:ai-ethics       [1.2s]'},
-          {t:'success', v:'✓ Stage 3/4 email:welcome         [0.9s]'},
-          {t:'success', v:'✓ Stage 2/4 social:twitter        [1.4s]'},
-          {t:'success', v:'✓ Stage 4/4 readme:core           [1.1s]'},
-          {t:'blank'},
-          {t:'accent', v:'Pipeline complete!'},
-          {t:'output', v:'  Total time: 1.4s (parallel) vs ~5.6s (sequential)'},
-          {t:'output', v:'  Files written: 4'},
-          {t:'output', v:'  Total tokens used: 7,441'},
-          {t:'blank'},
-          {t:'output', v:'Watching for changes in pipeline.yaml... (Ctrl+C to exit)'},
-        ]},
-      ]
-    },
-  ];
-
-  let termState = {
-    scenarioIdx: 0,
-    running: false,
-    paused: false,
-    stepMode: false,
-    stepResolve: null,
-    baseDelay: 40,
-    speedMult: 1,
-    abortCtrl: null,
-  };
-
-  function termScreen(){ return document.getElementById('term-screen'); }
-
-  function termClear(){
-    termStop();
-    const s=termScreen();
-    s.innerHTML='<span class="term-line term-comment"># AI Content Generator CLI — Interactive Demo</span><span class="term-line">&nbsp;</span><span class="term-cursor" id="term-cursor"></span>';
-  }
-
-  function termStop(){
-    termState.running=false;
-    termState.paused=false;
-    if(termState.abortCtrl) termState.abortCtrl.abort();
-  }
-
-  function termPlay(){
-    if(termState.running && !termState.paused){ return; }
-    if(termState.paused){ termState.paused=false; if(termState.stepResolve){termState.stepResolve();termState.stepResolve=null;} return; }
-    termClear();
-    termState.stepMode=false;
-    termState.running=true;
-    termState.paused=false;
-    termState.abortCtrl=new AbortController();
-    termState.scenarioIdx=parseInt(document.getElementById('term-scenario').value)||0;
-    runScenario(termState.scenarioIdx, termState.abortCtrl.signal);
-  }
-
-  function termPause(){
-    if(!termState.running) return;
-    termState.paused=!termState.paused;
-    document.getElementById('btn-pause').classList.toggle('active',termState.paused);
-  }
-
-  function termStep(){
-    termState.stepMode=true;
-    if(!termState.running){
-      termClear();
-      termState.running=true;
-      termState.paused=true;
-      termState.abortCtrl=new AbortController();
-      termState.scenarioIdx=parseInt(document.getElementById('term-scenario').value)||0;
-      runScenario(termState.scenarioIdx, termState.abortCtrl.signal);
-    } else if(termState.paused && termState.stepResolve){
-      termState.stepResolve();
-      termState.stepResolve=null;
-    } else {
-      termState.paused=true;
-    }
-  }
-
-  function termSpeedChange(v){
-    termState.speedMult=parseFloat(v);
-    document.getElementById('speed-label').textContent=v+'x';
-  }
-
-  function termToggleTheme(green){
-    document.getElementById('term-wrapper').classList.toggle('term-theme-green',green);
-  }
-
-  document.getElementById('term-scenario').addEventListener('change',function(){
-    termClear();
+/* ===== FLOWCHARTS ===== */
+const FCS=[
+  {title:'Content Generation Flow',nodes:[
+    {id:'in',x:60,y:140,icon:'✏️',label:'User Input',type:'input',desc:'User provides topic, tone, and content type.',det:['Topic/keyword','Target audience','Desired tone','Content length']},
+    {id:'an',x:250,y:140,icon:'🔍',label:'Analysis',type:'process',desc:'AI analyzes input for context and intent.',det:['Sentiment analysis','Keyword extraction','Audience profiling','Competitor research']},
+    {id:'ge',x:440,y:140,icon:'✨',label:'Generation',type:'process',desc:'AI model generates draft content.',det:['GPT-based generation','Template matching','Tone calibration','Structure formatting']},
+    {id:'rv',x:630,y:140,icon:'✔',label:'Quality Review',type:'process',desc:'Automated quality checks and scoring.',det:['Grammar check','Readability score','Plagiarism scan','Fact verification']},
+    {id:'ou',x:820,y:140,icon:'📄',label:'Output',type:'output',desc:'Final content in chosen format.',det:['Markdown/HTML/PDF','SEO metadata','Social snippets','Version history']}
+  ],edges:[[0,1],[1,2],[2,3],[3,4]]},
+  {title:'SEO Pipeline',nodes:[
+    {id:'kw',x:60,y:140,icon:'🔑',label:'Keywords',type:'input',desc:'Target keywords and search terms.',det:['Primary keywords','Long-tail variants','Search volume','Competition']},
+    {id:'rs',x:240,y:80,icon:'📊',label:'Research',type:'process',desc:'Market and competitor analysis.',det:['SERP analysis','Content gaps','Trending topics','Intent mapping']},
+    {id:'ct',x:420,y:140,icon:'✏️',label:'Content',type:'process',desc:'SEO-optimized content creation.',det:['Keyword placement','Header structure','Internal linking','Meta tags']},
+    {id:'op',x:600,y:80,icon:'⚙',label:'Optimize',type:'process',desc:'Fine-tune for search engines.',det:['Keyword density','Schema markup','Alt text','URL structure']},
+    {id:'sc',x:780,y:140,icon:'🏆',label:'Scoring',type:'output',desc:'SEO score and recommendations.',det:['Overall score','Page speed','Mobile optimization','Ranking predictions']}
+  ],edges:[[0,1],[0,2],[1,2],[2,3],[3,4],[2,4]]},
+  {title:'Brand Voice Pipeline',nodes:[
+    {id:'in',x:60,y:140,icon:'📝',label:'Raw Input',type:'input',desc:'Unformatted content draft.',det:['Draft text','Content type','Platform','Audience']},
+    {id:'va',x:240,y:80,icon:'🎤',label:'Voice Analysis',type:'process',desc:'Analyze brand voice profile.',det:['Tone markers','Vocabulary','Personality','Style rules']},
+    {id:'tm',x:420,y:140,icon:'🎨',label:'Tone Matching',type:'process',desc:'Align with brand tone.',det:['Formality','Emotion','Word choice','Sentence rhythm']},
+    {id:'st',x:600,y:80,icon:'✨',label:'Style Transfer',type:'process',desc:'Apply brand styling.',det:['Phrase patterns','Terminology','Conventions','Cultural alignment']},
+    {id:'ou',x:780,y:140,icon:'✔',label:'Brand Output',type:'output',desc:'On-brand content ready to publish.',det:['Consistency score','A/B variants','Platform format','Approval status']}
+  ],edges:[[0,1],[0,2],[1,2],[2,3],[3,4]]},
+  {title:'Quality Assurance',nodes:[
+    {id:'dr',x:50,y:140,icon:'📃',label:'Draft',type:'input',desc:'Initial generated content.',det:['Raw output','Template','Variables','Formatting']},
+    {id:'rd',x:210,y:70,icon:'📖',label:'Readability',type:'process',desc:'Reading level assessment.',det:['Flesch-Kincaid','Sentence complexity','Paragraph length','Jargon']},
+    {id:'gr',x:370,y:200,icon:'🔤',label:'Grammar',type:'process',desc:'Grammar and spelling check.',det:['Spell check','Grammar rules','Punctuation','Consistency']},
+    {id:'se',x:530,y:70,icon:'🔍',label:'SEO Check',type:'process',desc:'SEO compliance.',det:['Keyword density','Meta completeness','Link quality','Schema']},
+    {id:'en',x:690,y:200,icon:'💡',label:'Engagement',type:'process',desc:'Predicted engagement score.',det:['Hook strength','CTA effectiveness','Emotional appeal','Shareability']},
+    {id:'fi',x:850,y:140,icon:'✅',label:'Final',type:'output',desc:'Quality-assured output.',det:['Quality score','Change log','Approval','Publish ready']}
+  ],edges:[[0,1],[0,2],[1,3],[2,4],[3,5],[4,5],[1,4]]}
+];
+let curFC=0,fcZ=1;
+function rFCTabs(){$('#fcTabs').innerHTML=FCS.map((f,i)=>`<button class="fc-tab${i===curFC?' active':''}" data-f="${i}">${f.title}</button>`).join('');$$('.fc-tab').forEach(t=>t.onclick=()=>{curFC=+t.dataset.f;rFCTabs();rFC()})}
+function rFC(){
+  const fc=FCS[curFC],cvs=$('#fcCvs'),svg=$('#fcSvg');fcZ=1;cvs.style.transform='scale(1)';
+  let mx=0,my=0;fc.nodes.forEach(n=>{mx=Math.max(mx,n.x+160);my=Math.max(my,n.y+100)});
+  cvs.style.width=(mx+80)+'px';cvs.style.height=(my+80)+'px';
+  svg.setAttribute('width',mx+80);svg.setAttribute('height',my+80);
+  let eh='<defs><marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="var(--text-muted)" opacity=".5"/></marker></defs>';
+  fc.edges.forEach(([fi,ti],ei)=>{
+    const f=fc.nodes[fi],t=fc.nodes[ti],x1=f.x+60,y1=f.y+25,x2=t.x+60,y2=t.y+25,mx2=(x1+x2)/2,my2=(y1+y2)/2;
+    eh+=`<path id="e${ei}" class="fc-edge" d="M${x1},${y1} Q${mx2},${y1} ${mx2},${my2} T${x2},${y2}" marker-end="url(#ah)"/>`;
+    eh+=`<circle class="fc-particle" r="3"><animateMotion dur="${2+Math.random()*2}s" repeatCount="indefinite"><mpath href="#e${ei}"/></animateMotion></circle>`;
   });
-
-  async function typeText(container, text, delay=40, signal){
-    const span=document.createElement('span');
-    span.className='term-line';
-    container.insertBefore(span, document.getElementById('term-cursor'));
-    for(let i=0;i<text.length;i++){
-      if(signal&&signal.aborted) return;
-      while(termState.paused){
-        if(signal&&signal.aborted) return;
-        await sleep(50);
-      }
-      span.textContent+=text[i];
-      container.scrollTop=container.scrollHeight;
-      await sleep(delay/termState.speedMult);
-    }
-  }
-
-  function addLine(container, cls, text){
-    const cur=document.getElementById('term-cursor');
-    const span=document.createElement('span');
-    span.className='term-line '+(cls||'');
-    span.textContent=text||'\u00a0';
-    container.insertBefore(span, cur);
-    container.scrollTop=container.scrollHeight;
-  }
-
-  async function runSpinner(container, text, duration, signal){
-    const cur=document.getElementById('term-cursor');
-    const span=document.createElement('span');
-    span.className='term-line';
-    container.insertBefore(span, cur);
-    const end=Date.now()+duration;
-    let fi=0;
-    while(Date.now()<end){
-      if(signal&&signal.aborted) return;
-      while(termState.paused){
-        if(signal&&signal.aborted) return;
-        await sleep(50);
-      }
-      span.innerHTML=`<span class="term-spinner">${BRAILLE_FRAMES[fi%BRAILLE_FRAMES.length]}</span> <span style="color:#8b8fa4">${text}...</span>`;
-      fi++;
-      await sleep(80/termState.speedMult);
-    }
-    span.innerHTML=`<span class="term-success">✓</span> <span style="color:#8b8fa4">${text}</span>`;
-  }
-
-  async function runScenario(idx, signal){
-    const scen=SCENARIOS[idx];
-    const screen=termScreen();
-    addLine(screen,'term-comment','# Scenario: '+scen.title);
-    addLine(screen,'');
-    await sleep(300/termState.speedMult);
-
-    for(const step of scen.steps){
-      if(signal.aborted) return;
-      if(termState.stepMode){
-        termState.paused=true;
-        await new Promise(r=>{ termState.stepResolve=r; });
-        termState.paused=false;
-      }
-      if(step.type==='cmd'){
-        // Type prompt
-        const cur=document.getElementById('term-cursor');
-        const pspan=document.createElement('span');
-        pspan.className='term-line';
-        pspan.innerHTML='<span class="term-prompt">user@contentgen</span><span style="color:#8b8fa4">:</span><span style="color:#6384ff">~</span><span style="color:#8b8fa4">$ </span>';
-        screen.insertBefore(pspan, cur);
-        // Type the command with coloring
-        const cmdSpan=document.createElement('span');
-        pspan.appendChild(cmdSpan);
-        const cmd=step.text;
-        for(let i=0;i<cmd.length;i++){
-          if(signal.aborted) return;
-          while(termState.paused){ if(signal.aborted)return; await sleep(50); }
-          cmdSpan.textContent+=cmd[i];
-          screen.scrollTop=screen.scrollHeight;
-          await sleep(28/termState.speedMult);
-        }
-        // Highlight flags
-        const parts=cmd.split(' ');
-        let html='';
-        parts.forEach(p=>{
-          if(p.startsWith('--')){ html+=`<span class="term-flag">${p}</span> `; }
-          else if(p.startsWith('"')){ html+=`<span class="term-string">${p}</span> `; }
-          else { html+=`<span class="term-cmd">${p}</span> `; }
-        });
-        cmdSpan.innerHTML=html;
-        await sleep(200/termState.speedMult);
-      } else if(step.type==='spin'){
-        await runSpinner(screen, step.text, step.duration, signal);
-        if(signal.aborted) return;
-      } else if(step.type==='output'){
-        for(const ln of step.lines){
-          if(signal.aborted) return;
-          while(termState.paused){ if(signal.aborted)return; await sleep(50); }
-          const clsMap={output:'term-output',success:'term-success',accent:'term-accent',blank:'',error:'term-error'};
-          addLine(screen, clsMap[ln.t]||'term-output', ln.v||'\u00a0');
-          await sleep(60/termState.speedMult);
-        }
-      }
-    }
-    addLine(screen,'');
-    addLine(screen,'term-comment','# Demo complete. Choose another scenario or press Play again.');
-    termState.running=false;
-  }
-
-  // ============================================================
-  //  2. PIPELINE VISUALIZER
-  // ============================================================
-  const PIPELINE_STAGES = [
-    { id:'input', icon:'📥', label:'Input', emoji:'📥',
-      title:'Input Parsing', color:'#6384ff',
-      desc:'The CLI receives raw user input — topic, flags, and options. Arguments are validated against the schema and defaults are applied for missing parameters.',
-      params:['--topic "string"','--tone [enum]','--length [int]','--format [enum]','--output [path]'] },
-    { id:'parse', icon:'🔍', label:'Parsing', emoji:'🔍',
-      title:'Flag Resolution', color:'#8b6fff',
-      desc:'Each flag is resolved to its concrete value. Environment variables and config files are merged. Conflicting options are resolved by priority order.',
-      params:['mergeConfig()','resolveEnv()','validateSchema()','applyDefaults()'] },
-    { id:'template', icon:'📋', label:'Template Selection', emoji:'📋',
-      title:'Template Selection', color:'#a855f7',
-      desc:'The best-matching template is selected from the library based on content type, tone, and format. Templates contain structured prompts optimised for Claude.',
-      params:['type → "blog-professional"','tone → "professional"','version → "v2.1"','tokens_budget → 2048'] },
-    { id:'ai', icon:'🤖', label:'AI Processing', emoji:'🤖',
-      title:'AI Processing', color:'#ec4899',
-      desc:'The assembled prompt is sent to Claude via the Anthropic API. Streaming responses are buffered and reassembled. Token usage is tracked in real time.',
-      params:['model: claude-sonnet-4','temperature: 0.7','max_tokens: 2048','stream: true'] },
-    { id:'format', icon:'✨', label:'Formatting', emoji:'✨',
-      title:'Output Formatting', color:'#f97316',
-      desc:'Raw AI output is parsed and reformatted to the requested format (Markdown, HTML, plain text). Headers, code blocks, and lists are structured correctly.',
-      params:['parseMarkdown()','applyTemplate()','sanitize()','formatHeadings()'] },
-    { id:'output', icon:'💾', label:'Output', emoji:'💾',
-      title:'File Output', color:'#34d399',
-      desc:'The final content is written to disk with a timestamped filename. Metadata (word count, token usage, generation time) is appended to the log file.',
-      params:['writeFile()','appendLog()','printSummary()','triggerHooks()'] },
-  ];
-
-  function buildPipeline(){
-    const cont=document.getElementById('pipeline-stages');
-    cont.innerHTML='';
-    PIPELINE_STAGES.forEach((s,i)=>{
-      const stageEl=document.createElement('div');
-      stageEl.className='pipeline-stage';
-      stageEl.id='ps-'+s.id;
-      stageEl.innerHTML=`
-        <div class="stage-node" id="sn-${s.id}">${s.icon}</div>
-        <div class="stage-label">${s.label}</div>`;
-      stageEl.addEventListener('click',()=>showStageDetail(s));
-      cont.appendChild(stageEl);
-      if(i<PIPELINE_STAGES.length-1){
-        const arr=document.createElement('div');
-        arr.className='pipeline-arrow';
-        arr.id='pa-'+i;
-        arr.innerHTML=`<div class="arrow-line" id="al-${i}"><div class="arrow-track"></div><div class="arrow-particle" id="ap-${i}"></div><div class="arrow-head"></div></div>`;
-        cont.appendChild(arr);
-      }
-    });
-  }
-
-  function showStageDetail(s){
-    document.getElementById('sd-icon').textContent=s.emoji;
-    document.getElementById('sd-title').querySelector('span:last-child').textContent=s.title;
-    document.getElementById('sd-desc').textContent=s.desc;
-    const params=document.getElementById('sd-params');
-    params.innerHTML=s.params.map(p=>`<span class="param-chip">${p}</span>`).join('');
-    // Highlight the node
-    document.querySelectorAll('.stage-node').forEach(n=>n.classList.remove('selected'));
-    document.getElementById('sn-'+s.id).style.borderColor=s.color;
-    document.getElementById('sn-'+s.id).style.boxShadow=`0 0 20px ${s.color}40`;
-  }
-
-  let pipelineAnim=null;
-  async function pipelineRun(){
-    if(pipelineAnim) clearTimeout(pipelineAnim);
-    // Reset all
-    PIPELINE_STAGES.forEach(s=>{
-      const n=document.getElementById('sn-'+s.id);
-      if(n){ n.className='stage-node'; n.style.borderColor=''; n.style.boxShadow=''; }
-    });
-    for(let i=0;i<PIPELINE_STAGES.length-1;i++){
-      const al=document.getElementById('al-'+i);
-      if(al) al.classList.remove('active');
-      const ap=document.getElementById('ap-'+i);
-      if(ap) ap.classList.remove('flowing');
-    }
-    document.getElementById('pipeline-run-btn').disabled=true;
-    for(let i=0;i<PIPELINE_STAGES.length;i++){
-      const s=PIPELINE_STAGES[i];
-      const node=document.getElementById('sn-'+s.id);
-      if(node){ node.className='stage-node active pulsing'; }
-      showStageDetail(s);
-      await sleep(700);
-      if(node){ node.className='stage-node done'; }
-      if(i<PIPELINE_STAGES.length-1){
-        const al=document.getElementById('al-'+i);
-        const ap=document.getElementById('ap-'+i);
-        if(al) al.classList.add('active');
-        if(ap) ap.classList.add('flowing');
-        await sleep(400);
-      }
-    }
-    document.getElementById('pipeline-run-btn').disabled=false;
-  }
-
-  // ============================================================
-  //  3. STEP-BY-STEP WALKTHROUGH
-  // ============================================================
-  const WT_STEPS = [
-    { section:'Getting Started', title:'Install & Setup',
-      desc:'Install the AI Content Generator CLI globally with npm, then authenticate with your API key.',
-      cmd:'npm install -g contentgen && contentgen auth --key YOUR_API_KEY',
-      flags:[
-        {name:'-g / --global', desc:'Install the package globally so `contentgen` is available in any directory.'},
-        {name:'auth --key', desc:'Store your Anthropic API key in the secure system keychain.'},
-      ],
-      tryCmd:'contentgen --version' },
-    { section:'Getting Started', title:'First Command',
-      desc:'Run your first content generation. The simplest possible command — just provide a topic.',
-      cmd:'contentgen blog --topic "Getting started with TypeScript"',
-      flags:[
-        {name:'blog', desc:'The content type subcommand. Generates a full blog post.'},
-        {name:'--topic', desc:'The main subject of the content. Wrap multi-word topics in quotes.'},
-      ],
-      tryCmd:'contentgen blog --topic "Getting started with TypeScript"' },
-    { section:'Blog Posts', title:'Blog Post Options',
-      desc:'Customise your blog posts with tone, word count, and output format.',
-      cmd:'contentgen blog --topic "Remote Work Tips" --tone casual --length 800 --format markdown',
-      flags:[
-        {name:'--tone', desc:'Writing voice: professional, casual, technical, or creative.'},
-        {name:'--length', desc:'Target word count. Default is 1000. Range: 200–5000.'},
-        {name:'--format', desc:'Output format: markdown (default), html, or plain.'},
-      ],
-      tryCmd:'contentgen blog --topic "Remote Work Tips" --tone casual --length 800' },
-    { section:'Social Media', title:'Twitter Threads',
-      desc:'Generate ready-to-post Twitter threads with automatic character count optimisation.',
-      cmd:'contentgen social --platform twitter --topic "Python async tips" --count 8 --hashtags',
-      flags:[
-        {name:'--platform', desc:'Target social platform: twitter, linkedin, instagram.'},
-        {name:'--count', desc:'Number of tweets/posts to generate. Default 5, max 20.'},
-        {name:'--hashtags', desc:'Automatically append relevant hashtags to posts.'},
-      ],
-      tryCmd:'contentgen social --platform twitter --topic "Python async tips" --count 5' },
-    { section:'README Files', title:'README Generator',
-      desc:'Auto-generate comprehensive README files from your project name and tech stack.',
-      cmd:'contentgen readme --project "my-app" --tech react,node,postgres --badges',
-      flags:[
-        {name:'--project', desc:'Your project name. Used in the title and all references.'},
-        {name:'--tech', desc:'Comma-separated list of technologies for stack section.'},
-        {name:'--badges', desc:'Add shield.io badges for build status, version, license.'},
-      ],
-      tryCmd:'contentgen readme --project "my-app" --tech react,node,postgres' },
-    { section:'Advanced Options', title:'Batch & Pipeline',
-      desc:'Process multiple content jobs in parallel using pipeline configuration files.',
-      cmd:'contentgen pipeline --config ./pipeline.yaml --parallel --dry-run',
-      flags:[
-        {name:'--config', desc:'Path to a YAML/JSON pipeline config defining multiple jobs.'},
-        {name:'--parallel', desc:'Run all pipeline stages concurrently for maximum speed.'},
-        {name:'--dry-run', desc:'Validate the pipeline without generating content or using tokens.'},
-      ],
-      tryCmd:'contentgen pipeline --config pipeline.yaml --parallel' },
-    { section:'Advanced Options', title:'Output & Hooks',
-      desc:'Control where output is saved and trigger custom scripts post-generation.',
-      cmd:'contentgen blog --topic "AI Trends" --output ./docs/ --hook ./scripts/post-gen.sh',
-      flags:[
-        {name:'--output', desc:'Directory or file path for the generated content.'},
-        {name:'--hook', desc:'Shell script to run after successful generation (e.g. git commit).'},
-      ],
-      tryCmd:'contentgen blog --topic "AI Trends" --output ./docs/' },
-    { section:'Advanced Options', title:'Config File',
-      desc:'Persist your preferred settings in a `.contentgenrc` file to avoid repeating flags.',
-      cmd:'contentgen config set --tone professional --format markdown --model claude-sonnet-4',
-      flags:[
-        {name:'config set', desc:'Write key-value pairs to your local .contentgenrc config file.'},
-        {name:'--model', desc:'Choose the Claude model: claude-sonnet-4 (default) or claude-opus-4.'},
-      ],
-      tryCmd:'contentgen config list' },
-  ];
-
-  let wtCurrent=0;
-
-  function buildWalkthrough(){
-    const sidebar=document.getElementById('wt-sidebar');
-    const slides=document.getElementById('wt-slides');
-    const dots=document.getElementById('wt-dots');
-    sidebar.innerHTML='';
-    slides.innerHTML='';
-    dots.innerHTML='';
-    WT_STEPS.forEach((s,i)=>{
-      // Sidebar
-      const item=document.createElement('div');
-      item.className='wt-sidebar-item'+(i===0?' active':'');
-      item.innerHTML=`<span class="wt-step-num">${i+1}</span><span>${s.title}</span>`;
-      item.addEventListener('click',()=>wtGoto(i));
-      sidebar.appendChild(item);
-      // Dot
-      const dot=document.createElement('div');
-      dot.className='wt-dot'+(i===0?' current':'');
-      dot.textContent=i+1;
-      dot.title=s.title;
-      dot.addEventListener('click',()=>wtGoto(i));
-      dots.appendChild(dot);
-      // Slide
-      const slide=document.createElement('div');
-      slide.className='wt-slide'+(i===0?' visible':'');
-      slide.id='wt-slide-'+i;
-      slide.innerHTML=`
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:4px;">${s.section}</div>
-        <h3>${s.title}</h3>
-        <p class="wt-desc">${s.desc}</p>
-        <div class="wt-cmd-box">
-          <span class="term-prompt">$</span> <span class="term-cmd" style="color:#e8eaf0;">${escHtml(s.cmd)}</span>
-        </div>
-        <div class="wt-flags-list">
-          ${s.flags.map(f=>`<div class="wt-flag-item"><span class="wt-flag-name">${escHtml(f.name)}</span><span class="wt-flag-desc">${escHtml(f.desc)}</span></div>`).join('')}
-        </div>
-        <div class="wt-nav">
-          <button class="wt-btn" onclick="wtPrev()" ${i===0?'disabled':''}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-            Previous
-          </button>
-          <button class="wt-try-btn" onclick="wtTry(${i})">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-            Try it in terminal
-          </button>
-          <button class="wt-btn primary" onclick="wtNext()" ${i===WT_STEPS.length-1?'disabled':''}>
-            Next
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>`;
-      slides.appendChild(slide);
-    });
-    wtUpdateProgress();
-  }
-
-  function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  function wtGoto(i){
-    const prev=wtCurrent;
-    wtCurrent=Math.max(0,Math.min(WT_STEPS.length-1,i));
-    document.querySelectorAll('.wt-slide').forEach((s,j)=>{ s.classList.toggle('visible',j===wtCurrent); });
-    document.querySelectorAll('.wt-sidebar-item').forEach((s,j)=>s.classList.toggle('active',j===wtCurrent));
-    document.querySelectorAll('.wt-dot').forEach((d,j)=>{
-      d.classList.toggle('current',j===wtCurrent);
-      d.classList.toggle('done',j<wtCurrent);
-    });
-    wtUpdateProgress();
-  }
-  function wtNext(){ wtGoto(wtCurrent+1); }
-  function wtPrev(){ wtGoto(wtCurrent-1); }
-  function wtUpdateProgress(){
-    const pct=((wtCurrent+1)/WT_STEPS.length)*100;
-    document.getElementById('wt-progress').style.width=pct+'%';
-  }
-  function wtTry(i){
-    const step=WT_STEPS[i];
-    // Create a fake single-command scenario and run it
-    document.getElementById('term-scenario').value='0';
-    termStop();
-    termClear();
-    const screen=termScreen();
-    const cur=document.getElementById('term-cursor');
-    const pspan=document.createElement('span');
-    pspan.className='term-line';
-    pspan.innerHTML=`<span class="term-prompt">user@contentgen</span><span style="color:#8b8fa4">:</span><span style="color:#6384ff">~</span><span style="color:#8b8fa4">$ </span><span class="term-cmd">${escHtml(step.tryCmd)}</span>`;
-    screen.insertBefore(pspan, cur);
-    const msgSpan=document.createElement('span');
-    msgSpan.className='term-line term-output';
-    msgSpan.textContent='[Scroll up to see terminal — demo output would appear here]';
-    screen.insertBefore(msgSpan, cur);
-    document.getElementById('terminal').scrollIntoView({behavior:'smooth'});
-    showToast('Command sent to terminal!');
-  }
-
-  // ============================================================
-  //  4. KEYBOARD SHORTCUT VISUALIZER
-  // ============================================================
-  const KBD_SHORTCUTS = [
-    { cat:'Navigation', keys:['Ctrl','K'], desc:'Focus topic / search input', combo:'ctrl+k' },
-    { cat:'Navigation', keys:['Esc'], desc:'Close modal / clear focus', combo:'escape' },
-    { cat:'Navigation', keys:['Tab'], desc:'Navigate between fields', combo:'tab' },
-    { cat:'Generation', keys:['Ctrl','Enter'], desc:'Generate content', combo:'ctrl+enter' },
-    { cat:'Generation', keys:['Ctrl','Shift','Enter'], desc:'Regenerate last', combo:'ctrl+shift+enter' },
-    { cat:'Editing', keys:['Ctrl','C'], desc:'Copy output to clipboard', combo:'ctrl+c' },
-    { cat:'Editing', keys:['Ctrl','S'], desc:'Save preferences', combo:'ctrl+s' },
-    { cat:'Editing', keys:['Ctrl','Z'], desc:'Undo last change', combo:'ctrl+z' },
-    { cat:'Advanced', keys:['Ctrl','/'], desc:'Toggle keyboard shortcuts', combo:'ctrl+/' },
-    { cat:'Advanced', keys:['Ctrl','Shift','D'], desc:'Toggle dark/light theme', combo:'ctrl+shift+d' },
-    { cat:'Advanced', keys:['1'], desc:'Select Blog type', combo:'1' },
-    { cat:'Advanced', keys:['2'], desc:'Select Social type', combo:'2' },
-  ];
-
-  const KBD_ROWS = [
-    ['`','1','2','3','4','5','6','7','8','9','0','-','=','⌫'],
-    ['Tab','Q','W','E','R','T','Y','U','I','O','P','[',']','\\'],
-    ['Caps','A','S','D','F','G','H','J','K','L',';',"'",'Enter'],
-    ['Shift','Z','X','C','V','B','N','M',',','.','/','Shift'],
-    ['Ctrl','Alt','Cmd','Space','Cmd','Alt','Ctrl'],
-  ];
-
-  const KEY_WIDTHS = { 'Tab':'wide','Caps':'wide','Enter':'wider','Shift':'wider','⌫':'wider','Space':'widest','Ctrl':'wide','Alt':'wide','Cmd':'wide' };
-
-  let kbdActiveCat='All';
-  let kbdPracticeActive=false;
-  let kbdPracticeIdx=0;
-  let kbdPracticeShortcuts=[];
-
-  function buildKeyboard(){
-    const layout=document.getElementById('kbd-layout');
-    layout.innerHTML='';
-    KBD_ROWS.forEach(row=>{
-      const rowEl=document.createElement('div');
-      rowEl.className='kbd-row';
-      row.forEach(k=>{
-        const keyEl=document.createElement('div');
-        keyEl.className='key '+(KEY_WIDTHS[k]||'');
-        keyEl.textContent=k;
-        keyEl.id='key-'+k.replace(/[^a-zA-Z0-9]/g,'_');
-        rowEl.appendChild(keyEl);
-      });
-      layout.appendChild(rowEl);
-    });
-
-    // Categories
-    const cats=['All',...new Set(KBD_SHORTCUTS.map(s=>s.cat))];
-    const catsCont=document.getElementById('kbd-cats');
-    catsCont.innerHTML='';
-    cats.forEach(c=>{
-      const btn=document.createElement('button');
-      btn.className='kbd-cat-btn'+(c==='All'?' active':'');
-      btn.textContent=c;
-      btn.addEventListener('click',()=>{
-        kbdActiveCat=c;
-        document.querySelectorAll('.kbd-cat-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        buildShortcutList();
-      });
-      catsCont.appendChild(btn);
-    });
-    buildShortcutList();
-  }
-
-  function buildShortcutList(){
-    const list=document.getElementById('kbd-list');
-    const filtered=kbdActiveCat==='All'?KBD_SHORTCUTS:KBD_SHORTCUTS.filter(s=>s.cat===kbdActiveCat);
-    list.innerHTML='';
-    filtered.forEach(s=>{
-      const item=document.createElement('div');
-      item.className='kbd-shortcut-item';
-      const keysHtml=s.keys.map((k,i)=>`<div class="key">${escHtml(k)}</div>${i<s.keys.length-1?'<span class="kbd-plus">+</span>':''}`).join('');
-      item.innerHTML=`<span class="kbd-desc">${escHtml(s.desc)}</span><span class="keys">${keysHtml}</span>`;
-      item.addEventListener('mouseenter',()=>kbdHighlight(s.keys));
-      item.addEventListener('mouseleave',()=>kbdUnhighlight());
-      item.addEventListener('click',()=>kbdPress(s.keys));
-      list.appendChild(item);
-    });
-  }
-
-  function kbdFindKey(k){
-    // Normalize key names to match element IDs
-    const id='key-'+k.replace(/[^a-zA-Z0-9]/g,'_');
-    return document.getElementById(id);
-  }
-
-  function kbdHighlight(keys){
-    keys.forEach(k=>{ const el=kbdFindKey(k); if(el) el.classList.add('highlight'); });
-  }
-  function kbdUnhighlight(){
-    document.querySelectorAll('.key.highlight').forEach(k=>k.classList.remove('highlight'));
-  }
-  function kbdPress(keys){
-    keys.forEach(k=>{
-      const el=kbdFindKey(k);
-      if(el){
-        el.classList.add('pressed');
-        setTimeout(()=>el.classList.remove('pressed'),350);
-      }
-    });
-  }
-
-  function kbdPracticeStart(){
-    kbdPracticeShortcuts=[...KBD_SHORTCUTS].sort(()=>Math.random()-0.5);
-    kbdPracticeIdx=0;
-    kbdPracticeActive=true;
-    kbdShowChallenge();
-  }
-
-  function kbdShowChallenge(){
-    const s=kbdPracticeShortcuts[kbdPracticeIdx % kbdPracticeShortcuts.length];
-    const ct=document.getElementById('kbd-challenge-text');
-    const cf=document.getElementById('kbd-feedback');
-    ct.innerHTML=s.keys.map((k,i)=>`<span style="background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:4px 12px;">${escHtml(k)}</span>${i<s.keys.length-1?' <span style="color:var(--text-muted)">+</span> ':''}`).join('');
-    cf.textContent='';
-    cf.className='kbd-feedback';
-    kbdHighlight(s.keys);
-    setTimeout(kbdUnhighlight,600);
-  }
-
-  document.addEventListener('keydown',e=>{
-    if(!kbdPracticeActive) return;
-    const s=kbdPracticeShortcuts[kbdPracticeIdx % kbdPracticeShortcuts.length];
-    const fb=document.getElementById('kbd-feedback');
-    // Check combo
-    const combo=s.combo;
-    let correct=false;
-    if(combo==='ctrl+enter' && e.ctrlKey && e.key==='Enter') correct=true;
-    else if(combo==='ctrl+k' && e.ctrlKey && e.key==='k') correct=true;
-    else if(combo==='ctrl+c' && e.ctrlKey && e.key==='c') correct=true;
-    else if(combo==='ctrl+s' && e.ctrlKey && e.key==='s') correct=true;
-    else if(combo==='ctrl+z' && e.ctrlKey && e.key==='z') correct=true;
-    else if(combo==='ctrl+/' && e.ctrlKey && e.key==='/') correct=true;
-    else if(combo==='escape' && e.key==='Escape') correct=true;
-    else if(combo==='tab' && e.key==='Tab') correct=true;
-    else if(combo==='1' && e.key==='1') correct=true;
-    else if(combo==='2' && e.key==='2') correct=true;
-    else if(combo==='ctrl+shift+enter' && e.ctrlKey && e.shiftKey && e.key==='Enter') correct=true;
-    else if(combo==='ctrl+shift+d' && e.ctrlKey && e.shiftKey && (e.key==='D'||e.key==='d')) correct=true;
-    if(correct){
-      kbdPress(s.keys);
-      fb.textContent='Correct! ✓';
-      fb.className='kbd-feedback correct';
-      kbdPracticeIdx++;
-      setTimeout(kbdShowChallenge,900);
-    } else if(e.key!=='Shift'&&e.key!=='Control'&&e.key!=='Alt'&&e.key!=='Meta'){
-      fb.textContent='Try again!';
-      fb.className='kbd-feedback wrong';
-    }
-    // Prevent defaults for tracked shortcuts
-    if(['ctrl+k','ctrl+/','tab'].includes(combo) && correct) e.preventDefault();
+  svg.innerHTML=eh;
+  cvs.querySelectorAll('.fc-node').forEach(n=>n.remove());
+  fc.nodes.forEach(n=>{
+    const div=document.createElement('div');div.className=`fc-node type-${n.type}`;div.style.left=n.x+'px';div.style.top=n.y+'px';
+    div.innerHTML=`<div class="fc-ni">${n.icon}</div><div class="fc-nl">${n.label}</div><div class="fc-pulse"></div>`;
+    div.setAttribute('role','button');div.setAttribute('aria-label',n.label);div.setAttribute('tabindex','0');
+    div.onclick=()=>{$$('.fc-node').forEach(nn=>nn.classList.remove('active'));div.classList.add('active');
+      const dt=$('#fcDet');dt.innerHTML=`<h5>${n.icon} ${n.label}</h5><p>${n.desc}</p><ul>${n.det.map(d=>`<li>${d}</li>`).join('')}</ul>`;
+      const r=div.getBoundingClientRect(),cr=$('#fcVP').getBoundingClientRect();
+      dt.style.left=(r.left-cr.left+r.width+10)+'px';dt.style.top=(r.top-cr.top)+'px';dt.classList.add('show');
+    };
+    cvs.appendChild(div);
   });
+  $('#fcDet').classList.remove('show');
+}
+$('#fcZI').onclick=()=>{fcZ=Math.min(2,fcZ+.1);$('#fcCvs').style.transform=`scale(${fcZ})`};
+$('#fcZO').onclick=()=>{fcZ=Math.max(.5,fcZ-.1);$('#fcCvs').style.transform=`scale(${fcZ})`};
+$('#fcRst').onclick=()=>{fcZ=1;$('#fcCvs').style.transform='scale(1)';$('#fcDet').classList.remove('show')};
+$('#fcVP').onclick=e=>{if(e.target===$('#fcVP')||e.target===$('#fcCvs'))$('#fcDet').classList.remove('show')};
+rFCTabs();rFC();
 
-  // ============================================================
-  //  5. INPUT → PROCESSING → OUTPUT
-  // ============================================================
-  const IPO_OUTPUTS = {
-    blog: (topic,tone) => `# ${topic}
+/* ===== KEYBOARD ===== */
+const SC={
+  'Enter':{a:'Generate content',c:'gen',ch:['Ctrl']},
+  'c':{a:'Copy output',c:'edit',ch:['Ctrl']},
+  's':{a:'Save preferences',c:'export',ch:['Ctrl']},
+  'k':{a:'Clear / Focus search',c:'nav',ch:['Ctrl']},
+  '/':{a:'Toggle help',c:'nav',ch:['Ctrl']},
+  '1':{a:'Blog content type',c:'gen',ch:[]},
+  '2':{a:'Social media type',c:'gen',ch:[]},
+  '3':{a:'Email type',c:'gen',ch:[]},
+  '4':{a:'Product copy type',c:'gen',ch:[]},
+  '5':{a:'SEO content type',c:'gen',ch:[]},
+  'Tab':{a:'Switch panels',c:'nav',ch:[]},
+  't':{a:'Toggle theme',c:'nav',ch:['Ctrl','Shift']},
+  'e':{a:'Export content',c:'export',ch:['Ctrl']},
+  'h':{a:'View history',c:'nav',ch:['Ctrl']}
+};
+const KBL=[
+  ['Esc','1','2','3','4','5','6','7','8','9','0','-','=','Bksp'],
+  ['Tab','q','w','e','r','t','y','u','i','o','p','[',']','\\'],
+  ['Caps','a','s','d','f','g','h','j','k','l',';','\'','Enter'],
+  ['Shift','z','x','c','v','b','n','m',',','.','/','Shift'],
+  ['Ctrl','Alt','Cmd','Space','Cmd','Alt','Ctrl']
+];
+const WM={Bksp:'w-bs',Tab:'w-tab',Caps:'w-caps',Enter:'w-enter',Shift:'w-shift',Ctrl:'w-ctrl',Alt:'w-alt',Cmd:'w-ctrl',Space:'w-space'};
 
-${tone==='casual'?'Hey there!':'In today\'s rapidly evolving landscape,'} ${topic.toLowerCase()} has become one of the most discussed topics among professionals and enthusiasts alike.
+let kbCat='all',kbDemoOn=false;
 
-## Why This Matters
+function getSC(k){const kl=k.toLowerCase();if(SC[k])return SC[k];if(SC[kl])return SC[kl];for(const[ky,v]of Object.entries(SC)){if(v.ch&&v.ch.includes(k))return{a:'Modifier',c:v.c,ch:[]}}return null}
+function inCat(k,cat){if(cat==='all')return!!getSC(k);const kl=k.toLowerCase();if(SC[k]&&SC[k].c===cat)return true;if(SC[kl]&&SC[kl].c===cat)return true;for(const[ky,v]of Object.entries(SC)){if(v.c===cat&&v.ch&&v.ch.includes(k))return true}return false}
+function gCls(c){return c==='gen'?'glow-gen':c==='edit'?'glow-edit':c==='export'?'glow-export':'glow'}
 
-Understanding the nuances of this subject can fundamentally change how we approach problems and build solutions. The implications span industries and disciplines.
+function rKB(){
+  $('#kb').innerHTML=KBL.map(row=>`<div class="kb-row">${row.map(k=>{
+    const w=WM[k]||'',sc=getSC(k),ic=inCat(k,kbCat);
+    let gc='';if(ic&&kbCat!=='all')gc=gCls(kbCat);else if(ic&&sc&&sc.a!=='Modifier')gc=gCls(sc.c);
+    const tip=sc&&sc.a!=='Modifier'?`<div class="kb-tip">${sc.a}</div>`:(sc?`<div class="kb-tip">Modifier</div>`:'');
+    return `<div class="kb-key ${w} ${gc}" data-key="${k}">${tip}${k}</div>`;
+  }).join('')}</div>`).join('');
+}
+function rKBRef(){
+  $('#kbRef').innerHTML=Object.entries(SC).map(([k,s])=>{
+    const keys=[...s.ch,k].map(x=>`<kbd>${x}</kbd>`).join('+');
+    return `<div class="kb-ri"><span class="act">${s.a}</span><span>${keys}</span></div>`;
+  }).join('');
+}
+$$('.kb-cb').forEach(b=>b.onclick=()=>{kbCat=b.dataset.cat;$$('.kb-cb').forEach(x=>x.classList.toggle('active',x.dataset.cat===kbCat));rKB()});
 
-## Key Insights
+const demoSeq=[{k:['Ctrl','Enter']},{k:['Ctrl','c']},{k:['Ctrl','s']},{k:['1']},{k:['Tab']},{k:['Ctrl','Shift','t']},{k:['Ctrl','e']},{k:['Ctrl','/']}];
+$('#kbDemo').onclick=function(){
+  if(kbDemoOn){kbDemoOn=false;this.classList.remove('active');this.textContent='Demo Mode';rKB();return}
+  kbDemoOn=true;this.classList.add('active');this.textContent='Stop Demo';
+  let idx=0;
+  (function step(){if(!kbDemoOn)return;$$('.kb-key').forEach(k=>{k.classList.remove('glow','glow-gen','glow-edit','glow-export')});
+    demoSeq[idx%demoSeq.length].k.forEach(k=>{const el=document.querySelector(`.kb-key[data-key="${k}"]`);if(el)el.classList.add('glow')});
+    idx++;setTimeout(step,1200);
+  })();
+};
+rKB();rKBRef();
 
-- The foundational principles remain consistent across contexts
-- Modern tooling has dramatically lowered the barrier to entry
-- Community-driven innovation continues to accelerate progress
-
-## Looking Ahead
-
-As we move further into 2026, the trajectory is clear: those who invest time in understanding ${topic.toLowerCase()} will be better positioned for what comes next.
-
-*Generated by ContentGenAI — 312 words*`,
-
-    twitter: (topic) => `[1/5] 🧵 ${topic} — a thread worth bookmarking.
-
-[2/5] The first thing most people miss: it's not about the tools, it's about the fundamentals. Master those and everything else falls into place.
-
-[3/5] The 80/20 rule applies here more than anywhere. 20% of the concepts explain 80% of what you see in the wild.
-
-[4/5] Resources worth your time: the official docs > any blog post. Primary sources always. 📚
-
-[5/5] That's a wrap! Follow for more threads like this. RT if this was useful. 🚀 #tech #learning`,
-
-    readme: (topic) => `# ${topic}
-
-> A focused, well-documented project.
-
-![Build](https://img.shields.io/badge/build-passing-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue)
-
-## Quick Start
-
-\`\`\`bash
-git clone https://github.com/you/${topic.toLowerCase().replace(/\s+/g,'-')}
-cd ${topic.toLowerCase().replace(/\s+/g,'-')}
-npm install && npm run dev
-\`\`\`
-
-## Features
-
-- ✅ Production-ready configuration
-- ✅ Comprehensive test coverage
-- ✅ Full TypeScript support
-
-## License
-
-MIT © 2026`,
-
-    email: (topic) => `Subject: ${topic} — What You Need to Know
-
-Hi [First Name],
-
-We wanted to share some important updates about ${topic.toLowerCase()}.
-
-**What's new this month:**
-→ Improved performance across all endpoints
-→ New documentation with live examples
-→ Community forum now open
-
-[Read More →]
-
-Best,
-The ContentGenAI Team
-
----
-Unsubscribe | View in browser`,
-  };
-
-  const PROC_STATUSES=[
-    ['⠋','Parsing input...'],
-    ['⠹','Loading templates...'],
-    ['⠸','Resolving flags...'],
-    ['⠼','Building prompt...'],
-    ['⠴','Calling Claude API...'],
-    ['⠦','Streaming response...'],
-    ['⠧','Formatting output...'],
-    ['⠇','Writing to disk...'],
-  ];
-
-  let ipoRunning=false;
-  let particleAnimId=null;
-  const particles=[];
-
-  function setupParticleCanvas(){
-    const canvas=document.getElementById('particle-canvas');
-    const proc=canvas.parentElement;
-    canvas.width=proc.offsetWidth||300;
-    canvas.height=proc.offsetHeight||420;
-  }
-
-  function spawnParticle(canvas){
-    particles.push({
-      x:Math.random()*canvas.width,
-      y:canvas.height+5,
-      vx:(Math.random()-0.5)*1.5,
-      vy:-(1+Math.random()*2),
-      r:Math.random()*3+1,
-      alpha:1,
-      color:`hsla(${210+Math.random()*80},80%,70%,`,
-    });
-  }
-
-  function animParticles(){
-    const canvas=document.getElementById('particle-canvas');
-    if(!canvas) return;
-    const ctx=canvas.getContext('2d');
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    if(ipoRunning && particles.length<60) spawnParticle(canvas);
-    for(let i=particles.length-1;i>=0;i--){
-      const p=particles[i];
-      p.x+=p.vx; p.y+=p.vy; p.alpha-=0.008;
-      if(p.alpha<=0){ particles.splice(i,1); continue; }
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=p.color+p.alpha+')';
-      ctx.fill();
-    }
-    particleAnimId=requestAnimationFrame(animParticles);
-  }
-
-  function neuralLight(on){
-    for(let i=0;i<7;i++){
-      const n=document.getElementById('n'+i);
-      if(n) n.classList.toggle('lit',on);
-    }
-  }
-
-  async function ipoRun(){
-    if(ipoRunning) return;
-    ipoRunning=true;
-    const btn=document.getElementById('ipo-run-btn');
-    btn.disabled=true;
-    const topic=document.getElementById('ipo-input').value.trim()||'AI and the Future';
-    const type=document.getElementById('ipo-type').value;
-    const tone=document.getElementById('ipo-tone').value;
-    const output=document.getElementById('ipo-output');
-    const meta=document.getElementById('ipo-meta');
-    const copy=document.getElementById('ipo-copy-btn');
-    output.textContent='';
-    meta.style.display='none';
-    copy.style.display='none';
-
-    // Setup canvas
-    setupParticleCanvas();
-    if(!particleAnimId) animParticles();
-
-    // Gear animation
-    document.getElementById('gear-1').classList.add('spinning');
-    document.getElementById('gear-2').classList.add('spinning-rev');
-    neuralLight(false);
-
-    const statusEl=document.getElementById('proc-status');
-    const startTime=Date.now();
-
-    for(const [frame,msg] of PROC_STATUSES){
-      statusEl.innerHTML=`<span class="proc-spinner spin" style="font-size:20px;">${frame}</span><span style="font-size:12px;">${msg}</span>`;
-      // Animate neural nodes randomly
-      for(let i=0;i<7;i++){
-        const n=document.getElementById('n'+i);
-        if(n) n.classList.toggle('lit', Math.random()>0.4);
-      }
-      await sleep(280);
-    }
-
-    // Generate output text
-    const genFn=IPO_OUTPUTS[type];
-    const finalText=genFn?genFn(topic,tone):`Generated ${type} content for: ${topic}`;
-    statusEl.innerHTML=`<span style="color:#34d399;font-size:13px;">✓ Complete!</span>`;
-    document.getElementById('gear-1').classList.remove('spinning');
-    document.getElementById('gear-2').classList.remove('spinning-rev');
-    neuralLight(false);
-    ipoRunning=false;
-
-    // Typewriter output
-    const chars=finalText.split('');
-    let i=0;
-    async function typeChar(){
-      if(i<chars.length){
-        output.textContent+=chars[i++];
-        setTimeout(typeChar, 8);
-      } else {
-        // Show meta
-        const elapsed=Date.now()-startTime;
-        const words=finalText.split(/\s+/).filter(Boolean).length;
-        document.getElementById('ipo-meta-words').textContent=words+' words';
-        document.getElementById('ipo-meta-time').textContent=elapsed+'ms';
-        document.getElementById('ipo-meta-type').textContent=type;
-        meta.style.display='flex';
-        copy.style.display='flex';
-        btn.disabled=false;
-      }
-    }
-    typeChar();
-  }
-
-  function ipoCopy(){
-    const text=document.getElementById('ipo-output').textContent;
-    if(text){ navigator.clipboard.writeText(text).then(()=>showToast('Output copied!')).catch(()=>showToast('Copy failed','error')); }
-  }
-
-  // ============================================================
-  //  INIT
-  // ============================================================
-  window.addEventListener('DOMContentLoaded',()=>{
-    buildPipeline();
-    buildWalkthrough();
-    buildKeyboard();
-
-    // Start terminal automatically after short delay
-    setTimeout(()=>{
-      termState.scenarioIdx=0;
-      termState.running=true;
-      termState.paused=false;
-      termState.abortCtrl=new AbortController();
-      runScenario(0, termState.abortCtrl.signal);
-    }, 1200);
-  });
-  </script>
+})();
+</script>
 </body>
 </html>

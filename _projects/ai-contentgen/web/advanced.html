@@ -9,21 +9,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <style>
-:root {
-  --bg:#0a0b0f;--bg-card:#13151c;--bg-elevated:#1a1d27;
-  --text:#e8eaf0;--text-secondary:#8b8fa4;
-  --accent:#6384ff;--success:#34d399;--warning:#fbbf24;--error:#f87171;
-  --gradient:linear-gradient(135deg,#6384ff 0%,#a855f7 50%,#ec4899 100%);
-  --radius:12px;--radius-sm:8px;--transition:.2s ease;
+:root{
+--bg:#0a0b0f;--bg-card:#13151c;--bg-elevated:#1a1d27;--bg-input:#161921;
+--text:#e8eaf0;--text-secondary:#8b8fa4;--text-muted:#5c6078;
+--accent:#6384ff;--accent-rgb:99,132,255;
+--gradient:linear-gradient(135deg,#6384ff 0%,#a855f7 50%,#ec4899 100%);
+--success:#34d399;--warning:#fbbf24;--error:#f87171;
+--radius-sm:8px;--radius:12px;--radius-md:16px;--radius-lg:24px;
+--ease:cubic-bezier(0.16,1,0.3,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
+--transition:.25s var(--ease);
+--sidebar-w:260px;
+}
+[data-theme="light"]{
+--bg:#f4f5f9;--bg-card:#ffffff;--bg-elevated:#eceef4;--bg-input:#f0f1f6;
+--text:#1a1c24;--text-secondary:#5c5f72;--text-muted:#9498ad;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6}
 .mono{font-family:'JetBrains Mono',monospace}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.25);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(var(--accent-rgb),.4)}
 
 /* Ambient */
 .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12}
 .orb-1{width:600px;height:600px;background:#6384ff;top:-200px;left:-200px;animation:drift1 20s infinite alternate}
 .orb-2{width:500px;height:500px;background:#a855f7;bottom:-100px;right:-100px;animation:drift2 25s infinite alternate}
 .orb-3{width:400px;height:400px;background:#ec4899;top:40%;left:50%;animation:drift3 18s infinite alternate}
@@ -32,1159 +44,2003 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 @keyframes drift3{to{transform:translate(-80px,40px)}}
 
 /* Nav */
-nav{position:sticky;top:0;z-index:100;background:rgba(10,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+nav.top-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,11,15,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);height:56px}
+[data-theme="light"] nav.top-nav{background:rgba(244,245,249,.85);border-bottom-color:rgba(0,0,0,.08)}
+.nav-inner{max-width:1600px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between}
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
-.brand-icon{width:36px;height:36px;background:var(--gradient);border-radius:10px;display:grid;place-items:center}
-.brand-text{font-weight:700;font-size:1.1rem}
+.brand-icon{width:32px;height:32px;background:var(--gradient);border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.brand-text{font-weight:700;font-size:1.05rem}
 .brand-ai{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.nav-links{display:flex;gap:8px}
-.nav-link{padding:6px 14px;border-radius:var(--radius-sm);color:var(--text-secondary);text-decoration:none;font-size:.875rem;transition:var(--transition)}
-.nav-link:hover,.nav-link.active{color:var(--text);background:var(--bg-elevated)}
-.nav-link.active{color:var(--accent)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.nav-btn{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text-secondary);cursor:pointer;display:grid;place-items:center;transition:var(--transition)}
+.nav-btn:hover{color:var(--text);background:var(--bg-elevated);border-color:rgba(var(--accent-rgb),.3)}
+.nav-btn svg{width:16px;height:16px}
+.xp-pill{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(var(--accent-rgb),.1);border:1px solid rgba(var(--accent-rgb),.2);font-size:.75rem;font-weight:600;color:var(--accent)}
+[data-theme="light"] .nav-btn{border-color:rgba(0,0,0,.1)}
+.icon-sun,.icon-moon{display:none}
+:root .icon-moon{display:block}
+[data-theme="light"] .icon-moon{display:none}
+[data-theme="light"] .icon-sun{display:block}
 
-/* Layout */
-.container{max-width:1200px;margin:0 auto;padding:40px 24px;position:relative;z-index:1}
-.page-header{text-align:center;margin-bottom:48px}
-.page-header h1{font-size:2.5rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
-.page-header p{color:var(--text-secondary);font-size:1.05rem}
+/* Sidebar */
+.sidebar{position:fixed;top:56px;left:0;bottom:0;width:var(--sidebar-w);background:rgba(19,21,28,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:1px solid rgba(255,255,255,.06);z-index:150;padding:24px 0;overflow-y:auto;transition:transform .35s var(--ease)}
+[data-theme="light"] .sidebar{background:rgba(255,255,255,.7);border-right-color:rgba(0,0,0,.06)}
+.sidebar-section{padding:0 16px;margin-bottom:24px}
+.sidebar-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);padding:0 12px;margin-bottom:8px}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius-sm);color:var(--text-secondary);text-decoration:none;font-size:.85rem;font-weight:500;cursor:pointer;transition:var(--transition);position:relative;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.sidebar-link:hover{color:var(--text);background:var(--bg-elevated)}
+.sidebar-link.active{color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.sidebar-link.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.sidebar-link svg{width:18px;height:18px;flex-shrink:0}
+.sidebar-link .badge{margin-left:auto;background:rgba(var(--accent-rgb),.15);color:var(--accent);font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:10px}
+.sidebar-toggle{display:none;position:fixed;top:64px;left:8px;z-index:160;width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.1);background:var(--bg-card);color:var(--text);cursor:pointer}
 
-/* Tab Navigation */
-.tab-nav{display:flex;gap:4px;background:var(--bg-card);border-radius:var(--radius);padding:4px;margin-bottom:36px;overflow-x:auto}
-.tab-btn{flex:1;min-width:120px;padding:10px 16px;border:none;background:transparent;color:var(--text-secondary);border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;font-size:.875rem;font-weight:500;transition:var(--transition);white-space:nowrap}
-.tab-btn:hover{color:var(--text);background:var(--bg-elevated)}
-.tab-btn.active{background:var(--bg-elevated);color:var(--accent);box-shadow:0 0 0 1px rgba(99,132,255,.3)}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
+/* Main content area */
+.main{margin-left:var(--sidebar-w);margin-top:56px;padding:32px 40px 80px;max-width:1200px;position:relative;z-index:1}
+
+/* Section */
+.section{display:none;animation:fadeSection .4s var(--ease)}
+.section.active{display:block}
+@keyframes fadeSection{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
 /* Cards */
 .card{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:24px;transition:var(--transition)}
-.card:hover{border-color:rgba(99,132,255,.2)}
+[data-theme="light"] .card{border-color:rgba(0,0,0,.08);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card:hover{border-color:rgba(var(--accent-rgb),.15)}
+.card-glass{background:rgba(19,21,28,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .card-grid{display:grid;gap:16px}
-@media(min-width:640px){.card-grid.cols-2{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:960px){.card-grid.cols-3{grid-template-columns:repeat(3,1fr)}.card-grid.cols-4{grid-template-columns:repeat(4,1fr)}}
+.cols-2{grid-template-columns:1fr}
+.cols-3{grid-template-columns:1fr}
+.cols-4{grid-template-columns:1fr}
+@media(min-width:640px){.cols-2{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:768px){.cols-3{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.cols-3{grid-template-columns:repeat(3,1fr)}.cols-4{grid-template-columns:repeat(4,1fr)}}
+
+/* Section headers */
+.section-header{margin-bottom:32px}
+.section-header h2{font-size:1.6rem;font-weight:800;margin-bottom:6px}
+.section-header p{color:var(--text-secondary);font-size:.9rem}
+.section-title{font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
 /* Inputs */
-input,textarea,select{width:100%;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.9rem;padding:10px 14px;outline:none;transition:var(--transition);resize:vertical}
-input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,132,255,.1)}
+input[type="text"],input[type="search"],textarea,select{width:100%;background:var(--bg-input);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.875rem;padding:10px 14px;outline:none;transition:var(--transition);resize:vertical}
+[data-theme="light"] input[type="text"],[data-theme="light"] input[type="search"],[data-theme="light"] textarea,[data-theme="light"] select{border-color:rgba(0,0,0,.1)}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.1)}
 textarea{min-height:120px;line-height:1.6}
-label{display:block;font-size:.8rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+label{display:block;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:inherit;font-size:.875rem;font-weight:600;transition:var(--transition)}
-.btn-primary{background:var(--gradient);color:#fff}
-.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:600;transition:all .2s var(--ease);white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--gradient);color:#fff;box-shadow:0 2px 12px rgba(var(--accent-rgb),.3)}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 20px rgba(var(--accent-rgb),.4)}
 .btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid rgba(255,255,255,.1)}
 .btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2);background:var(--bg-elevated)}
-.btn-sm{padding:6px 12px;font-size:.8rem}
-.btn-accent{background:rgba(99,132,255,.15);color:var(--accent);border:1px solid rgba(99,132,255,.3)}
-.btn-accent:hover{background:rgba(99,132,255,.25)}
-.btn-success{background:rgba(52,211,153,.15);color:var(--success);border:1px solid rgba(52,211,153,.3)}
+.btn-sm{padding:6px 12px;font-size:.78rem}
+.btn-xs{padding:3px 8px;font-size:.72rem}
+.btn-accent{background:rgba(var(--accent-rgb),.12);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.25)}
+.btn-accent:hover{background:rgba(var(--accent-rgb),.2)}
+.btn-success{background:rgba(52,211,153,.12);color:var(--success);border:1px solid rgba(52,211,153,.25)}
+.btn-success:hover{background:rgba(52,211,153,.2)}
+.btn-warning{background:rgba(251,191,36,.12);color:var(--warning);border:1px solid rgba(251,191,36,.25)}
+.btn-error{background:rgba(248,113,113,.12);color:var(--error);border:1px solid rgba(248,113,113,.25)}
+.btn-icon{width:32px;height:32px;padding:0;display:grid;place-items:center;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text-secondary);cursor:pointer;transition:var(--transition)}
+.btn-icon:hover{color:var(--text);background:var(--bg-elevated)}
 
-/* Tags/Badges */
-.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:500;background:rgba(99,132,255,.12);color:var(--accent)}
-.tag-purple{background:rgba(168,85,247,.12);color:#a855f7}
-.tag-pink{background:rgba(236,72,153,.12);color:#ec4899}
-.tag-success{background:rgba(52,211,153,.12);color:var(--success)}
-.tag-warning{background:rgba(251,191,36,.12);color:var(--warning)}
-
-/* Search bar */
-.search-bar{position:relative;margin-bottom:16px}
-.search-bar input{padding-left:40px}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-secondary);pointer-events:none}
+/* Tags */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:.72rem;font-weight:600;background:rgba(var(--accent-rgb),.1);color:var(--accent)}
+.tag-purple{background:rgba(168,85,247,.1);color:#a855f7}
+.tag-pink{background:rgba(236,72,153,.1);color:#ec4899}
+.tag-success{background:rgba(52,211,153,.1);color:var(--success)}
+.tag-warning{background:rgba(251,191,36,.1);color:var(--warning)}
+.tag-error{background:rgba(248,113,113,.1);color:var(--error)}
+.tag-high{background:rgba(248,113,113,.12);color:var(--error)}
+.tag-medium{background:rgba(251,191,36,.12);color:var(--warning)}
+.tag-low{background:rgba(52,211,153,.12);color:var(--success)}
 
 /* Filter tabs */
-.filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-.filter-tab{padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:.8rem;font-weight:500;font-family:inherit;transition:var(--transition)}
-.filter-tab:hover{border-color:rgba(99,132,255,.3);color:var(--text)}
-.filter-tab.active{background:rgba(99,132,255,.15);border-color:rgba(99,132,255,.4);color:var(--accent)}
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.filter-tab{padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:.78rem;font-weight:500;font-family:inherit;transition:var(--transition)}
+.filter-tab:hover{border-color:rgba(var(--accent-rgb),.3);color:var(--text)}
+.filter-tab.active{background:rgba(var(--accent-rgb),.12);border-color:rgba(var(--accent-rgb),.35);color:var(--accent)}
 
-/* Template card */
-.tpl-card{cursor:pointer;position:relative;overflow:hidden}
-.tpl-card::before{content:'';position:absolute;inset:0;background:var(--gradient);opacity:0;transition:var(--transition)}
-.tpl-card:hover::before{opacity:.04}
-.tpl-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.tpl-title{font-weight:600;font-size:.95rem}
-.tpl-preview{font-size:.8rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:10px 0}
-.tpl-tags{display:flex;flex-wrap:wrap;gap:4px}
+/* Search */
+.search-bar{position:relative;margin-bottom:16px}
+.search-bar input{padding-left:40px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none}
 
-/* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
-.modal-overlay[hidden]{display:none}
-.modal{background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:16px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06)}
-.modal-header h3{font-weight:700}
-.modal-close{background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.4rem;padding:4px;line-height:1}
-.modal-close:hover{color:var(--text)}
-.modal-body{padding:24px}
-.modal-preview{background:var(--bg-elevated);border-radius:var(--radius-sm);padding:16px;font-size:.85rem;line-height:1.7;min-height:120px;margin-top:12px;white-space:pre-wrap;border:1px solid rgba(255,255,255,.06)}
+/* Gauge */
+.gauge-container{display:flex;flex-direction:column;align-items:center;gap:6px}
+.gauge-svg{width:110px;height:110px}
+.gauge-label{font-size:.78rem;color:var(--text-secondary);font-weight:500}
+.gauge-value{font-size:1.3rem;font-weight:800}
+.gauges-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:16px}
 
-/* Gauge rings */
-.gauges-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin:24px 0}
-.gauge-item{text-align:center}
-.gauge-ring{width:100px;height:100px;margin:0 auto 8px}
-.gauge-ring svg{width:100%;height:100%}
-.gauge-label{font-size:.8rem;color:var(--text-secondary)}
-.gauge-val{font-size:1.1rem;font-weight:700;color:var(--text)}
-
-/* Suggestions list */
-.suggestion-item{background:var(--bg-elevated);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
-.suggestion-item .sug-cat{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 6px;border-radius:4px;white-space:nowrap;margin-top:2px}
-.sug-clarity{background:rgba(99,132,255,.15);color:var(--accent)}
-.sug-engage{background:rgba(168,85,247,.15);color:#a855f7}
-.sug-seo{background:rgba(52,211,153,.15);color:var(--success)}
-.sug-read{background:rgba(251,191,36,.15);color:var(--warning)}
-.sug-text{font-size:.85rem;line-height:1.5;flex:1}
-.sug-original{font-family:'JetBrains Mono',monospace;background:rgba(248,113,113,.1);color:var(--error);border-radius:4px;padding:1px 4px}
-.sug-improved{font-family:'JetBrains Mono',monospace;background:rgba(52,211,153,.1);color:var(--success);border-radius:4px;padding:1px 4px}
+/* Suggestion items */
+.sug-item{background:var(--bg-elevated);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;transition:var(--transition);cursor:default}
+.sug-item:hover{border-color:rgba(var(--accent-rgb),.15)}
+.sug-item-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sug-cat{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:4px}
+.sug-cat-readability{background:rgba(251,191,36,.12);color:var(--warning)}
+.sug-cat-seo{background:rgba(52,211,153,.12);color:var(--success)}
+.sug-cat-engagement{background:rgba(168,85,247,.12);color:#a855f7}
+.sug-cat-style{background:rgba(var(--accent-rgb),.12);color:var(--accent)}
+.sug-text{font-size:.82rem;line-height:1.5;color:var(--text-secondary)}
+.sug-original{font-family:'JetBrains Mono',monospace;background:rgba(248,113,113,.1);color:var(--error);border-radius:3px;padding:1px 4px;font-size:.78rem}
+.sug-improved{font-family:'JetBrains Mono',monospace;background:rgba(52,211,153,.1);color:var(--success);border-radius:3px;padding:1px 4px;font-size:.78rem}
 
 /* Stats bar */
-.stats-bar{display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px;background:var(--bg-elevated);border-radius:var(--radius-sm);margin-bottom:16px;font-size:.8rem}
-.stat-item{display:flex;align-items:center;gap:6px;color:var(--text-secondary)}
-.stat-item strong{color:var(--text)}
+.stats-bar{display:flex;gap:16px;flex-wrap:wrap;padding:10px 16px;background:var(--bg-elevated);border-radius:var(--radius-sm);font-size:.78rem}
+.stat-item{display:flex;align-items:center;gap:5px;color:var(--text-secondary)}
+.stat-item strong{color:var(--text);font-weight:700}
+.stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
-/* Mixer */
-.mixer-grid{display:grid;gap:16px}
-@media(min-width:768px){.mixer-grid{grid-template-columns:repeat(3,1fr)}}
-.mixer-viz{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;background:var(--bg-elevated);border-radius:var(--radius);margin:20px 0;overflow:hidden}
-.mix-orb{width:60px;height:60px;border-radius:50%;animation:pulse-mix 2s infinite alternate}
-.mix-orb-1{background:rgba(99,132,255,.5)}
-.mix-orb-2{background:rgba(168,85,247,.5);animation-delay:.5s}
-.mix-orb-3{background:rgba(236,72,153,.5);animation-delay:1s}
-.mix-arrow{color:var(--text-secondary);font-size:1.2rem}
-@keyframes pulse-mix{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.15);opacity:1}}
-.mix-result{background:var(--bg-elevated);border-radius:var(--radius);padding:20px;min-height:120px;font-size:.9rem;line-height:1.7;white-space:pre-wrap}
-.source-a{background:rgba(99,132,255,.15);border-radius:3px;padding:0 3px}
-.source-b{background:rgba(168,85,247,.15);border-radius:3px;padding:0 3px}
-.source-c{background:rgba(236,72,153,.15);border-radius:3px;padding:0 3px}
-.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.slider-row label{width:80px;font-size:.8rem;margin:0}
-input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--accent)}
+/* Template cards */
+.tpl-card{cursor:pointer;position:relative;overflow:hidden;transition:all .3s var(--ease)}
+.tpl-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.tpl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:0;transition:opacity .2s}
+.tpl-card:hover::before{opacity:1}
+.tpl-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.tpl-title{font-weight:700;font-size:.9rem}
+.tpl-desc{font-size:.78rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:6px 0 10px}
+.tpl-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tpl-star{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;transition:var(--transition);z-index:2}
+.tpl-star:hover,.tpl-star.starred{color:var(--warning)}
 
-/* A/B */
-.ab-grid{display:grid;gap:20px}
-@media(min-width:768px){.ab-grid{grid-template-columns:1fr 1fr}}
-.ab-panel{border:2px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;position:relative}
-.ab-panel.winner{border-color:var(--success);box-shadow:0 0 20px rgba(52,211,153,.15)}
-.winner-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gradient);color:#fff;padding:3px 12px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
-.ab-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;color:var(--text-secondary)}
-.ab-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
-.metric-item{background:var(--bg-elevated);border-radius:var(--radius-sm);padding:10px;text-align:center}
-.metric-val{font-size:1.1rem;font-weight:700}
-.metric-label{font-size:.7rem;color:var(--text-secondary);margin-top:2px}
-.diff-add{background:rgba(52,211,153,.15);text-decoration:none}
-.diff-del{background:rgba(248,113,113,.15);text-decoration:line-through}
-.diff-view{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.8;background:var(--bg-elevated);padding:16px;border-radius:var(--radius-sm);white-space:pre-wrap;max-height:200px;overflow-y:auto}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-md);width:100%;max-width:720px;max-height:90vh;overflow-y:auto;transform:scale(.95) translateY(10px);transition:transform .3s var(--spring);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-overlay.open .modal{transform:scale(1) translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06)}
+.modal-header h3{font-weight:700;font-size:1.1rem}
+.modal-close{background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.5rem;padding:4px;line-height:1;transition:var(--transition)}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:24px}
 
-/* Export */
-.export-card{background:var(--bg-elevated);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;cursor:pointer;transition:var(--transition);text-align:center}
-.export-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.export-card.selected{border-color:var(--accent);background:rgba(99,132,255,.08)}
-.export-icon{font-size:2rem;margin-bottom:8px}
-.export-name{font-weight:700;font-size:.95rem}
-.export-desc{font-size:.75rem;color:var(--text-secondary);margin-top:4px}
+/* Toast */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:12px 18px;border-radius:var(--radius-sm);font-size:.85rem;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:toastIn .3s var(--spring);backdrop-filter:blur(10px)}
+.toast.toast-success{border-color:rgba(52,211,153,.3)}
+.toast.toast-error{border-color:rgba(248,113,113,.3)}
+.toast.toast-out{animation:toastOut .25s var(--ease) forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px) scale(.9)}}
+
+/* Comparison panels */
+.compare-panel{border:2px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;position:relative;transition:var(--transition)}
+.compare-panel.winner{border-color:var(--success);box-shadow:0 0 25px rgba(52,211,153,.1)}
+.winner-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gradient);color:#fff;padding:3px 14px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
+.diff-add{background:rgba(52,211,153,.15);border-radius:2px;padding:0 2px}
+.diff-del{background:rgba(248,113,113,.15);text-decoration:line-through;border-radius:2px;padding:0 2px}
+
+/* Export platform cards */
+.platform-card{cursor:pointer;transition:all .25s var(--ease)}
+.platform-card:hover{transform:translateY(-2px);border-color:rgba(var(--accent-rgb),.3)}
+.platform-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.platform-icon{width:40px;height:40px;border-radius:var(--radius-sm);display:grid;place-items:center;font-size:1.2rem;margin-bottom:8px}
+.platform-name{font-weight:700;font-size:.88rem;margin-bottom:2px}
+.platform-desc{font-size:.75rem;color:var(--text-secondary)}
 
 /* Calendar */
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-head{text-align:center;font-size:.7rem;font-weight:700;color:var(--text-secondary);padding:8px 0;text-transform:uppercase}
-.cal-cell{background:var(--bg-card);border:1px solid rgba(255,255,255,.04);border-radius:6px;min-height:80px;padding:6px;cursor:pointer;transition:var(--transition);position:relative}
-.cal-cell:hover{border-color:var(--accent);background:var(--bg-elevated)}
-.cal-cell.today{border-color:var(--accent);box-shadow:0 0 12px rgba(99,132,255,.2)}
-.cal-cell.other{opacity:.35}
-.cal-num{font-size:.75rem;font-weight:600;margin-bottom:4px}
-.cal-item{font-size:.6rem;padding:2px 5px;border-radius:4px;margin-bottom:2px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.cal-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
-.cal-legend{font-size:.75rem;color:var(--text-secondary);display:flex;gap:16px;flex-wrap:wrap}
-.align-center{align-items:center}
-.mb-0{margin-bottom:0}
+.calendar{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);overflow:hidden}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.cal-header h3{font-weight:700;font-size:1rem}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-day-name{padding:8px;text-align:center;font-size:.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase}
+.cal-day{padding:8px;min-height:80px;border:1px solid rgba(255,255,255,.03);cursor:pointer;transition:var(--transition);position:relative}
+.cal-day:hover{background:var(--bg-elevated)}
+.cal-day.today{background:rgba(var(--accent-rgb),.06)}
+.cal-day.other-month{opacity:.3}
+.cal-day-num{font-size:.78rem;font-weight:600;margin-bottom:4px}
+.cal-event{font-size:.65rem;padding:2px 4px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:grab}
+.cal-event.type-blog{background:rgba(var(--accent-rgb),.15);color:var(--accent)}
+.cal-event.type-social{background:rgba(168,85,247,.15);color:#a855f7}
+.cal-event.type-email{background:rgba(236,72,153,.15);color:#ec4899}
+.cal-event.type-marketing{background:rgba(52,211,153,.15);color:var(--success)}
+.cal-event.type-technical{background:rgba(251,191,36,.15);color:var(--warning)}
+
+/* Letter grade */
+.grade-display{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;font-size:1.8rem;font-weight:800;border:3px solid}
+.grade-a{border-color:var(--success);color:var(--success);background:rgba(52,211,153,.08)}
+.grade-b{border-color:#6384ff;color:#6384ff;background:rgba(99,132,255,.08)}
+.grade-c{border-color:var(--warning);color:var(--warning);background:rgba(251,191,36,.08)}
+.grade-d{border-color:#f97316;color:#f97316;background:rgba(249,115,22,.08)}
+.grade-f{border-color:var(--error);color:var(--error);background:rgba(248,113,113,.08)}
+
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg,var(--bg-elevated) 25%,rgba(255,255,255,.05) 50%,var(--bg-elevated) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-sm)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Progress bar */
+.progress-bar{height:4px;background:var(--bg-elevated);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gradient);border-radius:2px;transition:width .5s var(--ease)}
 
 /* Utility */
-.flex{display:flex}.gap-8{gap:8px}.gap-12{gap:12px}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-wrap{flex-wrap:wrap}
-.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}.mt-24{margin-top:24px}
-.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}
-.text-sm{font-size:.875rem}.text-xs{font-size:.75rem}.text-secondary{color:var(--text-secondary)}
-.section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px}
-.empty-state{text-align:center;padding:40px;color:var(--text-secondary)}
+.flex{display:flex}.gap-4{gap:4px}.gap-8{gap:8px}.gap-12{gap:12px}.gap-16{gap:16px}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-wrap{flex-wrap:wrap}.flex-1{flex:1}
+.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}.mt-24{margin-top:24px}.mt-32{margin-top:32px}
+.mb-4{margin-bottom:4px}.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}.mb-16{margin-bottom:16px}.mb-24{margin-bottom:24px}
+.text-sm{font-size:.85rem}.text-xs{font-size:.75rem}.text-secondary{color:var(--text-secondary)}.text-muted{color:var(--text-muted)}
+.text-center{text-align:center}
+.hidden{display:none !important}
+.empty-state{text-align:center;padding:40px;color:var(--text-secondary);font-size:.88rem}
 
-/* Personality chip */
-.personality{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:.9rem;margin-bottom:16px}
+/* Responsive */
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.sidebar-toggle{display:grid;place-items:center}
+.main{margin-left:0;padding:24px 16px 80px}
+.cols-2,.cols-3,.cols-4{grid-template-columns:1fr}
+.cal-day{min-height:50px;padding:4px}
+.cal-day-name{font-size:.6rem;padding:4px}
+}
 
-/* Suggestions toggle */
-.sug-toggles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.sug-toggle{padding:4px 12px;border-radius:20px;border:1px solid;cursor:pointer;font-size:.75rem;font-weight:600;font-family:inherit;background:transparent;transition:var(--transition)}
-.sug-toggle[data-cat=clarity]{border-color:rgba(99,132,255,.4);color:var(--accent)}
-.sug-toggle[data-cat=clarity].off{opacity:.35}
-.sug-toggle[data-cat=engage]{border-color:rgba(168,85,247,.4);color:#a855f7}
-.sug-toggle[data-cat=engage].off{opacity:.35}
-.sug-toggle[data-cat=seo]{border-color:rgba(52,211,153,.4);color:var(--success)}
-.sug-toggle[data-cat=seo].off{opacity:.35}
-.sug-toggle[data-cat=read]{border-color:rgba(251,191,36,.4);color:var(--warning)}
-.sug-toggle[data-cat=read].off{opacity:.35}
-
-/* Fade-up animation */
-.fade-up{opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+/* Fade animations */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .fade-up.visible{opacity:1;transform:none}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
 </style>
 </head>
 <body>
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<div id="toast-container"></div>
 
-<!-- Template Modal -->
-<div id="tpl-modal" class="modal-overlay" hidden>
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="modal-title">Template Preview</h3>
-      <button class="modal-close" onclick="closeTplModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div id="modal-category" class="mb-8"></div>
-      <p id="modal-desc" class="text-sm text-secondary mb-16"></p>
-      <div class="card-grid cols-2 mb-16" id="modal-inputs"></div>
-      <label>Live Preview</label>
-      <div class="modal-preview mono" id="modal-preview"></div>
-      <div class="flex gap-8 mt-16">
-        <button class="btn btn-primary" onclick="copyModalPreview()">Copy to Clipboard</button>
-        <button class="btn btn-ghost" onclick="closeTplModal()">Close</button>
-      </div>
-    </div>
-  </div>
+<!-- Top Nav -->
+<nav class="top-nav">
+<div class="nav-inner">
+<a href="index.html" class="nav-brand">
+<div class="brand-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+<span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
+</a>
+<div class="nav-actions">
+<div class="xp-pill" id="xp-display" title="Your XP"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span id="xp-val">0 XP</span></div>
+<button class="nav-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle dark/light mode">
+<svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+<svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+</button>
+<a href="index.html" class="btn btn-ghost btn-sm" style="font-size:.78rem"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</a>
 </div>
-
-<nav>
-  <div class="nav-inner">
-    <a href="index.html" class="nav-brand">
-      <div class="brand-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      </div>
-      <span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
-    </a>
-    <div class="nav-links">
-      <a href="index.html" class="nav-link">Dashboard</a>
-      <a href="blog.html" class="nav-link">Blog</a>
-      <a href="social.html" class="nav-link">Social</a>
-      <a href="advanced.html" class="nav-link active">Advanced</a>
-    </div>
-  </div>
+</div>
 </nav>
 
-<div class="container">
-  <div class="page-header fade-up">
-    <h1>Advanced Features</h1>
-    <p>Powerful tools for professional content creation and optimization</p>
-  </div>
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
 
-  <div class="tab-nav fade-up" id="tab-nav"></div>
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-section">
+<div class="sidebar-label">Analysis</div>
+<button class="sidebar-link active" data-section="analyzer" onclick="switchSection('analyzer')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+Quality Analyzer
+</button>
+<button class="sidebar-link" data-section="suggestions" onclick="switchSection('suggestions')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+Suggestions
+<span class="badge" id="sug-badge">0</span>
+</button>
+</div>
+<div class="sidebar-section">
+<div class="sidebar-label">Create</div>
+<button class="sidebar-link" data-section="comparison" onclick="switchSection('comparison')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="8" height="18" rx="1"/><rect x="14" y="3" width="8" height="18" rx="1"/></svg>
+Compare
+</button>
+<button class="sidebar-link" data-section="templates" onclick="switchSection('templates')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+Templates
+<span class="badge" id="tpl-count">24</span>
+</button>
+</div>
+<div class="sidebar-section">
+<div class="sidebar-label">Publish</div>
+<button class="sidebar-link" data-section="export" onclick="switchSection('export')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+Export
+</button>
+<button class="sidebar-link" data-section="calendar" onclick="switchSection('calendar')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Calendar
+</button>
+</div>
+</aside>
 
-  <!-- Panel 1: Templates -->
-  <div class="tab-panel active" id="panel-templates">
-    <div class="search-bar fade-up">
-      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="tpl-search" placeholder="Search templates…" oninput="filterTemplates()">
-    </div>
-    <div class="filter-tabs fade-up" id="tpl-filters"></div>
-    <div class="card-grid cols-3" id="tpl-grid"></div>
-  </div>
+<!-- Main Content -->
+<main class="main" id="main-content">
 
-  <!-- Panel 2: Style Analyzer -->
-  <div class="tab-panel" id="panel-analyzer">
-    <div class="card-grid cols-2">
-      <div class="card fade-up">
-        <div class="section-title">Input Text</div>
-        <textarea id="analyzer-input" placeholder="Paste your content here to analyze style, readability, and tone…" style="min-height:220px" oninput="scheduleAnalysis()"></textarea>
-        <div class="flex gap-8 mt-12">
-          <button class="btn btn-primary btn-sm" onclick="runAnalysis()">Analyze Now</button>
-          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('analyzer-input').value='';runAnalysis()">Clear</button>
-        </div>
-      </div>
-      <div class="card fade-up">
-        <div class="section-title">Writing Personality</div>
-        <div id="personality-chip" class="personality" style="background:rgba(99,132,255,.1);color:var(--accent)">—</div>
-        <div class="gauges-grid" id="gauges"></div>
-      </div>
-    </div>
-    <div class="card mt-16 fade-up">
-      <div class="section-title">Suggestions</div>
-      <div id="analysis-suggestions" class="text-secondary text-sm">Analyze your text to receive suggestions.</div>
-    </div>
-  </div>
-
-  <!-- Panel 3: Real-time Suggestions -->
-  <div class="tab-panel" id="panel-suggestions">
-    <div class="card-grid cols-2">
-      <div class="fade-up">
-        <div class="card">
-          <div class="section-title">Editor</div>
-          <textarea id="sug-input" placeholder="Start writing… suggestions appear as you type." style="min-height:300px" oninput="scheduleSuggestions()"></textarea>
-        </div>
-        <div class="stats-bar mt-8 fade-up" id="sug-stats">
-          <span class="stat-item">Words: <strong id="sug-words">0</strong></span>
-          <span class="stat-item">Sentences: <strong id="sug-sents">0</strong></span>
-          <span class="stat-item">Score: <strong id="sug-score">—</strong></span>
-        </div>
-      </div>
-      <div class="fade-up">
-        <div class="flex items-center justify-between mb-8">
-          <div class="section-title" style="margin:0">Suggestions</div>
-          <div class="sug-toggles" id="sug-toggles"></div>
-        </div>
-        <div id="sug-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Panel 4: Content Mixer -->
-  <div class="tab-panel" id="panel-mixer">
-    <div class="mixer-grid fade-up">
-      <div><label>Source A</label><textarea id="mix-a" placeholder="First content source…" style="min-height:150px"></textarea></div>
-      <div><label>Source B</label><textarea id="mix-b" placeholder="Second content source…" style="min-height:150px"></textarea></div>
-      <div><label>Source C (optional)</label><textarea id="mix-c" placeholder="Third content source…" style="min-height:150px"></textarea></div>
-    </div>
-    <div class="card fade-up mt-16">
-      <div class="flex items-center justify-between flex-wrap gap-12 mb-16">
-        <div>
-          <div class="section-title" style="margin-bottom:8px">Mix Mode</div>
-          <div class="filter-tabs" id="mix-modes"></div>
-        </div>
-        <div style="min-width:200px">
-          <div class="section-title" style="margin-bottom:8px">Mix Ratios</div>
-          <div id="mix-sliders"></div>
-        </div>
-      </div>
-      <div class="mixer-viz" id="mixer-viz">
-        <div class="mix-orb mix-orb-1"></div>
-        <div class="mix-arrow">→</div>
-        <div class="mix-orb mix-orb-2"></div>
-        <div class="mix-arrow">→</div>
-        <div class="mix-orb mix-orb-3"></div>
-      </div>
-      <button class="btn btn-primary mb-16" onclick="mixContent()">Mix Content</button>
-      <label>Mixed Result <span class="text-secondary text-xs">(colors = source)</span></label>
-      <div class="mix-result" id="mix-result">Mixed content will appear here…</div>
-    </div>
-  </div>
-
-  <!-- Panel 5: A/B Testing -->
-  <div class="tab-panel" id="panel-ab">
-    <div class="ab-grid">
-      <div class="card ab-panel fade-up" id="ab-panel-a">
-        <div class="ab-label">Version A</div>
-        <textarea id="ab-a" placeholder="Version A content…" style="min-height:180px"></textarea>
-        <div class="ab-metrics" id="ab-metrics-a"></div>
-      </div>
-      <div class="card ab-panel fade-up" id="ab-panel-b">
-        <div class="ab-label">Version B</div>
-        <textarea id="ab-b" placeholder="Version B content…" style="min-height:180px"></textarea>
-        <div class="ab-metrics" id="ab-metrics-b"></div>
-      </div>
-    </div>
-    <div class="flex gap-8 mt-16 fade-up">
-      <button class="btn btn-primary" onclick="runABTest()">Compare Versions</button>
-      <button class="btn btn-ghost" onclick="generateVariant()">Generate Variant B</button>
-      <button class="btn btn-ghost" onclick="toggleDiff()">Toggle Diff View</button>
-    </div>
-    <div class="card mt-16 fade-up" id="diff-panel" style="display:none">
-      <div class="section-title">Diff View</div>
-      <div class="diff-view" id="diff-output"></div>
-    </div>
-  </div>
-
-  <!-- Panel 6: Export to Platforms -->
-  <div class="tab-panel" id="panel-export">
-    <div class="section-title">Content to Export</div>
-    <textarea id="export-content" placeholder="Paste or write your content here to export to any platform..." style="min-height:160px"></textarea>
-    <div class="flex gap-8 mt-8 mb-16 flex-wrap">
-      <input type="text" id="export-title" placeholder="Title" style="flex:1;min-width:200px">
-      <input type="text" id="export-tags" placeholder="Tags (comma-separated)" style="flex:1;min-width:200px">
-    </div>
-    <div class="section-title">Choose Platform</div>
-    <div class="card-grid cols-3" id="export-grid"></div>
-    <div id="export-preview-panel" class="card mt-16 fade-up" style="display:none">
-      <div class="flex justify-between align-center mb-8">
-        <div class="section-title mb-0" id="export-preview-title">Preview</div>
-        <div class="flex gap-8">
-          <button class="btn btn-ghost btn-sm" onclick="copyExport()">Copy</button>
-          <button class="btn btn-primary btn-sm" onclick="downloadExport()">Download</button>
-        </div>
-      </div>
-      <div id="export-char-info" class="text-xs text-secondary mb-8"></div>
-      <div id="export-tips" class="text-sm" style="background:rgba(99,132,255,.08);padding:12px;border-radius:8px;margin-bottom:12px;display:none"></div>
-      <pre class="mono" id="export-output" style="white-space:pre-wrap;max-height:500px;overflow:auto;background:var(--bg-input);padding:16px;border-radius:8px;font-size:13px;line-height:1.6"></pre>
-    </div>
-  </div>
-
-  <!-- Panel 7: Content Calendar -->
-  <div class="tab-panel" id="panel-calendar">
-    <div class="flex justify-between align-center mb-16">
-      <div class="flex gap-8 align-center">
-        <button class="btn btn-ghost btn-sm" onclick="calNav(-1)">&larr;</button>
-        <h3 id="cal-month" style="margin:0;min-width:180px;text-align:center"></h3>
-        <button class="btn btn-ghost btn-sm" onclick="calNav(1)">&rarr;</button>
-      </div>
-      <div class="flex gap-8">
-        <button class="btn btn-ghost btn-sm" onclick="calToday()">Today</button>
-        <button class="btn btn-ghost btn-sm" onclick="exportICal()">Export iCal</button>
-      </div>
-    </div>
-    <div class="cal-legend mb-8">
-      <span class="cal-dot" style="background:#6384ff"></span> Blog
-      <span class="cal-dot" style="background:#a855f7"></span> Social
-      <span class="cal-dot" style="background:#ec4899"></span> Email
-      <span class="cal-dot" style="background:#34d399"></span> Marketing
-      <span class="cal-dot" style="background:#fbbf24"></span> Technical
-    </div>
-    <div class="cal-grid" id="cal-grid"></div>
-    <div id="cal-day-modal" class="modal-overlay" hidden>
-      <div class="modal-card" style="max-width:420px">
-        <div class="flex justify-between align-center mb-16">
-          <h3 id="cal-day-title" style="margin:0"></h3>
-          <button class="btn btn-ghost btn-sm" onclick="closeCalModal()">&times;</button>
-        </div>
-        <div id="cal-day-items"></div>
-        <div class="section-title mt-16" style="font-size:.9rem">Add Content</div>
-        <input type="text" id="cal-new-title" placeholder="Content title" class="mb-8">
-        <select id="cal-new-type" class="mb-8" style="width:100%;padding:8px 12px;border-radius:8px;background:var(--bg-input);color:var(--text);border:1px solid rgba(255,255,255,.1)">
-          <option value="blog">Blog</option>
-          <option value="social">Social</option>
-          <option value="email">Email</option>
-          <option value="marketing">Marketing</option>
-          <option value="technical">Technical</option>
-        </select>
-        <button class="btn btn-primary btn-sm" onclick="addCalItem()" style="width:100%">Add to Calendar</button>
-      </div>
-    </div>
-  </div>
+<!-- SECTION 1: Content Quality Analyzer -->
+<div class="section active" id="sec-analyzer">
+<div class="section-header">
+<h2>Content Quality Analyzer</h2>
+<p>Paste or type content to get real-time quality metrics and a detailed breakdown</p>
 </div>
 
+<div class="card-grid cols-2 mb-24">
+<div>
+<div class="card mb-16">
+<label for="analyzer-input">Your Content</label>
+<textarea id="analyzer-input" placeholder="Paste or type your content here for comprehensive analysis..." style="min-height:260px" oninput="scheduleAnalysis()" aria-label="Content to analyze"></textarea>
+<div class="flex gap-8 mt-12 flex-wrap">
+<button class="btn btn-primary btn-sm" onclick="runFullAnalysis()">Analyze Now</button>
+<button class="btn btn-ghost btn-sm" onclick="clearAnalyzer()">Clear</button>
+<button class="btn btn-ghost btn-sm" onclick="loadSampleText()">Load Sample</button>
+</div>
+</div>
+<div class="stats-bar" id="analyzer-stats">
+<span class="stat-item"><span class="stat-dot" style="background:var(--accent)"></span>Words: <strong id="a-words">0</strong></span>
+<span class="stat-item"><span class="stat-dot" style="background:#a855f7"></span>Sentences: <strong id="a-sents">0</strong></span>
+<span class="stat-item"><span class="stat-dot" style="background:#ec4899"></span>Paragraphs: <strong id="a-paras">0</strong></span>
+<span class="stat-item"><span class="stat-dot" style="background:var(--success)"></span>Reading Time: <strong id="a-readtime">0 min</strong></span>
+</div>
+</div>
+
+<div>
+<!-- Overall Grade -->
+<div class="card mb-16 text-center">
+<div class="flex items-center justify-between mb-16">
+<div class="section-title" style="margin:0">Overall Quality</div>
+<select id="content-type-benchmark" style="width:auto;padding:4px 10px;font-size:.75rem" onchange="runFullAnalysis()">
+<option value="blog">Blog Post</option>
+<option value="social">Social Media</option>
+<option value="email">Email</option>
+<option value="technical">Technical Doc</option>
+<option value="marketing">Marketing Copy</option>
+</select>
+</div>
+<div class="flex items-center justify-center gap-24 flex-wrap">
+<div class="grade-display grade-b" id="overall-grade">--</div>
+<div style="text-align:left">
+<div style="font-size:2rem;font-weight:800" id="overall-score">--</div>
+<div class="text-secondary text-sm">out of 100</div>
+<div class="progress-bar mt-8" style="width:140px"><div class="progress-fill" id="overall-bar" style="width:0%"></div></div>
+</div>
+</div>
+</div>
+
+<!-- Gauges -->
+<div class="card">
+<div class="section-title">Score Breakdown</div>
+<div class="gauges-row" id="analyzer-gauges">
+<div class="gauge-container" id="gc-readability">
+<svg class="gauge-svg" viewBox="0 0 110 110">
+<circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="8"/>
+<circle cx="55" cy="55" r="46" fill="none" stroke="var(--warning)" stroke-width="8" stroke-dasharray="289" stroke-dashoffset="289" stroke-linecap="round" transform="rotate(-90 55 55)" id="ring-readability" style="transition:stroke-dashoffset .8s var(--ease),stroke .3s"/>
+</svg>
+<div class="gauge-value" id="val-readability">--</div>
+<div class="gauge-label">Readability</div>
+</div>
+<div class="gauge-container" id="gc-seo">
+<svg class="gauge-svg" viewBox="0 0 110 110">
+<circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="8"/>
+<circle cx="55" cy="55" r="46" fill="none" stroke="var(--success)" stroke-width="8" stroke-dasharray="289" stroke-dashoffset="289" stroke-linecap="round" transform="rotate(-90 55 55)" id="ring-seo" style="transition:stroke-dashoffset .8s var(--ease),stroke .3s"/>
+</svg>
+<div class="gauge-value" id="val-seo">--</div>
+<div class="gauge-label">SEO</div>
+</div>
+<div class="gauge-container" id="gc-engagement">
+<svg class="gauge-svg" viewBox="0 0 110 110">
+<circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="8"/>
+<circle cx="55" cy="55" r="46" fill="none" stroke="#a855f7" stroke-width="8" stroke-dasharray="289" stroke-dashoffset="289" stroke-linecap="round" transform="rotate(-90 55 55)" id="ring-engagement" style="transition:stroke-dashoffset .8s var(--ease),stroke .3s"/>
+</svg>
+<div class="gauge-value" id="val-engagement">--</div>
+<div class="gauge-label">Engagement</div>
+</div>
+<div class="gauge-container" id="gc-style">
+<svg class="gauge-svg" viewBox="0 0 110 110">
+<circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="8"/>
+<circle cx="55" cy="55" r="46" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="289" stroke-dashoffset="289" stroke-linecap="round" transform="rotate(-90 55 55)" id="ring-style" style="transition:stroke-dashoffset .8s var(--ease),stroke .3s"/>
+</svg>
+<div class="gauge-value" id="val-style">--</div>
+<div class="gauge-label">Grammar & Style</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Analysis history -->
+<div class="card">
+<div class="flex items-center justify-between mb-16">
+<div class="section-title" style="margin:0">Analysis History</div>
+<button class="btn btn-ghost btn-xs" onclick="clearHistory()">Clear History</button>
+</div>
+<div id="analysis-history" class="text-secondary text-sm">No analyses yet. Analyze content to build your history.</div>
+</div>
+</div>
+
+<!-- SECTION 2: Real-Time Improvement Suggestions -->
+<div class="section" id="sec-suggestions">
+<div class="section-header">
+<h2>Real-Time Suggestions</h2>
+<p>Get instant improvement suggestions as you write, categorized by impact</p>
+</div>
+
+<div class="card-grid cols-2">
+<div>
+<div class="card mb-16">
+<div class="flex items-center justify-between mb-8">
+<label for="sug-editor" style="margin:0">Editor</label>
+<div class="flex gap-4">
+<button class="btn btn-xs btn-ghost" onclick="undoSuggestion()" title="Undo last apply">Undo</button>
+</div>
+</div>
+<textarea id="sug-editor" placeholder="Start writing or paste content... suggestions appear in real-time as you type." style="min-height:340px;font-size:.88rem;line-height:1.8" oninput="scheduleSuggestions()" aria-label="Content editor for suggestions"></textarea>
+</div>
+<div class="stats-bar" id="sug-stats-bar">
+<span class="stat-item">Words: <strong id="s-words">0</strong></span>
+<span class="stat-item">Sentences: <strong id="s-sents">0</strong></span>
+<span class="stat-item">Avg Sentence: <strong id="s-avg">0</strong> words</span>
+<span class="stat-item">Score: <strong id="s-score">--</strong></span>
+</div>
+</div>
+
+<div>
+<div class="flex items-center justify-between mb-12">
+<div class="section-title" style="margin:0">Suggestions</div>
+<button class="btn btn-sm btn-accent" id="apply-all-btn" onclick="applyAllSuggestions()" style="display:none">Apply All</button>
+</div>
+
+<!-- Category filter toggles -->
+<div class="flex gap-4 flex-wrap mb-12" id="sug-category-toggles">
+<button class="filter-tab active" data-cat="all" onclick="filterSuggestions('all',this)">All <span class="badge" id="badge-all">0</span></button>
+<button class="filter-tab" data-cat="readability" onclick="filterSuggestions('readability',this)">Readability <span class="badge" id="badge-readability">0</span></button>
+<button class="filter-tab" data-cat="seo" onclick="filterSuggestions('seo',this)">SEO <span class="badge" id="badge-seo">0</span></button>
+<button class="filter-tab" data-cat="engagement" onclick="filterSuggestions('engagement',this)">Engagement <span class="badge" id="badge-engagement">0</span></button>
+<button class="filter-tab" data-cat="style" onclick="filterSuggestions('style',this)">Style <span class="badge" id="badge-style">0</span></button>
+</div>
+
+<div id="sug-list" style="max-height:500px;overflow-y:auto">
+<div class="empty-state">Start typing to see suggestions...</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SECTION 3: Multi-Generation Comparison -->
+<div class="section" id="sec-comparison">
+<div class="section-header">
+<h2>Multi-Generation Comparison</h2>
+<p>Compare different content variations side by side with detailed metrics</p>
+</div>
+
+<div class="card mb-24">
+<label for="compare-prompt">Content Prompt / Topic</label>
+<div class="flex gap-8">
+<input type="text" id="compare-prompt" placeholder="Enter a topic or prompt to generate variations..." style="flex:1" aria-label="Comparison prompt">
+<button class="btn btn-primary" onclick="generateVariations()">Generate 3 Versions</button>
+</div>
+<div class="flex gap-8 mt-12">
+<button class="filter-tab active" data-view="side" onclick="setCompareView('side',this)">2-Way View</button>
+<button class="filter-tab" data-view="triple" onclick="setCompareView('triple',this)">3-Way View</button>
+<button class="filter-tab" data-view="diff" onclick="setCompareView('diff',this)">Diff View</button>
+</div>
+</div>
+
+<div id="compare-panels" class="card-grid cols-2 mb-24">
+<div class="card compare-panel" id="var-panel-0">
+<div class="flex items-center justify-between mb-8">
+<div class="text-xs" style="font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)">Version A - Professional</div>
+<button class="btn btn-xs btn-success" onclick="pickWinner(0)">Pick Winner</button>
+</div>
+<textarea id="var-text-0" placeholder="Version A content..." style="min-height:160px" oninput="updateVariationMetrics(0)"></textarea>
+<div class="card-grid cols-2 mt-12" id="var-metrics-0"></div>
+</div>
+<div class="card compare-panel" id="var-panel-1">
+<div class="flex items-center justify-between mb-8">
+<div class="text-xs" style="font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a855f7">Version B - Conversational</div>
+<button class="btn btn-xs btn-success" onclick="pickWinner(1)">Pick Winner</button>
+</div>
+<textarea id="var-text-1" placeholder="Version B content..." style="min-height:160px" oninput="updateVariationMetrics(1)"></textarea>
+<div class="card-grid cols-2 mt-12" id="var-metrics-1"></div>
+</div>
+<div class="card compare-panel" id="var-panel-2" style="display:none">
+<div class="flex items-center justify-between mb-8">
+<div class="text-xs" style="font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#ec4899">Version C - Bold</div>
+<button class="btn btn-xs btn-success" onclick="pickWinner(2)">Pick Winner</button>
+</div>
+<textarea id="var-text-2" placeholder="Version C content..." style="min-height:160px" oninput="updateVariationMetrics(2)"></textarea>
+<div class="card-grid cols-2 mt-12" id="var-metrics-2"></div>
+</div>
+</div>
+
+<!-- Diff view -->
+<div class="card mb-24" id="diff-view-panel" style="display:none">
+<div class="section-title">Diff Comparison</div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.8;background:var(--bg-elevated);padding:16px;border-radius:var(--radius-sm);max-height:300px;overflow-y:auto;white-space:pre-wrap" id="diff-output"></div>
+</div>
+
+<!-- Merge + Export -->
+<div class="card-grid cols-2">
+<div class="card">
+<div class="section-title">Merge Best Parts</div>
+<p class="text-sm text-secondary mb-12">Select text from different versions and merge them into one.</p>
+<textarea id="merge-output" placeholder="Merged content will appear here. You can also manually edit." style="min-height:140px"></textarea>
+<div class="flex gap-8 mt-12">
+<button class="btn btn-sm btn-primary" onclick="autoMerge()">Auto-Merge</button>
+<button class="btn btn-sm btn-ghost" onclick="copyMerged()">Copy Result</button>
+</div>
+</div>
+<div class="card">
+<div class="section-title">Comparison History</div>
+<div id="compare-history" style="max-height:200px;overflow-y:auto">
+<div class="empty-state text-sm">No comparisons yet.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SECTION 4: Template Gallery -->
+<div class="section" id="sec-templates">
+<div class="section-header">
+<h2>Template Gallery</h2>
+<p>Choose from 24+ professionally crafted templates for any content type</p>
+</div>
+
+<div class="flex gap-12 mb-16 flex-wrap items-center">
+<div class="search-bar" style="flex:1;min-width:200px;margin:0">
+<svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+<input type="search" id="tpl-search" placeholder="Search templates..." oninput="filterTemplates()" aria-label="Search templates">
+</div>
+<div class="flex gap-4">
+<button class="btn btn-ghost btn-sm" onclick="exportTemplates()">Export JSON</button>
+<button class="btn btn-ghost btn-sm" onclick="document.getElementById('tpl-import').click()">Import</button>
+<input type="file" id="tpl-import" accept=".json" style="display:none" onchange="importTemplates(event)">
+</div>
+</div>
+
+<div class="filter-tabs mb-24" id="tpl-category-filters"></div>
+
+<div class="card-grid cols-3" id="tpl-grid"></div>
+</div>
+
+<!-- SECTION 5: Export to Platforms -->
+<div class="section" id="sec-export">
+<div class="section-header">
+<h2>Export to Platforms</h2>
+<p>Format and export your content for any publishing platform</p>
+</div>
+
+<div class="card mb-24">
+<label for="export-content">Content to Export</label>
+<textarea id="export-content" placeholder="Paste your finalized content here to format for different platforms..." style="min-height:180px" oninput="updateExportPreviews()"></textarea>
+<div class="stats-bar mt-8">
+<span class="stat-item">Characters: <strong id="exp-chars">0</strong></span>
+<span class="stat-item">Words: <strong id="exp-words">0</strong></span>
+</div>
+</div>
+
+<div class="section-title mb-16">Select Platforms</div>
+<div class="card-grid cols-4 mb-24" id="platform-grid">
+<div class="card platform-card" data-platform="medium" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(var(--accent-rgb),.1);color:var(--accent)">M</div>
+<div class="platform-name">Medium</div>
+<div class="platform-desc">Formatted article with proper headings</div>
+</div>
+<div class="card platform-card" data-platform="devto" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(52,211,153,.1);color:var(--success)">D</div>
+<div class="platform-name">Dev.to</div>
+<div class="platform-desc">Forem frontmatter + markdown</div>
+</div>
+<div class="card platform-card" data-platform="twitter" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(var(--accent-rgb),.1);color:var(--accent)">X</div>
+<div class="platform-name">Twitter / X</div>
+<div class="platform-desc">Tweet thread with char counts</div>
+</div>
+<div class="card platform-card" data-platform="linkedin" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(168,85,247,.1);color:#a855f7">in</div>
+<div class="platform-name">LinkedIn</div>
+<div class="platform-desc">Professional post formatting</div>
+</div>
+<div class="card platform-card" data-platform="wordpress" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(var(--accent-rgb),.1);color:var(--accent)">W</div>
+<div class="platform-name">WordPress</div>
+<div class="platform-desc">HTML with WP-compatible classes</div>
+</div>
+<div class="card platform-card" data-platform="ghost" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(168,85,247,.1);color:#a855f7">G</div>
+<div class="platform-name">Ghost</div>
+<div class="platform-desc">Ghost-compatible markdown</div>
+</div>
+<div class="card platform-card" data-platform="substack" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(236,72,153,.1);color:#ec4899">S</div>
+<div class="platform-name">Substack</div>
+<div class="platform-desc">Newsletter-optimized format</div>
+</div>
+<div class="card platform-card" data-platform="markdown" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(255,255,255,.08);color:var(--text)">MD</div>
+<div class="platform-name">Markdown</div>
+<div class="platform-desc">Clean markdown export</div>
+</div>
+<div class="card platform-card" data-platform="html" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(251,191,36,.1);color:var(--warning)">&lt;/&gt;</div>
+<div class="platform-name">HTML</div>
+<div class="platform-desc">Styled HTML with inline CSS</div>
+</div>
+<div class="card platform-card" data-platform="pdf" onclick="togglePlatform(this)">
+<div class="platform-icon" style="background:rgba(248,113,113,.1);color:var(--error)">PDF</div>
+<div class="platform-name">PDF</div>
+<div class="platform-desc">Print-ready version</div>
+</div>
+</div>
+
+<div class="flex gap-8 mb-24">
+<button class="btn btn-primary" onclick="exportSelected()">Export Selected</button>
+<button class="btn btn-ghost" onclick="exportAll()">Export All</button>
+</div>
+
+<!-- Export preview -->
+<div class="card" id="export-preview-card" style="display:none">
+<div class="flex items-center justify-between mb-12">
+<div class="section-title" style="margin:0">Export Preview: <span id="preview-platform-name"></span></div>
+<div class="flex gap-8">
+<button class="btn btn-sm btn-accent" onclick="copyExport()">Copy</button>
+<button class="btn btn-sm btn-ghost" onclick="downloadExport()">Download</button>
+</div>
+</div>
+<div class="text-xs text-secondary mb-8" id="export-tips"></div>
+<pre style="background:var(--bg-elevated);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:16px;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.6;max-height:400px;overflow:auto;white-space:pre-wrap" id="export-preview-content"></pre>
+</div>
+</div>
+
+<!-- SECTION 6: Content Calendar -->
+<div class="section" id="sec-calendar">
+<div class="section-header">
+<h2>Content Calendar</h2>
+<p>Plan and schedule your content with drag-and-drop calendar management</p>
+</div>
+
+<div class="flex gap-8 mb-16 flex-wrap">
+<button class="btn btn-primary btn-sm" onclick="addCalendarEvent()">+ Add Content</button>
+<button class="btn btn-ghost btn-sm" onclick="toggleCalendarView()">Toggle Week/Month</button>
+<button class="btn btn-ghost btn-sm" onclick="exportCalendar()">Export iCal</button>
+</div>
+
+<div class="calendar" id="calendar-widget">
+<div class="cal-header">
+<button class="btn-icon" onclick="changeMonth(-1)" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+<h3 id="cal-month-label">March 2026</h3>
+<button class="btn-icon" onclick="changeMonth(1)" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+</div>
+<div class="cal-grid" id="cal-grid"></div>
+</div>
+</div>
+
+<!-- Template Modal -->
+<div class="modal-overlay" id="tpl-modal">
+<div class="modal">
+<div class="modal-header">
+<h3 id="modal-title">Template</h3>
+<button class="modal-close" onclick="closeModal('tpl-modal')">&times;</button>
+</div>
+<div class="modal-body">
+<div id="modal-tags" class="flex gap-4 mb-8"></div>
+<p class="text-sm text-secondary mb-16" id="modal-desc"></p>
+<div id="modal-inputs" class="card-grid cols-2 mb-16"></div>
+<label>Live Preview</label>
+<pre style="background:var(--bg-elevated);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:16px;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.7;max-height:250px;overflow:auto;white-space:pre-wrap" id="modal-preview"></pre>
+<div class="flex gap-8 mt-16">
+<button class="btn btn-primary" onclick="useTemplate()">Use Template</button>
+<button class="btn btn-accent" onclick="copyModalContent()">Copy</button>
+<button class="btn btn-ghost" onclick="closeModal('tpl-modal')">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Calendar Event Modal -->
+<div class="modal-overlay" id="cal-modal">
+<div class="modal" style="max-width:480px">
+<div class="modal-header">
+<h3>Schedule Content</h3>
+<button class="modal-close" onclick="closeModal('cal-modal')">&times;</button>
+</div>
+<div class="modal-body">
+<label>Title</label>
+<input type="text" id="cal-event-title" placeholder="Content title..." class="mb-12">
+<label>Date</label>
+<input type="date" id="cal-event-date" class="mb-12">
+<label>Content Type</label>
+<select id="cal-event-type" class="mb-12">
+<option value="blog">Blog Post</option>
+<option value="social">Social Media</option>
+<option value="email">Email</option>
+<option value="marketing">Marketing</option>
+<option value="technical">Technical</option>
+</select>
+<label>Notes</label>
+<textarea id="cal-event-notes" placeholder="Optional notes..." style="min-height:80px" class="mb-12"></textarea>
+<div class="flex gap-8">
+<button class="btn btn-primary" onclick="saveCalendarEvent()">Save</button>
+<button class="btn btn-ghost" onclick="closeModal('cal-modal')">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+
+</main>
+
 <script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+// DATA & CONSTANTS
+// ═══════════════════════════════════════════════════════════════════
+
+const POWER_WORDS = ['amazing','breakthrough','discover','effortless','exclusive','free','guaranteed','imagine','instantly','proven','remarkable','secret','transform','ultimate','unlock','powerful','revolutionary','stunning','unbelievable','essential','critical','urgent','deadly','catastrophic','miracle','hack','skyrocket','explode','dominate','crushing'];
+const EMOTIONAL_TRIGGERS = ['fear','joy','surprise','anger','trust','anticipation','love','hope','pride','guilt'];
+const FILLER_WORDS = ['just','very','really','quite','rather','somewhat','fairly','basically','actually','literally','honestly','definitely','certainly','obviously','simply','clearly'];
+const CLICHES = ['at the end of the day','think outside the box','low-hanging fruit','move the needle','game changer','paradigm shift','synergy','leverage','circle back','deep dive','take it to the next level','hit the ground running','best practice','win-win','touch base','on the same page','going forward','it is what it is','no brainer'];
+
 const TEMPLATES = [
-  {id:1,title:"AIDA Blog Post",category:"Blog",desc:"Attention-Interest-Desire-Action structure for compelling blog articles.",preview:"**Headline:** {topic} That Will Transform Your {outcome}\n\nHave you ever wondered why most {topic} attempts fail? You're about to discover the secret that top {industry} professionals use daily.\n\n[Interest]: Studies show that {statistic}% of people struggle with {pain_point}...",tags:["AIDA","persuasion","long-form"],inputs:[{key:"topic",label:"Topic"},{key:"outcome",label:"Desired Outcome"},{key:"industry",label:"Industry"}]},
-  {id:2,title:"Twitter Thread Hook",category:"Social",desc:"High-engagement opening hook for Twitter/X threads.",preview:"🧵 I spent {time} learning {topic}.\n\nHere are {number} things I wish someone told me sooner:\n\n(this will save you months of frustration)\n\n1/",tags:["twitter","thread","hook"],inputs:[{key:"time",label:"Time Spent"},{key:"topic",label:"Topic"},{key:"number",label:"Number of Tips"}]},
-  {id:3,title:"Cold Email Opener",category:"Email",desc:"Personalized cold outreach that gets replies.",preview:"Hi {name},\n\nI noticed {company} recently {trigger_event}. Congrats!\n\nI help {persona} achieve {result} without {pain_point}.\n\nWould it make sense to chat for 15 minutes this week?\n\nBest,\n{sender}",tags:["cold email","outreach","B2B"],inputs:[{key:"name",label:"Recipient Name"},{key:"company",label:"Company"},{key:"trigger_event",label:"Trigger Event"}]},
-  {id:4,title:"Product Launch Announcement",category:"Marketing",desc:"Launch email that drives immediate conversions.",preview:"Subject: {product} is finally here 🚀\n\nAfter {months} months of development, we're thrilled to announce {product}.\n\nHere's what makes it different:\n✓ {benefit_1}\n✓ {benefit_2}\n✓ {benefit_3}\n\nEarly access ends {deadline}.",tags:["launch","product","announcement"],inputs:[{key:"product",label:"Product Name"},{key:"months",label:"Development Time"},{key:"deadline",label:"Deadline"}]},
-  {id:5,title:"Technical README",category:"Technical",desc:"Clear, structured README for open-source projects.",preview:"# {project_name}\n\n> {tagline}\n\n## Features\n- {feature_1}\n- {feature_2}\n\n## Quick Start\n```bash\nnpm install {package}\n```\n\n## Documentation\nSee [docs]({docs_url}) for full API reference.",tags:["readme","docs","open-source"],inputs:[{key:"project_name",label:"Project Name"},{key:"tagline",label:"Tagline"},{key:"package",label:"NPM Package"}]},
-  {id:6,title:"LinkedIn Thought Leadership",category:"Social",desc:"Professional insight post that builds authority.",preview:"Most {professionals} are doing {common_practice} wrong.\n\nAfter {experience}, I've learned the real approach:\n\n→ {insight_1}\n→ {insight_2}\n→ {insight_3}\n\nThe result? {outcome}.\n\nWhat's your take? Drop it in the comments 👇",tags:["linkedin","thought leadership","B2B"],inputs:[{key:"professionals",label:"Professional Group"},{key:"common_practice",label:"Common Practice"},{key:"experience",label:"Your Experience"}]},
-  {id:7,title:"Case Study Structure",category:"Blog",desc:"Result-driven case study that converts prospects.",preview:"How {client} Achieved {result} in {timeframe}\n\n**The Challenge:**\n{client} was struggling with {problem}. They had tried {previous_solutions} but nothing worked.\n\n**Our Approach:**\nWe implemented {solution} focusing on {key_elements}.\n\n**The Results:**\n• {metric_1}: +{percent_1}%\n• {metric_2}: +{percent_2}%",tags:["case study","social proof","conversion"],inputs:[{key:"client",label:"Client/Company"},{key:"result",label:"Key Result"},{key:"timeframe",label:"Timeframe"}]},
-  {id:8,title:"Newsletter Subject Lines",category:"Email",desc:"5 split-testable subject line variations.",preview:"[CURIOSITY] The {topic} secret nobody talks about\n[BENEFIT] Get {result} without {pain_point}\n[URGENCY] Last chance: {offer} expires tonight\n[SOCIAL PROOF] How {number} people achieved {outcome}\n[QUESTION] Are you making these {topic} mistakes?",tags:["email","subject line","split test"],inputs:[{key:"topic",label:"Newsletter Topic"},{key:"result",label:"Main Benefit"},{key:"pain_point",label:"Pain Point"}]},
-  {id:9,title:"Instagram Caption",category:"Social",desc:"Engaging Instagram caption with CTA.",preview:"{hook_emoji} {attention_hook}\n\n{story_line_1}\n{story_line_2}\n\nHere's what I learned:\n↳ {lesson_1}\n↳ {lesson_2}\n\n{cta_question}?\n\n.\n.\n{hashtags}",tags:["instagram","caption","engagement"],inputs:[{key:"hook_emoji",label:"Hook Emoji"},{key:"attention_hook",label:"Opening Hook"},{key:"cta_question",label:"CTA Question"}]},
-  {id:10,title:"PAS Copywriting",category:"Marketing",desc:"Problem-Agitate-Solve framework for high-converting copy.",preview:"Are you tired of {problem}?\n\nEvery day you {delay}, you're losing {what_is_lost}. The longer you wait, the worse {consequence} gets.\n\n{product} solves this by {mechanism}.\n\nJoin {number}+ {people} who finally {result}.\n\n→ {cta}",tags:["PAS","copywriting","conversion"],inputs:[{key:"problem",label:"Core Problem"},{key:"product",label:"Your Product"},{key:"cta",label:"Call to Action"}]},
-  {id:11,title:"API Documentation",category:"Technical",desc:"Clear endpoint documentation with examples.",preview:"## {endpoint_name}\n\n`{method} /api/v1/{endpoint}`\n\n**Description:** {description}\n\n**Parameters:**\n| Name | Type | Required | Description |\n|------|------|----------|-------------|\n| {param} | string | yes | {param_desc} |\n\n**Response:** `200 OK`\n```json\n{\"success\": true, \"data\": {}}\n```",tags:["API","docs","technical"],inputs:[{key:"endpoint_name",label:"Endpoint Name"},{key:"method",label:"HTTP Method"},{key:"endpoint",label:"Endpoint Path"}]},
-  {id:12,title:"YouTube Video Description",category:"Marketing",desc:"SEO-optimized video description with timestamps.",preview:"{hook} — Watch till the end for {bonus}!\n\n📌 In this video:\n00:00 - Introduction\n{timestamp_1} - {chapter_1}\n{timestamp_2} - {chapter_2}\n\n🔗 Resources mentioned:\n• {resource_1}\n\n▶ Subscribe for weekly {topic} content\n\n#{tag1} #{tag2} #{tag3}",tags:["youtube","SEO","video"],inputs:[{key:"hook",label:"Opening Hook"},{key:"bonus",label:"End Bonus"},{key:"topic",label:"Channel Topic"}]},
+{id:1,title:"Listicle Blog Post",category:"Blog",difficulty:"Easy",time:"15 min",desc:"Numbered list format for engaging, scannable articles.",preview:"# {number} {adjective} Ways to {action}\n\nLooking for {outcome}? These proven strategies will help.\n\n## 1. {point_1}\n{detail_1}\n\n## 2. {point_2}\n{detail_2}\n\n## Conclusion\nStart with #{best_number} and see results within {timeframe}.",tags:["listicle","blog","easy"],inputs:[{key:"number",label:"Number of Items"},{key:"adjective",label:"Adjective (e.g. Proven)"},{key:"action",label:"Action Verb"}]},
+{id:2,title:"How-To Guide",category:"Blog",difficulty:"Medium",time:"30 min",desc:"Step-by-step instructional content with clear outcomes.",preview:"# How to {goal}: A Complete Guide\n\n**Time needed:** {time}\n**Difficulty:** {difficulty}\n\n## What You'll Need\n- {prereq_1}\n- {prereq_2}\n\n## Step 1: {step_1}\n{detail_1}\n\n## Step 2: {step_2}\n{detail_2}\n\n## Common Mistakes to Avoid\n- {mistake_1}",tags:["how-to","tutorial","guide"],inputs:[{key:"goal",label:"Goal"},{key:"time",label:"Time Needed"},{key:"difficulty",label:"Difficulty Level"}]},
+{id:3,title:"Opinion Piece",category:"Blog",difficulty:"Medium",time:"25 min",desc:"Persuasive opinion article with strong arguments.",preview:"# Why {topic} Is {stance}\n\nThe conventional wisdom about {topic} is wrong. Here's why.\n\n## The Popular Misconception\n{misconception}\n\n## The Reality\n{reality}\n\n## What We Should Do Instead\n{action}\n\nIt's time we rethink our approach to {topic}.",tags:["opinion","persuasive","thought-leadership"],inputs:[{key:"topic",label:"Topic"},{key:"stance",label:"Your Stance"},{key:"misconception",label:"Common Misconception"}]},
+{id:4,title:"Case Study",category:"Blog",difficulty:"Hard",time:"45 min",desc:"Data-driven success story that builds credibility.",preview:"# How {company} Achieved {result} in {timeframe}\n\n## The Challenge\n{company} faced {problem}.\n\n## Our Solution\nWe implemented {solution}.\n\n## The Results\n- {metric_1}: +{pct_1}%\n- {metric_2}: +{pct_2}%\n\n## Key Takeaways\n{takeaway}",tags:["case-study","data","proof"],inputs:[{key:"company",label:"Company Name"},{key:"result",label:"Key Result"},{key:"timeframe",label:"Timeframe"}]},
+{id:5,title:"Tutorial",category:"Blog",difficulty:"Hard",time:"40 min",desc:"In-depth educational content with code examples.",preview:"# {title}: Complete Tutorial\n\n## Prerequisites\n- {prereq_1}\n\n## Getting Started\n```{language}\n{code_example}\n```\n\n## Step-by-Step\n{steps}\n\n## Next Steps\n{next}",tags:["tutorial","code","technical"],inputs:[{key:"title",label:"Tutorial Title"},{key:"language",label:"Programming Language"},{key:"prereq_1",label:"Prerequisite"}]},
+{id:6,title:"Product Review",category:"Blog",difficulty:"Easy",time:"20 min",desc:"Balanced product review with pros, cons, and verdict.",preview:"# {product} Review: Is It Worth It?\n\n**Rating: {rating}/5**\n\n## Pros\n- {pro_1}\n- {pro_2}\n\n## Cons\n- {con_1}\n\n## Who Is It For?\n{audience}\n\n## Verdict\n{verdict}",tags:["review","product","comparison"],inputs:[{key:"product",label:"Product Name"},{key:"rating",label:"Rating (1-5)"},{key:"pro_1",label:"Top Pro"}]},
+{id:7,title:"Twitter Thread",category:"Social",difficulty:"Easy",time:"10 min",desc:"High-engagement Twitter/X thread with hook.",preview:"1/ {hook}\n\nHere are {number} things I learned about {topic}:\n\n2/ {point_1}\n\n3/ {point_2}\n\n4/ {point_3}\n\n5/ The biggest takeaway?\n{takeaway}\n\nRetweet if you found this valuable.",tags:["twitter","thread","hook"],inputs:[{key:"hook",label:"Opening Hook"},{key:"number",label:"Number of Points"},{key:"topic",label:"Topic"}]},
+{id:8,title:"LinkedIn Post",category:"Social",difficulty:"Easy",time:"10 min",desc:"Professional thought leadership post.",preview:"Most {professionals} are doing {practice} wrong.\n\nAfter {experience}, I learned:\n\n-> {insight_1}\n-> {insight_2}\n-> {insight_3}\n\nThe result? {outcome}\n\nAgree or disagree? Comment below.",tags:["linkedin","professional","B2B"],inputs:[{key:"professionals",label:"Professional Group"},{key:"practice",label:"Common Practice"},{key:"experience",label:"Your Experience"}]},
+{id:9,title:"Instagram Caption",category:"Social",difficulty:"Easy",time:"5 min",desc:"Engaging Instagram caption with CTA.",preview:"{emoji} {hook}\n\n{story}\n\nKey lessons:\n-> {lesson_1}\n-> {lesson_2}\n\n{cta}?\n\n.\n.\n{hashtags}",tags:["instagram","visual","engagement"],inputs:[{key:"emoji",label:"Lead Emoji"},{key:"hook",label:"Opening Hook"},{key:"cta",label:"Call to Action"}]},
+{id:10,title:"Facebook Ad Copy",category:"Social",difficulty:"Medium",time:"15 min",desc:"High-converting Facebook ad with clear CTA.",preview:"Tired of {pain_point}?\n\n{product} helps you {benefit} without {objection}.\n\nJoin {social_proof}+ {people} who already {result}.\n\n{cta_button} ->",tags:["facebook","ad","conversion"],inputs:[{key:"pain_point",label:"Pain Point"},{key:"product",label:"Product"},{key:"benefit",label:"Main Benefit"}]},
+{id:11,title:"Landing Page Copy",category:"Marketing",difficulty:"Hard",time:"45 min",desc:"High-converting landing page with AIDA framework.",preview:"# {headline}\n\n{subheadline}\n\n## The Problem\n{problem}\n\n## The Solution\n{solution}\n\n## Features\n- {feature_1}\n- {feature_2}\n- {feature_3}\n\n## Social Proof\n\"{testimonial}\" - {customer}\n\n[{cta_text}]",tags:["landing-page","AIDA","conversion"],inputs:[{key:"headline",label:"Headline"},{key:"subheadline",label:"Subheadline"},{key:"cta_text",label:"CTA Button Text"}]},
+{id:12,title:"Email Newsletter",category:"Marketing",difficulty:"Medium",time:"20 min",desc:"Engaging newsletter with clear sections.",preview:"Subject: {subject}\n\nHi {name},\n\n{intro}\n\n## This Week's Highlights\n{highlight_1}\n{highlight_2}\n\n## Quick Tip\n{tip}\n\nUntil next time,\n{sender}",tags:["email","newsletter","engagement"],inputs:[{key:"subject",label:"Subject Line"},{key:"intro",label:"Opening Line"},{key:"tip",label:"Quick Tip"}]},
+{id:13,title:"Press Release",category:"Marketing",difficulty:"Medium",time:"25 min",desc:"Professional press release format.",preview:"FOR IMMEDIATE RELEASE\n\n# {headline}\n\n{city}, {date} - {company} today announced {announcement}.\n\n{body_paragraph}\n\n\"{quote}\" said {spokesperson}, {title} at {company}.\n\n## About {company}\n{boilerplate}\n\nContact: {contact}",tags:["press-release","PR","formal"],inputs:[{key:"headline",label:"Headline"},{key:"company",label:"Company"},{key:"announcement",label:"Key Announcement"}]},
+{id:14,title:"Product Description",category:"Marketing",difficulty:"Easy",time:"10 min",desc:"Compelling product description for e-commerce.",preview:"## {product_name}\n\n{tagline}\n\n{description}\n\n**Key Features:**\n- {feature_1}\n- {feature_2}\n- {feature_3}\n\n**Specifications:**\n{specs}\n\nPrice: ${price}",tags:["product","e-commerce","description"],inputs:[{key:"product_name",label:"Product Name"},{key:"tagline",label:"Tagline"},{key:"price",label:"Price"}]},
+{id:15,title:"API Documentation",category:"Technical",difficulty:"Hard",time:"30 min",desc:"Clear endpoint documentation with examples.",preview:"## {endpoint}\n\n`{method} /api/v1/{path}`\n\n{description}\n\n### Parameters\n| Name | Type | Required | Description |\n|------|------|----------|-------------|\n| {param} | {type} | {required} | {param_desc} |\n\n### Response\n```json\n{response_example}\n```",tags:["API","docs","REST"],inputs:[{key:"endpoint",label:"Endpoint Name"},{key:"method",label:"HTTP Method"},{key:"path",label:"URL Path"}]},
+{id:16,title:"README",category:"Technical",difficulty:"Medium",time:"20 min",desc:"Open-source project README template.",preview:"# {project}\n\n> {tagline}\n\n[![License](badge)]({repo})\n\n## Features\n- {feature_1}\n- {feature_2}\n\n## Quick Start\n```bash\nnpm install {package}\n```\n\n## Documentation\nSee [docs]({docs_url})\n\n## Contributing\n{contributing}\n\n## License\n{license}",tags:["readme","open-source","github"],inputs:[{key:"project",label:"Project Name"},{key:"tagline",label:"One-line Description"},{key:"package",label:"Package Name"}]},
+{id:17,title:"Changelog",category:"Technical",difficulty:"Easy",time:"10 min",desc:"Version changelog following Keep a Changelog format.",preview:"# Changelog\n\n## [{version}] - {date}\n\n### Added\n- {added_1}\n\n### Changed\n- {changed_1}\n\n### Fixed\n- {fixed_1}\n\n### Deprecated\n- {deprecated_1}",tags:["changelog","versioning","release"],inputs:[{key:"version",label:"Version"},{key:"date",label:"Release Date"},{key:"added_1",label:"New Feature"}]},
+{id:18,title:"Error Messages",category:"Technical",difficulty:"Easy",time:"10 min",desc:"User-friendly error message templates.",preview:"## {error_code}: {error_title}\n\n**What happened:**\n{explanation}\n\n**How to fix it:**\n1. {fix_step_1}\n2. {fix_step_2}\n\n**Still stuck?**\nContact support at {support_email}",tags:["UX","errors","support"],inputs:[{key:"error_code",label:"Error Code"},{key:"error_title",label:"Error Title"},{key:"explanation",label:"User-Friendly Explanation"}]},
+{id:19,title:"Release Notes",category:"Technical",difficulty:"Easy",time:"15 min",desc:"Public-facing release notes for users.",preview:"# {product} {version} Release Notes\n\nWe're excited to announce {product} {version}!\n\n## New Features\n{new_features}\n\n## Improvements\n{improvements}\n\n## Bug Fixes\n{fixes}\n\n## Upgrade Guide\n{upgrade_instructions}",tags:["release","product","update"],inputs:[{key:"product",label:"Product Name"},{key:"version",label:"Version"},{key:"new_features",label:"Key New Feature"}]},
+{id:20,title:"Story Opener",category:"Creative",difficulty:"Medium",time:"15 min",desc:"Compelling opening paragraph for fiction.",preview:"The {time_of_day} {character} {action_verb} into {location}, {emotion_detail}. {sensory_detail}.\n\n\"{dialogue},\" {character} {speech_verb}, {gesture}.\n\n{narrator_observation}",tags:["fiction","creative","opening"],inputs:[{key:"character",label:"Character Name"},{key:"location",label:"Setting"},{key:"time_of_day",label:"Time of Day"}]},
+{id:21,title:"Poem Structure",category:"Creative",difficulty:"Medium",time:"15 min",desc:"Structured poem template with meter guidance.",preview:"{title}\n\n{image_1} like {simile_1},\n{action_1} through {setting_1}.\n{emotion_line_1},\n{resolution_1}.\n\n{image_2} like {simile_2},\n{action_2} through {setting_2}.\n{emotion_line_2},\n{resolution_2}.",tags:["poem","creative","literary"],inputs:[{key:"title",label:"Poem Title"},{key:"image_1",label:"Opening Image"},{key:"simile_1",label:"Simile"}]},
+{id:22,title:"Song Lyrics",category:"Creative",difficulty:"Hard",time:"30 min",desc:"Song structure with verse, chorus, bridge.",preview:"[Verse 1]\n{verse_1_line_1}\n{verse_1_line_2}\n{verse_1_line_3}\n{verse_1_line_4}\n\n[Chorus]\n{chorus_line_1}\n{chorus_line_2}\n{chorus_line_1}\n{chorus_hook}\n\n[Verse 2]\n{verse_2}\n\n[Bridge]\n{bridge}",tags:["song","music","lyrics"],inputs:[{key:"chorus_hook",label:"Chorus Hook Line"},{key:"verse_1_line_1",label:"Opening Line"},{key:"bridge",label:"Bridge Section"}]},
+{id:23,title:"Cold Email",category:"Marketing",difficulty:"Medium",time:"10 min",desc:"Personalized cold outreach that gets replies.",preview:"Hi {name},\n\nI noticed {company} recently {trigger}. Congrats!\n\nI help {persona} achieve {result} without {pain}.\n\nWould it make sense to chat for 15 min this week?\n\nBest,\n{sender}",tags:["email","outreach","B2B"],inputs:[{key:"name",label:"Recipient"},{key:"company",label:"Company"},{key:"trigger",label:"Trigger Event"}]},
+{id:24,title:"YouTube Description",category:"Marketing",difficulty:"Easy",time:"10 min",desc:"SEO-optimized video description.",preview:"{hook} Watch till the end for {bonus}!\n\nTimestamps:\n00:00 - Intro\n{ts_1} - {ch_1}\n{ts_2} - {ch_2}\n\nResources:\n{resource_1}\n\nSubscribe for weekly {topic} content!\n\n#{tag1} #{tag2} #{tag3}",tags:["youtube","video","SEO"],inputs:[{key:"hook",label:"Opening Hook"},{key:"topic",label:"Channel Topic"},{key:"bonus",label:"End Bonus"}]}
 ];
 
-const POWER_WORDS = ["amazing","breakthrough","discover","effortless","exclusive","guaranteed","imagine","instantly","proven","remarkable","secret","transform","ultimate","unlock","powerful"];
-const PASSIVE_PATTERNS = [/\b(is|are|was|were|be|been|being)\s+\w+ed\b/gi];
+let currentSection = 'analyzer';
+let analysisTimer = null;
+let suggestionsTimer = null;
+let sugFilterCat = 'all';
+let currentSuggestions = [];
+let sugUndoStack = [];
+let compareView = 'side';
+let currentTpl = null;
+let starredTemplates = JSON.parse(localStorage.getItem('acg-starred') || '[]');
+let customTemplates = JSON.parse(localStorage.getItem('acg-custom-templates') || '[]');
+let calendarEvents = JSON.parse(localStorage.getItem('acg-calendar') || '[]');
+let calYear = 2026, calMonth = 2; // March 2026 (0-indexed)
+let calViewMode = 'month';
+let selectedPlatforms = new Set();
+let xp = parseInt(localStorage.getItem('acg-xp') || '0');
+let analysisHistory = JSON.parse(localStorage.getItem('acg-history') || '[]');
+let compareHistory = JSON.parse(localStorage.getItem('acg-compare-history') || '[]');
 
-const SUGGESTION_PATTERNS = [
-  {cat:"clarity",label:"Wordy phrase",regex:/\b(in order to|due to the fact that|in the event that|at this point in time)\b/gi,fix:{"in order to":"to","due to the fact that":"because","in the event that":"if","at this point in time":"now"}},
-  {cat:"clarity",label:"Weak verb",regex:/\b(utilize|leverage|facilitate|implement)\b/gi,fix:{"utilize":"use","leverage":"use","facilitate":"enable","implement":"do"}},
-  {cat:"engage",label:"Passive opening",regex:/^(It is|There is|There are|It was)\b/gm,suggest:"Start with an active subject"},
-  {cat:"seo",label:"Missing transition",regex:/\.\s+(?!However|Therefore|Furthermore|Moreover|Additionally|First|Second|Finally|In addition)/g,suggest:"Add a transition word for better flow"},
-  {cat:"read",label:"Long sentence",regex:/[^.!?]{120,}[.!?]/g,suggest:"Break into shorter sentences for clarity"},
-  {cat:"engage",label:"Vague intensifier",regex:/\b(very|really|quite|rather|somewhat|fairly)\s+\w+/gi,suggest:"Replace with a more specific, powerful word"},
-];
-
-const MIX_MODES = ["Combine","Contrast","Synthesize"];
-let activeMixMode = "Combine";
-let activeCategory = "All";
-let sugToggles = {clarity:true,engage:true,seo:true,read:true};
-let analysisTimer, sugTimer;
-
-// ─── INIT ────────────────────────────────────────────────────────────────────
-const TABS = [
-  {id:"templates",label:"Templates Gallery"},
-  {id:"analyzer",label:"Style Analyzer"},
-  {id:"suggestions",label:"Real-time Suggestions"},
-  {id:"mixer",label:"Content Mixer"},
-  {id:"ab",label:"A/B Testing"},
-  {id:"export",label:"Export to Platforms"},
-  {id:"calendar",label:"Content Calendar"},
-];
+// ═══════════════════════════════════════════════════════════════════
+// INIT & NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
 
 function init() {
-  // Tab nav
-  const nav = document.getElementById('tab-nav');
-  TABS.forEach((t,i) => {
-    const b = document.createElement('button');
-    b.className = 'tab-btn' + (i===0?' active':'');
-    b.textContent = t.label;
-    b.onclick = () => switchTab(t.id);
-    nav.appendChild(b);
+  updateXPDisplay();
+  renderTemplateFilters();
+  renderTemplates();
+  renderCalendar();
+  renderAnalysisHistory();
+  loadPersistedData();
+  initFadeObserver();
+
+  document.getElementById('theme-toggle').onclick = toggleTheme;
+  document.getElementById('sidebar-toggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
+
+  // Load saved theme
+  if (localStorage.getItem('acg-theme') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(mo => {
+    mo.addEventListener('click', e => { if (e.target === mo) mo.classList.remove('open'); });
   });
 
-  // Template filters
-  const filters = document.getElementById('tpl-filters');
-  ['All','Blog','Social','Email','Marketing','Technical'].forEach(cat => {
-    const b = document.createElement('button');
-    b.className = 'filter-tab' + (cat==='All'?' active':'');
-    b.textContent = cat;
-    b.onclick = () => { activeCategory = cat; document.querySelectorAll('.filter-tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); filterTemplates(); };
-    filters.appendChild(b);
-  });
-  renderTemplates(TEMPLATES);
-  initExport();
-  initCalendar();
-
-  // Gauges
-  renderGauges([{label:'Readability',id:'g-read'},{label:'Vocabulary',id:'g-vocab'},{label:'Engagement',id:'g-eng'},{label:'Passive %',id:'g-pass'}]);
-
-  // Mix modes
-  const mm = document.getElementById('mix-modes');
-  MIX_MODES.forEach(m => {
-    const b = document.createElement('button');
-    b.className = 'filter-tab' + (m===activeMixMode?' active':'');
-    b.textContent = m;
-    b.onclick = () => { activeMixMode = m; document.querySelectorAll('#mix-modes .filter-tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
-    mm.appendChild(b);
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
   });
 
-  // Mix sliders
-  const sl = document.getElementById('mix-sliders');
-  [{id:'ratio-a',label:'Source A',val:40},{id:'ratio-b',label:'Source B',val:40},{id:'ratio-c',label:'Source C',val:20}].forEach(s => {
-    const row = document.createElement('div');
-    row.className = 'slider-row';
-    row.innerHTML = `<label>${s.label}</label><input type="range" id="${s.id}" min="0" max="100" value="${s.val}"><span id="${s.id}-val" class="text-xs text-secondary">${s.val}%</span>`;
-    sl.appendChild(row);
-    row.querySelector('input').oninput = function(){ document.getElementById(s.id+'-val').textContent = this.value+'%'; };
+  // Close sidebar on mobile when section changes
+  document.addEventListener('click', e => {
+    if (window.innerWidth <= 768 && !e.target.closest('.sidebar') && !e.target.closest('.sidebar-toggle')) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
   });
 
-  // Suggestion toggles
-  const st = document.getElementById('sug-toggles');
-  [{cat:'clarity',label:'Clarity'},{cat:'engage',label:'Engage'},{cat:'seo',label:'SEO'},{cat:'read',label:'Readability'}].forEach(t => {
-    const b = document.createElement('button');
-    b.className = `sug-toggle`;
-    b.dataset.cat = t.cat;
-    b.textContent = t.label;
-    b.onclick = () => { sugToggles[t.cat] = !sugToggles[t.cat]; b.classList.toggle('off',!sugToggles[t.cat]); renderSuggestions(); };
-    st.appendChild(b);
-  });
+  // Init variation metrics containers
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById(`var-metrics-${i}`);
+    if (el) {
+      el.innerHTML = [['--','Readability'],['--','Words'],['--','Engagement'],['--','Sentiment']].map(([v,l]) =>
+        `<div style="background:var(--bg-elevated);border-radius:var(--radius-sm);padding:8px;text-align:center">
+          <div style="font-size:1rem;font-weight:700" id="vm-${i}-${l.toLowerCase()}">${v}</div>
+          <div class="text-xs text-muted">${l}</div>
+        </div>`
+      ).join('');
+    }
+  }
+}
 
-  // AB metrics placeholders
-  ['a','b'].forEach(v => {
-    const el = document.getElementById(`ab-metrics-${v}`);
-    [['—','Readability'],['—','Word Count'],['—','Engagement'],['—','Sentiment']].forEach(([val,lbl]) => {
-      const div = document.createElement('div');
-      div.className = 'metric-item';
-      div.innerHTML = `<div class="metric-val" id="ab-${v}-${lbl.toLowerCase().replace(' ','-')}">${val}</div><div class="metric-label">${lbl}</div>`;
-      el.appendChild(div);
-    });
-  });
+function switchSection(id) {
+  currentSection = id;
+  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === `sec-${id}`));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.toggle('active', l.dataset.section === id));
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+  awardXP(2); // XP for navigation
+}
 
-  // Load persisted data
-  loadStorage();
+function toggleTheme() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  document.documentElement.setAttribute('data-theme', isLight ? '' : 'light');
+  localStorage.setItem('acg-theme', isLight ? 'dark' : 'light');
+}
 
-  // Fade-up observer
-  const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:.1});
+function initFadeObserver() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 }
 
-// ─── TABS ────────────────────────────────────────────────────────────────────
-function switchTab(id) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', TABS[i].id===id));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id===`panel-${id}`));
-  saveStorage();
+// ═══════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toast(msg, type = '') {
+  const tc = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type ? 'toast-' + type : ''}`;
+  t.innerHTML = `${type === 'success' ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' : type === 'error' ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' : ''}<span>${esc(msg)}</span>`;
+  tc.appendChild(t);
+  setTimeout(() => { t.classList.add('toast-out'); setTimeout(() => t.remove(), 300); }, 2800);
 }
 
-// ─── TEMPLATES ───────────────────────────────────────────────────────────────
-function renderTemplates(list) {
-  const grid = document.getElementById('tpl-grid');
-  grid.innerHTML = '';
-  if(!list.length){ grid.innerHTML='<div class="empty-state">No templates match your search.</div>'; return; }
-  list.forEach(t => {
-    const card = document.createElement('div');
-    card.className = 'card tpl-card';
-    card.innerHTML = `
-      <div class="tpl-card-header">
-        <span class="tpl-title">${t.title}</span>
-        <span class="tag">${t.category}</span>
-      </div>
-      <p class="text-sm text-secondary">${t.desc}</p>
-      <div class="tpl-preview mono">${escHtml(t.preview)}</div>
-      <div class="tpl-tags">${t.tags.map(tag=>`<span class="tag tag-purple">${tag}</span>`).join('')}</div>`;
-    card.onclick = () => openTplModal(t);
-    grid.appendChild(card);
+function awardXP(amount) {
+  xp += amount;
+  localStorage.setItem('acg-xp', xp);
+  updateXPDisplay();
+}
+
+function updateXPDisplay() {
+  document.getElementById('xp-val').textContent = xp + ' XP';
+}
+
+function setGauge(ringId, pct, valId, label, color) {
+  const ring = document.getElementById(ringId);
+  const val = document.getElementById(valId);
+  if (ring) {
+    ring.style.strokeDashoffset = 289 * (1 - Math.min(pct, 100) / 100);
+    if (color) ring.style.stroke = color;
+  }
+  if (val) val.textContent = label;
+}
+
+function getGaugeColor(pct) {
+  if (pct >= 80) return 'var(--success)';
+  if (pct >= 60) return 'var(--accent)';
+  if (pct >= 40) return 'var(--warning)';
+  return 'var(--error)';
+}
+
+function getGrade(score) {
+  if (score >= 95) return 'A+';
+  if (score >= 90) return 'A';
+  if (score >= 85) return 'A-';
+  if (score >= 80) return 'B+';
+  if (score >= 75) return 'B';
+  if (score >= 70) return 'B-';
+  if (score >= 65) return 'C+';
+  if (score >= 60) return 'C';
+  if (score >= 55) return 'C-';
+  if (score >= 50) return 'D+';
+  if (score >= 45) return 'D';
+  if (score >= 40) return 'D-';
+  return 'F';
+}
+
+function getGradeClass(grade) {
+  const l = grade.charAt(0);
+  if (l === 'A') return 'grade-a';
+  if (l === 'B') return 'grade-b';
+  if (l === 'C') return 'grade-c';
+  if (l === 'D') return 'grade-d';
+  return 'grade-f';
+}
+
+function splitSentences(text) { return (text.match(/[^.!?]+[.!?]+/g) || [text]).filter(s => s.trim().length > 0); }
+
+function countSyllables(word) {
+  word = word.toLowerCase().replace(/[^a-z]/g, '');
+  if (word.length <= 3) return 1;
+  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+  word = word.replace(/^y/, '');
+  const m = word.match(/[aeiouy]{1,2}/g);
+  return m ? m.length : 1;
+}
+
+function saveData() {
+  try {
+    const fields = {
+      'acg-analyzer': 'analyzer-input',
+      'acg-sug-editor': 'sug-editor',
+      'acg-export-content': 'export-content',
+      'acg-compare-prompt': 'compare-prompt'
+    };
+    for (const [key, id] of Object.entries(fields)) {
+      const el = document.getElementById(id);
+      if (el) localStorage.setItem(key, el.value);
+    }
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById(`var-text-${i}`);
+      if (el) localStorage.setItem(`acg-var-${i}`, el.value);
+    }
+  } catch(e) {}
+}
+
+function loadPersistedData() {
+  try {
+    const fields = {
+      'acg-analyzer': 'analyzer-input',
+      'acg-sug-editor': 'sug-editor',
+      'acg-export-content': 'export-content',
+      'acg-compare-prompt': 'compare-prompt'
+    };
+    for (const [key, id] of Object.entries(fields)) {
+      const v = localStorage.getItem(key);
+      const el = document.getElementById(id);
+      if (v && el) el.value = v;
+    }
+    for (let i = 0; i < 3; i++) {
+      const v = localStorage.getItem(`acg-var-${i}`);
+      const el = document.getElementById(`var-text-${i}`);
+      if (v && el) el.value = v;
+    }
+    if (document.getElementById('analyzer-input').value) runFullAnalysis();
+    if (document.getElementById('sug-editor').value) { updateSugStats(); renderSuggestions(); }
+  } catch(e) {}
+}
+
+// Auto-save on input
+document.addEventListener('input', e => {
+  if (['TEXTAREA','INPUT'].includes(e.target.tagName)) {
+    clearTimeout(window._saveT);
+    window._saveT = setTimeout(saveData, 600);
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// CONTENT QUALITY ANALYZER
+// ═══════════════════════════════════════════════════════════════════
+
+function scheduleAnalysis() { clearTimeout(analysisTimer); analysisTimer = setTimeout(runFullAnalysis, 400); }
+
+function clearAnalyzer() {
+  document.getElementById('analyzer-input').value = '';
+  resetAnalyzerUI();
+}
+
+function resetAnalyzerUI() {
+  ['readability','seo','engagement','style'].forEach(k => {
+    setGauge(`ring-${k}`, 0, `val-${k}`, '--');
   });
+  document.getElementById('overall-grade').textContent = '--';
+  document.getElementById('overall-score').textContent = '--';
+  document.getElementById('overall-bar').style.width = '0%';
+  document.getElementById('a-words').textContent = '0';
+  document.getElementById('a-sents').textContent = '0';
+  document.getElementById('a-paras').textContent = '0';
+  document.getElementById('a-readtime').textContent = '0 min';
 }
 
-function filterTemplates() {
-  const q = document.getElementById('tpl-search').value.toLowerCase();
-  let list = TEMPLATES;
-  if(activeCategory !== 'All') list = list.filter(t => t.category===activeCategory);
-  if(q) list = list.filter(t => t.title.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)||t.tags.some(tag=>tag.includes(q)));
-  renderTemplates(list);
+function loadSampleText() {
+  document.getElementById('analyzer-input').value = `The Art of Effective Communication in the Digital Age
+
+In today's rapidly evolving digital landscape, effective communication has become more important than ever. Whether you're crafting a business email, writing a blog post, or engaging on social media, the ability to convey your message clearly and persuasively is a critical skill.
+
+Research shows that the average person spends over 6 hours per day consuming digital content. This remarkable statistic highlights why your content needs to stand out. Here are three proven strategies to transform your writing:
+
+First, start with a compelling hook. Questions, surprising statistics, or bold statements instantly capture attention and keep readers engaged. Second, use short paragraphs and varied sentence lengths. This creates a natural rhythm that guides your reader through the content effortlessly. Third, always end with a clear call to action. Tell your readers exactly what you want them to do next.
+
+Remember, great content isn't just about what you say — it's about how you say it. By mastering these fundamental techniques, you'll discover the secret to creating content that resonates with your audience and drives meaningful results.
+
+What communication challenges do you face most often? Share your thoughts below.`;
+  runFullAnalysis();
+  toast('Sample text loaded!', 'success');
 }
 
-let currentTpl = null;
-function openTplModal(t) {
-  currentTpl = t;
-  document.getElementById('modal-title').textContent = t.title;
-  document.getElementById('modal-category').innerHTML = `<span class="tag">${t.category}</span>`;
-  document.getElementById('modal-desc').textContent = t.desc;
-  const inputs = document.getElementById('modal-inputs');
-  inputs.innerHTML = '';
-  t.inputs.forEach(inp => {
-    const div = document.createElement('div');
-    div.innerHTML = `<label>${inp.label}</label><input type="text" id="tpl-inp-${inp.key}" placeholder="${inp.label}…" oninput="updateModalPreview()">`;
-    inputs.appendChild(div);
-  });
-  updateModalPreview();
-  document.getElementById('tpl-modal').hidden = false;
-}
-
-function updateModalPreview() {
-  if(!currentTpl) return;
-  let text = currentTpl.preview;
-  currentTpl.inputs.forEach(inp => {
-    const val = (document.getElementById(`tpl-inp-${inp.key}`)||{}).value || `{${inp.key}}`;
-    text = text.replace(new RegExp(`\\{${inp.key}\\}`,'g'), val||`{${inp.key}}`);
-  });
-  document.getElementById('modal-preview').textContent = text;
-}
-
-function closeTplModal() { document.getElementById('tpl-modal').hidden=true; currentTpl=null; }
-
-function copyModalPreview() {
-  const text = document.getElementById('modal-preview').textContent;
-  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!'));
-}
-
-// ─── STYLE ANALYZER ──────────────────────────────────────────────────────────
-function renderGauges(defs) {
-  const grid = document.getElementById('gauges');
-  grid.innerHTML = '';
-  defs.forEach(({label,id}) => {
-    const div = document.createElement('div');
-    div.className = 'gauge-item';
-    div.innerHTML = `
-      <div class="gauge-ring">
-        <svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="8"/>
-          <circle cx="50" cy="50" r="40" fill="none" stroke="url(#g)" stroke-width="8"
-            stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"
-            transform="rotate(-90 50 50)" id="${id}-ring" style="transition:stroke-dashoffset .8s ease"/>
-          <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#6384ff"/><stop offset="100%" stop-color="#a855f7"/>
-          </linearGradient></defs>
-        </svg>
-      </div>
-      <div class="gauge-val" id="${id}-val">—</div>
-      <div class="gauge-label">${label}</div>`;
-    grid.appendChild(div);
-  });
-}
-
-function setGauge(id, pct, label) {
-  const ring = document.getElementById(id+'-ring');
-  const val = document.getElementById(id+'-val');
-  if(ring) ring.style.strokeDashoffset = 251.2 * (1 - Math.min(pct,100)/100);
-  if(val) val.textContent = label;
-}
-
-function scheduleAnalysis() { clearTimeout(analysisTimer); analysisTimer = setTimeout(runAnalysis, 400); }
-
-function runAnalysis() {
+function runFullAnalysis() {
   const text = document.getElementById('analyzer-input').value.trim();
-  if(!text){ ['g-read','g-vocab','g-eng','g-pass'].forEach(id=>setGauge(id,0,'—')); document.getElementById('personality-chip').textContent='—'; document.getElementById('analysis-suggestions').innerHTML='<span class="text-secondary text-sm">Analyze your text to receive suggestions.</span>'; return; }
+  if (!text) { resetAnalyzerUI(); return; }
 
-  const words = text.match(/\b\w+\b/g)||[];
-  const sentences = text.split(/[.!?]+/).filter(s=>s.trim().length>2);
-  const uniqueWords = new Set(words.map(w=>w.toLowerCase()));
-  const avgSentLen = words.length/(sentences.length||1);
-  const vocabRichness = uniqueWords.size/Math.max(words.length,1);
-  const passiveCount = PASSIVE_PATTERNS.reduce((n,p)=>{const m=text.match(p); return n+(m?m.length:0);},0);
-  const passivePct = passiveCount/Math.max(sentences.length,1)*100;
-  const powerCount = POWER_WORDS.filter(pw=>words.some(w=>w.toLowerCase()===pw)).length;
-  const fkScore = Math.max(0,Math.min(100,206.835-1.015*(words.length/Math.max(sentences.length,1))-84.6*(text.match(/[aeiou]/gi)||[]).length/Math.max(words.length,1)));
+  const words = text.match(/\b[a-zA-Z]+\b/g) || [];
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 2);
+  const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+  const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+  const avgSentLen = words.length / Math.max(sentences.length, 1);
 
-  setGauge('g-read', fkScore, Math.round(fkScore));
-  setGauge('g-vocab', vocabRichness*100, (vocabRichness*100).toFixed(0)+'%');
-  setGauge('g-eng', Math.min(100,powerCount*15+30), powerCount+' PW');
-  setGauge('g-pass', 100-passivePct, passivePct.toFixed(0)+'% pass');
+  // Update stats
+  document.getElementById('a-words').textContent = words.length;
+  document.getElementById('a-sents').textContent = sentences.length;
+  document.getElementById('a-paras').textContent = paragraphs.length;
+  document.getElementById('a-readtime').textContent = Math.max(1, Math.round(words.length / 238)) + ' min';
 
-  // Personality
-  let personality, color;
-  if(fkScore>70&&vocabRichness>.6){personality='Academic Scholar';color='#a855f7';}
-  else if(avgSentLen<12&&powerCount>2){personality='Dynamic Communicator';color='var(--success)';}
-  else if(passivePct>30){personality='Formal Writer';color='var(--warning)';}
-  else if(vocabRichness>.5){personality='Balanced Storyteller';color='var(--accent)';}
-  else{personality='Conversational Voice';color='#ec4899';}
-  const chip = document.getElementById('personality-chip');
-  chip.textContent = personality; chip.style.color = color; chip.style.background = color+'22';
+  // 1. Readability (Flesch-Kincaid)
+  const totalSyllables = words.reduce((sum, w) => sum + countSyllables(w), 0);
+  const fkScore = Math.max(0, Math.min(100, 206.835 - 1.015 * (words.length / Math.max(sentences.length, 1)) - 84.6 * (totalSyllables / Math.max(words.length, 1))));
+  const readabilityScore = Math.round(fkScore);
 
-  // Suggestions
-  const suggs = [];
-  if(passivePct>25) suggs.push('Reduce passive voice — aim for under 25% of sentences.');
-  if(avgSentLen>20) suggs.push(`Average sentence length is ${avgSentLen.toFixed(1)} words. Try to keep it under 20.`);
-  if(vocabRichness<.3) suggs.push('Vocabulary richness is low. Vary your word choices to keep readers engaged.');
-  if(powerCount<3) suggs.push('Add more power words (e.g., discover, transform, proven) to boost engagement.');
-  if(fkScore<40) suggs.push('Readability is complex. Simplify sentences for a wider audience.');
+  // 2. SEO Score
+  let seoScore = 50;
+  const hasHeadings = /^#+\s|^[A-Z][A-Za-z\s]{5,}$/m.test(text);
+  if (hasHeadings) seoScore += 15;
+  if (words.length >= 300) seoScore += 10;
+  if (words.length >= 600) seoScore += 5;
+  const keywordDensity = (uniqueWords.size / Math.max(words.length, 1));
+  if (keywordDensity > 0.3 && keywordDensity < 0.7) seoScore += 10;
+  if (paragraphs.length >= 3) seoScore += 5;
+  if (text.includes('?')) seoScore += 5;
+  seoScore = Math.min(100, seoScore);
 
-  const el = document.getElementById('analysis-suggestions');
-  el.innerHTML = suggs.length
-    ? suggs.map(s=>`<div class="suggestion-item"><div class="sug-cat sug-read">Tip</div><div class="sug-text">${s}</div></div>`).join('')
-    : '<div class="suggestion-item"><div class="sug-text text-secondary">Great writing! No major issues detected.</div></div>';
-  saveStorage();
+  // 3. Engagement
+  let engScore = 30;
+  const pwCount = POWER_WORDS.filter(pw => words.some(w => w.toLowerCase() === pw)).length;
+  engScore += Math.min(25, pwCount * 5);
+  if (text.includes('?')) engScore += 10;
+  if (/\b(you|your|you're)\b/i.test(text)) engScore += 10;
+  const hasStory = /\b(when|once|remember|imagine|picture this)\b/i.test(text);
+  if (hasStory) engScore += 10;
+  if (/\d+%|\d+ percent/i.test(text)) engScore += 5;
+  const sentLengths = sentences.map(s => (s.match(/\b\w+\b/g) || []).length);
+  const sentVariance = sentLengths.length > 1 ? Math.sqrt(sentLengths.reduce((s, l) => s + Math.pow(l - avgSentLen, 2), 0) / sentLengths.length) : 0;
+  if (sentVariance > 5) engScore += 10;
+  engScore = Math.min(100, engScore);
+
+  // 4. Grammar & Style
+  let styleScore = 80;
+  const passiveMatches = text.match(/\b(is|are|was|were|be|been|being)\s+\w+ed\b/gi) || [];
+  const passivePct = (passiveMatches.length / Math.max(sentences.length, 1)) * 100;
+  if (passivePct > 30) styleScore -= 20;
+  else if (passivePct > 15) styleScore -= 10;
+  const fillerCount = FILLER_WORDS.filter(fw => words.some(w => w.toLowerCase() === fw)).length;
+  styleScore -= Math.min(20, fillerCount * 3);
+  const clicheCount = CLICHES.filter(c => text.toLowerCase().includes(c)).length;
+  styleScore -= Math.min(15, clicheCount * 5);
+  if (avgSentLen > 25) styleScore -= 10;
+  styleScore = Math.max(0, Math.min(100, styleScore));
+
+  // Set gauges
+  setGauge('ring-readability', readabilityScore, 'val-readability', readabilityScore, getGaugeColor(readabilityScore));
+  setGauge('ring-seo', seoScore, 'val-seo', seoScore, getGaugeColor(seoScore));
+  setGauge('ring-engagement', engScore, 'val-engagement', engScore, getGaugeColor(engScore));
+  setGauge('ring-style', styleScore, 'val-style', styleScore, getGaugeColor(styleScore));
+
+  // Overall
+  const benchmark = document.getElementById('content-type-benchmark').value;
+  const weights = {
+    blog: [0.25, 0.3, 0.25, 0.2],
+    social: [0.15, 0.15, 0.5, 0.2],
+    email: [0.3, 0.1, 0.4, 0.2],
+    technical: [0.35, 0.2, 0.1, 0.35],
+    marketing: [0.2, 0.25, 0.35, 0.2]
+  }[benchmark] || [0.25, 0.25, 0.25, 0.25];
+
+  const overall = Math.round(readabilityScore * weights[0] + seoScore * weights[1] + engScore * weights[2] + styleScore * weights[3]);
+  const grade = getGrade(overall);
+  const gradeEl = document.getElementById('overall-grade');
+  gradeEl.textContent = grade;
+  gradeEl.className = `grade-display ${getGradeClass(grade)}`;
+  document.getElementById('overall-score').textContent = overall;
+  document.getElementById('overall-bar').style.width = overall + '%';
+
+  // Save to history
+  const entry = {
+    date: new Date().toISOString(),
+    score: overall,
+    grade,
+    words: words.length,
+    readability: readabilityScore,
+    seo: seoScore,
+    engagement: engScore,
+    style: styleScore,
+    preview: text.substring(0, 60) + '...'
+  };
+  analysisHistory.unshift(entry);
+  if (analysisHistory.length > 20) analysisHistory = analysisHistory.slice(0, 20);
+  localStorage.setItem('acg-history', JSON.stringify(analysisHistory));
+  renderAnalysisHistory();
+  awardXP(5);
 }
 
-// ─── REAL-TIME SUGGESTIONS ───────────────────────────────────────────────────
-function scheduleSuggestions() { clearTimeout(sugTimer); sugTimer = setTimeout(renderSuggestions, 350); updateSugStats(); }
+function renderAnalysisHistory() {
+  const el = document.getElementById('analysis-history');
+  if (!analysisHistory.length) {
+    el.innerHTML = '<div class="empty-state text-sm">No analyses yet.</div>';
+    return;
+  }
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px">${analysisHistory.slice(0, 10).map(h => {
+    const d = new Date(h.date);
+    const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    return `<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--bg-elevated);border-radius:var(--radius-sm);font-size:.8rem">
+      <div class="grade-display ${getGradeClass(h.grade)}" style="width:36px;height:36px;font-size:.8rem;border-width:2px;flex-shrink:0">${h.grade}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(h.preview)}</div>
+        <div class="text-muted text-xs">${dateStr} &bull; ${h.words} words &bull; Score: ${h.score}</div>
+      </div>
+      <div class="flex gap-4">
+        <span class="tag" style="font-size:.6rem">R:${h.readability}</span>
+        <span class="tag tag-success" style="font-size:.6rem">S:${h.seo}</span>
+        <span class="tag tag-purple" style="font-size:.6rem">E:${h.engagement}</span>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function clearHistory() {
+  analysisHistory = [];
+  localStorage.removeItem('acg-history');
+  renderAnalysisHistory();
+  toast('History cleared');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// REAL-TIME SUGGESTIONS
+// ═══════════════════════════════════════════════════════════════════
+
+const SUG_RULES = [
+  // Readability
+  {cat:'readability',priority:'high',label:'Long sentence',test:t=>{const r=[];t.replace(/[^.!?]{100,}[.!?]/g,(m,i)=>r.push({idx:i,original:m,suggestion:'Break this into shorter sentences for better readability.',before:m.substring(0,50)+'...',after:'[Split into 2-3 shorter sentences]'}));return r}},
+  {cat:'readability',priority:'medium',label:'Complex word',test:t=>{const r=[];const complex={'utilize':'use','leverage':'use','facilitate':'help','implement':'do','commence':'start','terminate':'end','endeavor':'try','subsequently':'then','approximately':'about','demonstrate':'show','sufficient':'enough','accomplish':'do','nevertheless':'but','furthermore':'also','consequently':'so'};Object.entries(complex).forEach(([w,fix])=>{const re=new RegExp('\\b'+w+'\\b','gi');let m;while((m=re.exec(t))!==null)r.push({idx:m.index,original:m[0],suggestion:`Replace "${m[0]}" with "${fix}"`,before:m[0],after:fix})});return r}},
+  {cat:'readability',priority:'low',label:'Add subheading',test:t=>{const r=[];const paras=t.split(/\n\s*\n/);if(paras.length>3&&!/^#+\s|^[A-Z][A-Z\s]{3,}$/m.test(t)){r.push({idx:0,original:'',suggestion:'Add subheadings to break up long content and improve scannability.',before:'[No headings found]',after:'## Add Section Heading Here'})}return r}},
+
+  // SEO
+  {cat:'seo',priority:'high',label:'Missing keyword in intro',test:t=>{const r=[];const first=t.substring(0,200);if(first.length>50&&!/\b(guide|how|what|why|best|top|tips)\b/i.test(first)){r.push({idx:0,original:'',suggestion:'Add your target keyword to the first paragraph for better SEO.',before:'[First paragraph]',after:'Include target keyword early'})}return r}},
+  {cat:'seo',priority:'medium',label:'No meta description hint',test:t=>{const r=[];if(t.length>300&&!/\b(summary|tldr|overview|in this)\b/i.test(t.substring(0,300))){r.push({idx:0,original:'',suggestion:'Add a concise summary (150-160 chars) near the top that could serve as a meta description.',before:'',after:'[Add 150-160 char summary]'})}return r}},
+  {cat:'seo',priority:'low',label:'Add internal link hint',test:t=>{const r=[];if(t.length>500&&!/\[.*?\]\(.*?\)|https?:\/\/|related|see also|read more/i.test(t)){r.push({idx:0,original:'',suggestion:'Add internal or external links to boost SEO value and provide reader resources.',before:'',after:'[Related: Link to relevant content]'})}return r}},
+
+  // Engagement
+  {cat:'engagement',priority:'high',label:'Weak opening',test:t=>{const r=[];const first=t.split(/[.!?]/)[0]||'';if(first.length>10&&/^(It is|There is|There are|This is|I am|We are|The)\b/i.test(first.trim())){r.push({idx:0,original:first.trim(),suggestion:'Start with a question, statistic, or bold statement for a stronger hook.',before:first.trim().substring(0,40),after:'[Rewrite with compelling hook]'})}return r}},
+  {cat:'engagement',priority:'medium',label:'No questions',test:t=>{const r=[];if(t.length>200&&!t.includes('?')){r.push({idx:0,original:'',suggestion:'Add rhetorical questions to increase reader engagement and interaction.',before:'[No questions found]',after:'Have you ever wondered...?'})}return r}},
+  {cat:'engagement',priority:'medium',label:'Missing power words',test:t=>{const r=[];const words=(t.match(/\b[a-zA-Z]+\b/g)||[]).map(w=>w.toLowerCase());const found=POWER_WORDS.filter(pw=>words.includes(pw));if(found.length<2&&t.length>100){r.push({idx:0,original:'',suggestion:`Add power words like "proven", "essential", "transform" to boost emotional impact. Currently found: ${found.length}`,before:'',after:'Use words like: proven, essential, remarkable'})}return r}},
+  {cat:'engagement',priority:'low',label:'Add statistic',test:t=>{const r=[];if(t.length>300&&!/\d+%|\d+ percent|\d+x|\$\d/i.test(t)){r.push({idx:0,original:'',suggestion:'Add a specific statistic or data point to increase credibility.',before:'',after:'Studies show that 73% of...'})}return r}},
+
+  // Style
+  {cat:'style',priority:'high',label:'Filler word',test:t=>{const r=[];FILLER_WORDS.forEach(fw=>{const re=new RegExp('\\b'+fw+'\\b','gi');let m;while((m=re.exec(t))!==null&&r.length<8){r.push({idx:m.index,original:m[0],suggestion:`Remove filler word "${m[0]}" for tighter prose.`,before:t.substring(Math.max(0,m.index-15),m.index+m[0].length+15),after:t.substring(Math.max(0,m.index-15),m.index)+t.substring(m.index+m[0].length,m.index+m[0].length+15)})}});return r}},
+  {cat:'style',priority:'medium',label:'Passive voice',test:t=>{const r=[];const re=/\b(is|are|was|were|be|been|being)\s+(\w+ed)\b/gi;let m;while((m=re.exec(t))!==null&&r.length<5){r.push({idx:m.index,original:m[0],suggestion:`Consider active voice instead of "${m[0]}".`,before:m[0],after:'[Rewrite in active voice]'})}return r}},
+  {cat:'style',priority:'low',label:'Cliche detected',test:t=>{const r=[];CLICHES.forEach(c=>{const idx=t.toLowerCase().indexOf(c);if(idx>=0){r.push({idx,original:c,suggestion:`Replace cliche "${c}" with original phrasing.`,before:c,after:'[Write something original]'})}});return r}},
+  {cat:'style',priority:'medium',label:'Sentence variety',test:t=>{const r=[];const sents=splitSentences(t);const lens=sents.map(s=>(s.match(/\b\w+\b/g)||[]).length);if(lens.length>3){const avg=lens.reduce((a,b)=>a+b,0)/lens.length;const allSimilar=lens.every(l=>Math.abs(l-avg)<4);if(allSimilar){r.push({idx:0,original:'',suggestion:'Vary your sentence lengths more. Mix short punchy sentences with longer descriptive ones.',before:`All sentences ~${Math.round(avg)} words`,after:'Mix 5-word and 20-word sentences'})}}return r}}
+];
+
+function scheduleSuggestions() {
+  clearTimeout(suggestionsTimer);
+  suggestionsTimer = setTimeout(() => { renderSuggestions(); updateSugStats(); }, 350);
+  updateSugStats();
+}
 
 function updateSugStats() {
-  const text = document.getElementById('sug-input').value;
-  const words = (text.match(/\b\w+\b/g)||[]).length;
-  const sents = (text.split(/[.!?]+/).filter(s=>s.trim().length>2)).length;
-  document.getElementById('sug-words').textContent = words;
-  document.getElementById('sug-sents').textContent = sents;
-  const score = words > 5 ? Math.min(100,Math.round(70 + (sents>2?10:0) + (words>50?10:0))) : '—';
-  document.getElementById('sug-score').textContent = score === '—' ? score : score+'%';
+  const text = document.getElementById('sug-editor').value;
+  const words = (text.match(/\b\w+\b/g) || []);
+  const sents = splitSentences(text);
+  const avg = words.length > 0 ? Math.round(words.length / Math.max(sents.length, 1)) : 0;
+  document.getElementById('s-words').textContent = words.length;
+  document.getElementById('s-sents').textContent = sents.length;
+  document.getElementById('s-avg').textContent = avg;
+
+  let score = '--';
+  if (words.length > 5) {
+    score = Math.min(100, Math.round(60 + (sents.length > 2 ? 10 : 0) + (words.length > 50 ? 10 : 0) + (words.length > 200 ? 10 : 0) + (text.includes('?') ? 5 : 0)));
+    score += '%';
+  }
+  document.getElementById('s-score').textContent = score;
 }
 
 function renderSuggestions() {
-  const text = document.getElementById('sug-input').value;
+  const text = document.getElementById('sug-editor').value;
   const list = document.getElementById('sug-list');
-  if(!text.trim()){ list.innerHTML='<div class="empty-state">Start typing to see suggestions…</div>'; return; }
 
-  const found = [];
-  SUGGESTION_PATTERNS.forEach(p => {
-    if(!sugToggles[p.cat]) return;
-    let m;
-    const re = new RegExp(p.regex.source, p.regex.flags);
-    while((m = re.exec(text)) !== null) {
-      const matched = m[0];
-      const suggestion = p.fix ? (p.fix[matched.toLowerCase()]||matched) : p.suggest;
-      found.push({cat:p.cat,label:p.label,original:matched,suggestion,idx:m.index});
-      if(found.length>10) break;
-    }
+  if (!text.trim()) {
+    list.innerHTML = '<div class="empty-state">Start typing to see suggestions...</div>';
+    updateBadges([]);
+    document.getElementById('apply-all-btn').style.display = 'none';
+    return;
+  }
+
+  currentSuggestions = [];
+  SUG_RULES.forEach(rule => {
+    const matches = rule.test(text);
+    matches.forEach(m => {
+      currentSuggestions.push({ ...m, cat: rule.cat, priority: rule.priority, label: rule.label });
+    });
   });
 
-  if(!found.length){ list.innerHTML='<div class="empty-state" style="padding:20px">No issues found — great writing!</div>'; return; }
+  // Sort by priority
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  currentSuggestions.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
-  list.innerHTML = found.map((s,i) => `
-    <div class="suggestion-item">
-      <span class="sug-cat sug-${s.cat}">${s.label}</span>
-      <div class="sug-text">
-        Replace <span class="sug-original">${escHtml(s.original)}</span>
-        with <span class="sug-improved">${escHtml(s.suggestion)}</span>
-        <button class="btn btn-sm btn-accent" style="margin-left:8px;padding:2px 8px" onclick="applySuggestion(${i})">Apply</button>
+  updateBadges(currentSuggestions);
+
+  const filtered = sugFilterCat === 'all' ? currentSuggestions : currentSuggestions.filter(s => s.cat === sugFilterCat);
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:24px">No suggestions in this category. Great writing!</div>';
+    document.getElementById('apply-all-btn').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('apply-all-btn').style.display = currentSuggestions.some(s => s.original) ? 'inline-flex' : 'none';
+
+  list.innerHTML = filtered.map((s, i) => `
+    <div class="sug-item" data-idx="${i}">
+      <div class="sug-item-header">
+        <span class="sug-cat sug-cat-${s.cat}">${s.cat}</span>
+        <span class="tag tag-${s.priority}" style="font-size:.6rem">${s.priority}</span>
+        <span class="text-xs" style="font-weight:600">${esc(s.label)}</span>
       </div>
-    </div>`).join('');
-  window._suggestions = found;
-}
-
-function applySuggestion(i) {
-  const s = window._suggestions[i];
-  if(!s) return;
-  const ta = document.getElementById('sug-input');
-  ta.value = ta.value.slice(0,s.idx) + s.suggestion + ta.value.slice(s.idx+s.original.length);
-  renderSuggestions(); updateSugStats();
-}
-
-// ─── CONTENT MIXER ───────────────────────────────────────────────────────────
-function mixContent() {
-  const a = document.getElementById('mix-a').value.trim();
-  const b = document.getElementById('mix-b').value.trim();
-  const c = document.getElementById('mix-c').value.trim();
-  if(!a&&!b){ showToast('Add at least two sources to mix.'); return; }
-
-  const ra = parseInt(document.getElementById('ratio-a').value)/100;
-  const rb = parseInt(document.getElementById('ratio-b').value)/100;
-
-  const senA = splitSentences(a), senB = splitSentences(b), senC = splitSentences(c);
-
-  let result = '';
-  if(activeMixMode==='Combine') {
-    const all = [];
-    senA.forEach((s,i) => { all.push({t:s,src:'a'}); if(senB[i]) all.push({t:senB[i],src:'b'}); if(senC[i]) all.push({t:senC[i],src:'c'}); });
-    result = all.map(x=>`<span class="source-${x.src}">${escHtml(x.t)}</span>`).join(' ');
-  } else if(activeMixMode==='Contrast') {
-    const intro = senA[0]||''; const counter = senB[0]||''; const syn = senC[0]||senA[1]||'';
-    result = `<span class="source-a">${escHtml(intro)}</span> However, <span class="source-b">${escHtml(counter)}</span>${syn?' On the other hand, <span class="source-c">'+escHtml(syn)+'</span>':''}`;
-  } else {
-    const pts = [...senA.slice(0,2),...senB.slice(0,2),...senC.slice(0,2)];
-    result = pts.map((s,i)=>`<span class="source-${['a','a','b','b','c','c'][i]}">${escHtml(s)}</span>`).join(' ');
-  }
-
-  document.getElementById('mix-result').innerHTML = result || '<span class="text-secondary">No content to mix.</span>';
-  saveStorage();
-}
-
-function splitSentences(text) { return text.match(/[^.!?]+[.!?]+/g)||[text]; }
-
-// ─── A/B TESTING ─────────────────────────────────────────────────────────────
-function analyzeAB(text) {
-  const words = (text.match(/\b\w+\b/g)||[]);
-  const sents = text.split(/[.!?]+/).filter(s=>s.trim().length>2);
-  const fk = Math.max(0,Math.min(100,206.835-1.015*(words.length/Math.max(sents.length,1))-84.6*(text.match(/[aeiou]/gi)||[]).length/Math.max(words.length,1)));
-  const posWords = ['great','excellent','amazing','wonderful','best','love','perfect','fantastic'];
-  const negWords = ['bad','terrible','awful','worst','hate','horrible','poor'];
-  const pos = posWords.filter(w=>words.map(x=>x.toLowerCase()).includes(w)).length;
-  const neg = negWords.filter(w=>words.map(x=>x.toLowerCase()).includes(w)).length;
-  const sentiment = pos>neg?'Positive':neg>pos?'Negative':'Neutral';
-  const eng = Math.min(100,Math.round(40+POWER_WORDS.filter(pw=>words.some(w=>w.toLowerCase()===pw)).length*8+(sents.length>2?10:0)));
-  return {readability:Math.round(fk),wordCount:words.length,engagement:eng,sentiment};
-}
-
-function updateABMetrics(v, m) {
-  const labels = {readability:'readability',wordCount:'word-count',engagement:'engagement',sentiment:'sentiment'};
-  Object.entries(labels).forEach(([key,id]) => {
-    const el = document.getElementById(`ab-${v}-${id}`);
-    if(el) el.textContent = m[key];
-  });
-}
-
-function runABTest() {
-  const ta = document.getElementById('ab-a').value.trim();
-  const tb = document.getElementById('ab-b').value.trim();
-  if(!ta||!tb){ showToast('Add content to both versions.'); return; }
-
-  const ma = analyzeAB(ta), mb = analyzeAB(tb);
-  updateABMetrics('a',ma); updateABMetrics('b',mb);
-
-  const scoreA = ma.readability + ma.engagement + (ma.sentiment==='Positive'?10:0);
-  const scoreB = mb.readability + mb.engagement + (mb.sentiment==='Positive'?10:0);
-
-  document.getElementById('ab-panel-a').classList.toggle('winner', scoreA>=scoreB);
-  document.getElementById('ab-panel-b').classList.toggle('winner', scoreB>scoreA);
-
-  // Remove old badges
-  document.querySelectorAll('.winner-badge').forEach(b=>b.remove());
-  const winnerPanel = scoreA>=scoreB ? 'ab-panel-a' : 'ab-panel-b';
-  const badge = document.createElement('div');
-  badge.className = 'winner-badge';
-  badge.textContent = 'Winner 🏆';
-  document.getElementById(winnerPanel).prepend(badge);
-  saveStorage();
-}
-
-function generateVariant() {
-  const ta = document.getElementById('ab-a').value.trim();
-  if(!ta){ showToast('Add content to Version A first.'); return; }
-  const words = ta.replace(/\b(is|are|was|were)\b/g,m=>({is:'becomes',are:'become',was:'became',were:'became'}[m]||m))
-    .replace(/\b(good|nice|big)\b/g,m=>({good:'excellent',nice:'outstanding',big:'substantial'}[m]||m));
-  document.getElementById('ab-b').value = words;
-  showToast('Variant B generated!');
-}
-
-let diffVisible = false;
-function toggleDiff() {
-  const panel = document.getElementById('diff-panel');
-  diffVisible = !diffVisible;
-  panel.style.display = diffVisible ? 'block' : 'none';
-  if(diffVisible) renderDiff();
-}
-
-function renderDiff() {
-  const a = document.getElementById('ab-a').value;
-  const b = document.getElementById('ab-b').value;
-  const wa = a.split(/\s+/), wb = b.split(/\s+/);
-  let html = '';
-  const maxLen = Math.max(wa.length,wb.length);
-  for(let i=0;i<maxLen;i++){
-    if(wa[i]===wb[i]) html += escHtml(wa[i]||'')+' ';
-    else {
-      if(wa[i]) html += `<span class="diff-del">${escHtml(wa[i])}</span> `;
-      if(wb[i]) html += `<span class="diff-add">${escHtml(wb[i])}</span> `;
-    }
-  }
-  document.getElementById('diff-output').innerHTML = html;
-}
-
-// ─── PERSISTENCE ─────────────────────────────────────────────────────────────
-function saveStorage() {
-  try {
-    localStorage.setItem('adv-analyzer', document.getElementById('analyzer-input').value);
-    localStorage.setItem('adv-sug', document.getElementById('sug-input').value);
-    localStorage.setItem('adv-mix-a', document.getElementById('mix-a').value);
-    localStorage.setItem('adv-mix-b', document.getElementById('mix-b').value);
-    localStorage.setItem('adv-mix-c', document.getElementById('mix-c').value);
-    localStorage.setItem('adv-ab-a', document.getElementById('ab-a').value);
-    localStorage.setItem('adv-ab-b', document.getElementById('ab-b').value);
-  } catch(e){}
-}
-
-function loadStorage() {
-  try {
-    const load = (id,key) => { const v = localStorage.getItem(key); if(v) document.getElementById(id).value = v; };
-    load('analyzer-input','adv-analyzer');
-    load('sug-input','adv-sug');
-    load('mix-a','adv-mix-a');
-    load('mix-b','adv-mix-b');
-    load('mix-c','adv-mix-c');
-    load('ab-a','adv-ab-a');
-    load('ab-b','adv-ab-b');
-    if(document.getElementById('analyzer-input').value) runAnalysis();
-    if(document.getElementById('sug-input').value) renderSuggestions();
-  } catch(e){}
-}
-
-// ─── EXPORT TO PLATFORMS ─────────────────────────────────────────────────────
-const PLATFORMS = [
-  {id:'medium',name:'Medium',icon:'M',desc:'Rich article format',color:'#00ab6c',ext:'.md'},
-  {id:'devto',name:'Dev.to',icon:'DEV',desc:'With frontmatter & tags',color:'#0a0a0a',ext:'.md'},
-  {id:'twitter',name:'Twitter/X',icon:'X',desc:'Thread with char counts',color:'#1da1f2',ext:'.txt'},
-  {id:'linkedin',name:'LinkedIn',icon:'in',desc:'Professional format',color:'#0077b5',ext:'.txt'},
-  {id:'wordpress',name:'WordPress',icon:'W',desc:'HTML with WP classes',color:'#21759b',ext:'.html'},
-  {id:'ghost',name:'Ghost',icon:'G',desc:'Ghost markdown format',color:'#738a94',ext:'.md'},
-  {id:'substack',name:'Substack',icon:'S',desc:'Newsletter optimized',color:'#ff6719',ext:'.md'},
-  {id:'markdown',name:'Markdown',icon:'MD',desc:'Clean markdown',color:'#6384ff',ext:'.md'},
-  {id:'html',name:'HTML',icon:'</>',desc:'Styled HTML output',color:'#e34c26',ext:'.html'},
-  {id:'pdf',name:'PDF',icon:'PDF',desc:'Print-ready format',color:'#f40f02',ext:'.pdf'},
-];
-let selectedPlatform = null;
-
-function initExport() {
-  const grid = document.getElementById('export-grid');
-  grid.innerHTML = PLATFORMS.map(p => `
-    <div class="export-card" data-id="${p.id}" onclick="selectPlatform('${p.id}')">
-      <div class="export-icon" style="color:${p.color};font-weight:900;font-family:'JetBrains Mono',monospace">${p.icon}</div>
-      <div class="export-name">${p.name}</div>
-      <div class="export-desc">${p.desc}</div>
+      <div class="sug-text">${esc(s.suggestion)}</div>
+      ${s.before ? `<div class="flex gap-8 mt-8 text-xs"><span>Before: <span class="sug-original">${esc(s.before.substring(0,50))}</span></span>${s.after ? `<span>After: <span class="sug-improved">${esc(s.after.substring(0,50))}</span></span>` : ''}</div>` : ''}
+      ${s.original ? `<button class="btn btn-xs btn-accent mt-8" onclick="applySuggestion(${currentSuggestions.indexOf(s)})">Apply Fix</button>` : ''}
     </div>
   `).join('');
 }
 
-function selectPlatform(id) {
-  selectedPlatform = id;
-  document.querySelectorAll('.export-card').forEach(c => c.classList.toggle('selected', c.dataset.id===id));
-  const content = document.getElementById('export-content').value;
-  if(!content) { showToast('Write some content first'); return; }
-  generateExport(id, content);
+function updateBadges(sugs) {
+  const counts = { all: sugs.length, readability: 0, seo: 0, engagement: 0, style: 0 };
+  sugs.forEach(s => { if (counts[s.cat] !== undefined) counts[s.cat]++; });
+  Object.entries(counts).forEach(([k, v]) => {
+    const el = document.getElementById(`badge-${k}`);
+    if (el) el.textContent = v;
+  });
+  const sb = document.getElementById('sug-badge');
+  if (sb) sb.textContent = sugs.length;
 }
 
-function generateExport(id, content) {
-  const title = document.getElementById('export-title').value || 'Untitled';
-  const tags = document.getElementById('export-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
-  const panel = document.getElementById('export-preview-panel');
-  const output = document.getElementById('export-output');
-  const info = document.getElementById('export-char-info');
-  const tips = document.getElementById('export-tips');
-  panel.style.display = 'block';
-  const p = PLATFORMS.find(x=>x.id===id);
-  document.getElementById('export-preview-title').textContent = `${p.name} Preview`;
-  let result = '', tipText = '', charInfo = '';
+function filterSuggestions(cat, btn) {
+  sugFilterCat = cat;
+  document.querySelectorAll('#sug-category-toggles .filter-tab').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  renderSuggestions();
+}
 
-  switch(id) {
-    case 'medium':
-      result = `# ${title}\n\n${content}\n\n---\n*Originally created with ContentGenAI*`;
-      tipText = 'Tip: Medium supports rich markdown. Add images between paragraphs for better engagement. Ideal length: 1000-1500 words.';
-      charInfo = `${content.length} chars | ~${Math.ceil(content.split(/\s+/).length/200)} min read`;
-      break;
-    case 'devto':
-      result = `---\ntitle: "${title}"\npublished: false\ntags: ${tags.length?tags.join(', '):'webdev, tutorial'}\ncover_image: \nseries: \n---\n\n${content}`;
-      tipText = 'Tip: Dev.to supports Liquid tags. Use {% codepen url %} for embeds. Max 4 tags allowed.';
-      charInfo = `${content.length} chars | Tags: ${tags.length}/4`;
-      break;
-    case 'twitter':
-      const tweets = splitIntoTweets(content);
-      result = tweets.map((t,i) => `[${i+1}/${tweets.length}] ${t}\n(${t.length}/280 chars)`).join('\n\n---\n\n');
-      tipText = 'Tip: Start with a hook. End thread with a CTA. Use line breaks for readability.';
-      charInfo = `${tweets.length} tweets | Avg ${Math.round(tweets.reduce((a,t)=>a+t.length,0)/tweets.length)} chars each`;
-      break;
-    case 'linkedin':
-      result = `${title.toUpperCase()}\n\n${content.split('\n').slice(0,2).join('\n')}\n\n...\n\n${content}\n\n#${tags.join(' #') || 'contentcreation #AI'}`;
-      tipText = 'Tip: LinkedIn truncates after ~210 chars. Make the first 2 lines compelling. Use emojis sparingly for professional tone.';
-      charInfo = `${content.length} chars | Hook: ${content.split('\n')[0].length} chars`;
-      break;
-    case 'wordpress':
-      result = `<!-- wp:heading -->\n<h1 class="wp-block-heading">${escHtml(title)}</h1>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n${content.split('\n\n').map(p=>`<p>${escHtml(p)}</p>`).join('\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n')}\n<!-- /wp:paragraph -->`;
-      tipText = 'Tip: Uses WordPress Gutenberg block format. Add featured image and excerpt in WP editor.';
-      charInfo = `${result.length} chars HTML`;
-      break;
-    case 'ghost':
-      result = `# ${title}\n\n${content}\n\n---\n\n<!--members-only-->`;
-      tipText = 'Tip: Use <!--members-only--> to gate content. Ghost supports bookmark and gallery cards.';
-      charInfo = `${content.length} chars`;
-      break;
-    case 'substack':
-      result = `# ${title}\n\n*Welcome to this week\'s edition.*\n\n---\n\n${content}\n\n---\n\n**Thanks for reading!** If you enjoyed this, consider sharing with a friend.\n\n[Share](https://substack.com)`;
-      tipText = 'Tip: Substack works best with personal, conversational tone. Include a clear CTA to subscribe.';
-      charInfo = `${content.split(/\s+/).length} words | ~${Math.ceil(content.split(/\s+/).length/200)} min read`;
-      break;
-    case 'markdown':
-      result = `# ${title}\n\n${content}`;
-      charInfo = `${content.length} chars | ${content.split(/\s+/).length} words`;
-      break;
-    case 'html':
-      result = `<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)}</title>\n<style>body{font-family:system-ui,sans-serif;max-width:680px;margin:2rem auto;padding:0 1rem;line-height:1.7;color:#1a1a1a}h1{font-size:2rem}</style></head>\n<body>\n<h1>${escHtml(title)}</h1>\n${content.split('\n\n').map(p=>`<p>${escHtml(p)}</p>`).join('\n')}\n</body></html>`;
-      tipText = 'Tip: Includes responsive inline styles. Add Open Graph meta tags for social sharing.';
-      charInfo = `${result.length} chars HTML`;
-      break;
-    case 'pdf':
-      result = content;
-      tipText = 'Click Download to open print dialog for PDF export.';
-      charInfo = `${content.split(/\s+/).length} words`;
-      break;
+function applySuggestion(idx) {
+  const s = currentSuggestions[idx];
+  if (!s || !s.original) return;
+  const ta = document.getElementById('sug-editor');
+  sugUndoStack.push(ta.value);
+  const pos = ta.value.indexOf(s.original);
+  if (pos >= 0) {
+    const replacement = s.after && s.after !== '[Rewrite in active voice]' && s.after !== '[Write something original]' && !s.after.startsWith('[') ? s.after : '';
+    ta.value = ta.value.substring(0, pos) + replacement + ta.value.substring(pos + s.original.length);
+    renderSuggestions();
+    updateSugStats();
+    toast('Suggestion applied!', 'success');
+    awardXP(3);
   }
-  output.textContent = result;
-  if(tipText) { tips.style.display='block'; tips.innerHTML='💡 '+tipText; } else { tips.style.display='none'; }
-  info.textContent = charInfo;
-  showToast(`${p.name} export ready`);
 }
 
-function splitIntoTweets(text) {
-  const words = text.split(/\s+/);
-  const tweets = []; let current = '';
-  for(const w of words) {
-    if((current+' '+w).trim().length > 270) { tweets.push(current.trim()); current = w; }
-    else current += ' ' + w;
+function applyAllSuggestions() {
+  const ta = document.getElementById('sug-editor');
+  sugUndoStack.push(ta.value);
+  let text = ta.value;
+  const applicable = currentSuggestions.filter(s => s.original && s.after && !s.after.startsWith('['));
+  // Apply from end to start to preserve indices
+  applicable.sort((a, b) => b.idx - a.idx);
+  applicable.forEach(s => {
+    const pos = text.indexOf(s.original);
+    if (pos >= 0) {
+      text = text.substring(0, pos) + s.after + text.substring(pos + s.original.length);
+    }
+  });
+  ta.value = text;
+  renderSuggestions();
+  updateSugStats();
+  toast(`Applied ${applicable.length} suggestions!`, 'success');
+  awardXP(10);
+}
+
+function undoSuggestion() {
+  if (!sugUndoStack.length) { toast('Nothing to undo'); return; }
+  document.getElementById('sug-editor').value = sugUndoStack.pop();
+  renderSuggestions();
+  updateSugStats();
+  toast('Undone!');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MULTI-GENERATION COMPARISON
+// ═══════════════════════════════════════════════════════════════════
+
+function setCompareView(view, btn) {
+  compareView = view;
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  const panels = document.getElementById('compare-panels');
+  const p2 = document.getElementById('var-panel-2');
+  const diffPanel = document.getElementById('diff-view-panel');
+
+  if (view === 'triple') {
+    panels.className = 'card-grid cols-3 mb-24';
+    p2.style.display = 'block';
+    diffPanel.style.display = 'none';
+  } else if (view === 'diff') {
+    panels.className = 'card-grid cols-2 mb-24';
+    p2.style.display = 'none';
+    diffPanel.style.display = 'block';
+    renderComparisonDiff();
+  } else {
+    panels.className = 'card-grid cols-2 mb-24';
+    p2.style.display = 'none';
+    diffPanel.style.display = 'none';
   }
-  if(current.trim()) tweets.push(current.trim());
-  return tweets.length ? tweets : [text.slice(0,280)];
 }
 
-let _exportResult = '';
+function generateVariations() {
+  const prompt = document.getElementById('compare-prompt').value.trim();
+  if (!prompt) { toast('Enter a prompt first', 'error'); return; }
+
+  const variations = [
+    generateProfessional(prompt),
+    generateConversational(prompt),
+    generateBold(prompt)
+  ];
+
+  variations.forEach((v, i) => {
+    const el = document.getElementById(`var-text-${i}`);
+    if (el) el.value = v;
+    updateVariationMetrics(i);
+  });
+
+  if (compareView === 'triple') document.getElementById('var-panel-2').style.display = 'block';
+
+  // Save to compare history
+  compareHistory.unshift({ date: new Date().toISOString(), prompt, versions: 3 });
+  if (compareHistory.length > 10) compareHistory = compareHistory.slice(0, 10);
+  localStorage.setItem('acg-compare-history', JSON.stringify(compareHistory));
+  renderCompareHistory();
+
+  toast('3 variations generated!', 'success');
+  awardXP(10);
+}
+
+function generateProfessional(topic) {
+  return `${topic}: A Comprehensive Analysis\n\nIn today's competitive landscape, understanding ${topic.toLowerCase()} is essential for sustained growth and success. This analysis examines the key factors that drive results.\n\nFirstly, research demonstrates that organizations prioritizing ${topic.toLowerCase()} achieve 40% higher performance metrics. The data speaks clearly: this is not optional.\n\nSecondly, implementing structured approaches to ${topic.toLowerCase()} yields measurable improvements across all key performance indicators.\n\nConclusion: The evidence supports immediate action on ${topic.toLowerCase()} initiatives to maintain competitive advantage.`;
+}
+
+function generateConversational(topic) {
+  return `Let's talk about ${topic.toLowerCase()}\n\nHere's the thing nobody tells you about ${topic.toLowerCase()} — it doesn't have to be complicated.\n\nI've spent years figuring this out, and honestly? The secret is simpler than you think.\n\nThree things matter most:\n1. Start small and iterate\n2. Focus on what actually moves the needle\n3. Don't overthink it\n\nThe biggest mistake? Trying to do everything at once. Pick one thing from this list and start today.\n\nWhat's your experience with ${topic.toLowerCase()}? Drop a comment below!`;
+}
+
+function generateBold(topic) {
+  return `STOP Everything You're Doing About ${topic}\n\nThe conventional wisdom about ${topic.toLowerCase()} is dead wrong. Here's proof.\n\nEverything you've been told about ${topic.toLowerCase()} comes from outdated playbooks. The rules have changed. Dramatically.\n\nThe new reality:\n• Speed beats perfection every single time\n• The 80/20 rule applies more than ever\n• Your competitors are already adapting\n\nThis isn't speculation. This is what separating winners from everyone else looks like.\n\nThe question isn't whether to change your approach to ${topic.toLowerCase()}. It's whether you'll do it before your competition does.`;
+}
+
+function analyzeText(text) {
+  const words = (text.match(/\b[a-zA-Z]+\b/g) || []);
+  const sents = text.split(/[.!?]+/).filter(s => s.trim().length > 2);
+  const totalSyllables = words.reduce((sum, w) => sum + countSyllables(w), 0);
+  const fk = Math.max(0, Math.min(100, 206.835 - 1.015 * (words.length / Math.max(sents.length, 1)) - 84.6 * (totalSyllables / Math.max(words.length, 1))));
+  const pwCount = POWER_WORDS.filter(pw => words.some(w => w.toLowerCase() === pw)).length;
+  const eng = Math.min(100, Math.round(40 + pwCount * 6 + (text.includes('?') ? 10 : 0) + (sents.length > 2 ? 10 : 0)));
+  const posWords = ['great','excellent','amazing','wonderful','best','love','perfect','success','proven','remarkable'];
+  const negWords = ['bad','terrible','awful','worst','hate','horrible','poor','wrong','fail','dead'];
+  const pos = posWords.filter(w => words.map(x => x.toLowerCase()).includes(w)).length;
+  const neg = negWords.filter(w => words.map(x => x.toLowerCase()).includes(w)).length;
+  return { readability: Math.round(fk), words: words.length, engagement: eng, sentiment: pos > neg ? 'Positive' : neg > pos ? 'Negative' : 'Neutral' };
+}
+
+function updateVariationMetrics(idx) {
+  const text = (document.getElementById(`var-text-${idx}`) || {}).value || '';
+  if (!text.trim()) return;
+  const m = analyzeText(text);
+  const set = (k, v) => { const el = document.getElementById(`vm-${idx}-${k}`); if (el) el.textContent = v; };
+  set('readability', m.readability);
+  set('words', m.words);
+  set('engagement', m.engagement);
+  set('sentiment', m.sentiment);
+}
+
+function pickWinner(idx) {
+  document.querySelectorAll('.compare-panel').forEach((p, i) => {
+    p.classList.toggle('winner', i === idx);
+  });
+  document.querySelectorAll('.winner-badge').forEach(b => b.remove());
+  const badge = document.createElement('div');
+  badge.className = 'winner-badge';
+  badge.textContent = 'Winner';
+  document.getElementById(`var-panel-${idx}`).prepend(badge);
+  toast('Winner selected!', 'success');
+  awardXP(5);
+}
+
+function renderComparisonDiff() {
+  const a = (document.getElementById('var-text-0') || {}).value || '';
+  const b = (document.getElementById('var-text-1') || {}).value || '';
+  const wa = a.split(/\s+/), wb = b.split(/\s+/);
+  let html = '';
+  const maxLen = Math.max(wa.length, wb.length);
+  for (let i = 0; i < maxLen; i++) {
+    if (wa[i] === wb[i]) html += esc(wa[i] || '') + ' ';
+    else {
+      if (wa[i]) html += `<span class="diff-del">${esc(wa[i])}</span> `;
+      if (wb[i]) html += `<span class="diff-add">${esc(wb[i])}</span> `;
+    }
+  }
+  document.getElementById('diff-output').innerHTML = html || '<span class="text-muted">Add content to both versions to see diff.</span>';
+}
+
+function autoMerge() {
+  const texts = [0, 1, 2].map(i => (document.getElementById(`var-text-${i}`) || {}).value || '').filter(t => t.trim());
+  if (texts.length < 2) { toast('Need at least 2 versions', 'error'); return; }
+
+  const sents = texts.map(t => splitSentences(t));
+  const merged = [];
+  const maxLen = Math.max(...sents.map(s => s.length));
+  for (let i = 0; i < maxLen; i++) {
+    // Pick the best sentence from available versions
+    const candidates = sents.map(s => s[i]).filter(Boolean);
+    if (candidates.length) {
+      // Pick longest as "most detailed"
+      merged.push(candidates.reduce((a, b) => a.length > b.length ? a : b));
+    }
+  }
+  document.getElementById('merge-output').value = merged.join(' ').trim();
+  toast('Content merged!', 'success');
+  awardXP(5);
+}
+
+function copyMerged() {
+  const text = document.getElementById('merge-output').value;
+  if (!text) { toast('Nothing to copy', 'error'); return; }
+  navigator.clipboard.writeText(text).then(() => toast('Copied!', 'success'));
+}
+
+function renderCompareHistory() {
+  const el = document.getElementById('compare-history');
+  if (!compareHistory.length) { el.innerHTML = '<div class="empty-state text-sm">No comparisons yet.</div>'; return; }
+  el.innerHTML = compareHistory.map(h => {
+    const d = new Date(h.date);
+    return `<div style="padding:8px 12px;background:var(--bg-elevated);border-radius:var(--radius-sm);margin-bottom:6px;font-size:.8rem">
+      <div style="font-weight:600">${esc(h.prompt)}</div>
+      <div class="text-muted text-xs">${d.toLocaleDateString()} &bull; ${h.versions} versions</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TEMPLATE GALLERY
+// ═══════════════════════════════════════════════════════════════════
+
+let activeTemplateCategory = 'All';
+
+function renderTemplateFilters() {
+  const cats = ['All', ...new Set(TEMPLATES.map(t => t.category))];
+  const el = document.getElementById('tpl-category-filters');
+  el.innerHTML = cats.map(c =>
+    `<button class="filter-tab${c === 'All' ? ' active' : ''}" onclick="setTemplateCategory('${c}',this)">${c}</button>`
+  ).join('');
+}
+
+function setTemplateCategory(cat, btn) {
+  activeTemplateCategory = cat;
+  document.querySelectorAll('#tpl-category-filters .filter-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  filterTemplates();
+}
+
+function filterTemplates() {
+  const q = (document.getElementById('tpl-search') || {}).value || '';
+  let list = [...TEMPLATES, ...customTemplates];
+  if (activeTemplateCategory !== 'All') list = list.filter(t => t.category === activeTemplateCategory);
+  if (q) {
+    const ql = q.toLowerCase();
+    list = list.filter(t => t.title.toLowerCase().includes(ql) || t.desc.toLowerCase().includes(ql) || t.tags.some(tag => tag.includes(ql)));
+  }
+  renderTemplates(list);
+}
+
+function renderTemplates(list) {
+  const grid = document.getElementById('tpl-grid');
+  if (!list) list = [...TEMPLATES, ...customTemplates];
+  if (!list.length) { grid.innerHTML = '<div class="empty-state">No templates match your search.</div>'; return; }
+
+  const diffColors = { Easy: 'tag-success', Medium: 'tag-warning', Hard: 'tag-error' };
+
+  grid.innerHTML = list.map(t => `
+    <div class="card tpl-card" onclick="openTemplateModal(${t.id})">
+      <button class="tpl-star ${starredTemplates.includes(t.id) ? 'starred' : ''}" onclick="event.stopPropagation();toggleStar(${t.id})" aria-label="Star template">${starredTemplates.includes(t.id) ? '★' : '☆'}</button>
+      <div class="tpl-header">
+        <span class="tpl-title">${esc(t.title)}</span>
+      </div>
+      <div class="tpl-desc">${esc(t.desc)}</div>
+      <div class="tpl-meta">
+        <span class="tag">${t.category}</span>
+        <span class="tag ${diffColors[t.difficulty] || ''}">${t.difficulty || 'Medium'}</span>
+        <span class="text-xs text-muted">${t.time || '15 min'}</span>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('tpl-count').textContent = list.length;
+}
+
+function toggleStar(id) {
+  const idx = starredTemplates.indexOf(id);
+  if (idx >= 0) starredTemplates.splice(idx, 1);
+  else starredTemplates.push(id);
+  localStorage.setItem('acg-starred', JSON.stringify(starredTemplates));
+  filterTemplates();
+}
+
+function openTemplateModal(id) {
+  const t = [...TEMPLATES, ...customTemplates].find(x => x.id === id);
+  if (!t) return;
+  currentTpl = t;
+  document.getElementById('modal-title').textContent = t.title;
+  document.getElementById('modal-desc').textContent = t.desc;
+  document.getElementById('modal-tags').innerHTML = [
+    `<span class="tag">${t.category}</span>`,
+    `<span class="tag ${({Easy:'tag-success',Medium:'tag-warning',Hard:'tag-error'})[t.difficulty]||''}">${t.difficulty||'Medium'}</span>`,
+    `<span class="text-xs text-muted">${t.time||'15 min'}</span>`
+  ].join('');
+
+  const inputs = document.getElementById('modal-inputs');
+  inputs.innerHTML = (t.inputs || []).map(inp =>
+    `<div><label>${esc(inp.label)}</label><input type="text" id="tpl-inp-${inp.key}" placeholder="${esc(inp.label)}..." oninput="updateTemplatePreview()"></div>`
+  ).join('');
+
+  updateTemplatePreview();
+  openModal('tpl-modal');
+  awardXP(2);
+}
+
+function updateTemplatePreview() {
+  if (!currentTpl) return;
+  let text = currentTpl.preview;
+  (currentTpl.inputs || []).forEach(inp => {
+    const el = document.getElementById(`tpl-inp-${inp.key}`);
+    const val = el ? el.value : '';
+    text = text.replace(new RegExp(`\\{${inp.key}\\}`, 'g'), val || `{${inp.key}}`);
+  });
+  document.getElementById('modal-preview').textContent = text;
+}
+
+function useTemplate() {
+  const preview = document.getElementById('modal-preview').textContent;
+  // Copy to analyzer or editor
+  const target = document.getElementById('sug-editor');
+  if (target) target.value = preview;
+  closeModal('tpl-modal');
+  switchSection('suggestions');
+  scheduleSuggestions();
+  toast('Template loaded into editor!', 'success');
+  awardXP(5);
+}
+
+function copyModalContent() {
+  const text = document.getElementById('modal-preview').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Copied!', 'success'));
+}
+
+function exportTemplates() {
+  const data = JSON.stringify([...TEMPLATES, ...customTemplates], null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'contentgenai-templates.json'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Templates exported!', 'success');
+}
+
+function importTemplates(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (Array.isArray(imported)) {
+        const maxId = Math.max(...[...TEMPLATES, ...customTemplates].map(t => t.id), 0);
+        imported.forEach((t, i) => { t.id = maxId + i + 1; });
+        customTemplates.push(...imported);
+        localStorage.setItem('acg-custom-templates', JSON.stringify(customTemplates));
+        filterTemplates();
+        toast(`Imported ${imported.length} templates!`, 'success');
+      }
+    } catch (err) { toast('Invalid JSON file', 'error'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ═══════════════════════════════════════════════════════════════════
+// EXPORT TO PLATFORMS
+// ═══════════════════════════════════════════════════════════════════
+
+function togglePlatform(card) {
+  const platform = card.dataset.platform;
+  if (selectedPlatforms.has(platform)) {
+    selectedPlatforms.delete(platform);
+    card.classList.remove('selected');
+  } else {
+    selectedPlatforms.add(platform);
+    card.classList.add('selected');
+  }
+}
+
+function updateExportPreviews() {
+  const text = document.getElementById('export-content').value;
+  document.getElementById('exp-chars').textContent = text.length;
+  document.getElementById('exp-words').textContent = (text.match(/\b\w+\b/g) || []).length;
+}
+
+const PLATFORM_FORMATTERS = {
+  medium: {
+    name: 'Medium',
+    tips: 'Medium supports markdown-like formatting. Use ## for headings, ** for bold, > for quotes.',
+    format: text => {
+      let out = text;
+      out = out.replace(/^(.+)$/m, (_, line) => {
+        if (/^#{1,6}\s/.test(line)) return line;
+        return line;
+      });
+      return out;
+    },
+    ext: '.md'
+  },
+  devto: {
+    name: 'Dev.to',
+    tips: 'Dev.to uses Forem. Add frontmatter for title, tags, and series.',
+    format: text => {
+      const lines = text.split('\n');
+      const title = lines[0] || 'Untitled';
+      return `---\ntitle: ${title.replace(/^#+\s*/, '')}\npublished: false\ndescription: \ntags: \nseries: \ncover_image: \n---\n\n${text}`;
+    },
+    ext: '.md'
+  },
+  twitter: {
+    name: 'Twitter / X',
+    tips: 'Each tweet must be under 280 characters. Thread numbering added automatically.',
+    format: text => {
+      const sentences = splitSentences(text);
+      const tweets = [];
+      let current = '';
+      sentences.forEach(s => {
+        const trimmed = s.trim();
+        if ((current + ' ' + trimmed).length > 270) {
+          if (current) tweets.push(current.trim());
+          current = trimmed;
+        } else {
+          current += (current ? ' ' : '') + trimmed;
+        }
+      });
+      if (current) tweets.push(current.trim());
+      const tags = '\n\n#ContentCreation #Writing';
+      return tweets.map((t, i) => `${i + 1}/${tweets.length} ${t}${i === tweets.length - 1 ? tags : ''}`).join('\n\n---\n\n');
+    },
+    ext: '.txt'
+  },
+  linkedin: {
+    name: 'LinkedIn',
+    tips: 'LinkedIn posts perform best at 1300-2000 chars. Start with a hook line.',
+    format: text => {
+      const lines = text.split('\n').filter(l => l.trim());
+      let out = '';
+      if (lines[0]) out += lines[0].replace(/^#+\s*/, '').toUpperCase() + '\n\n';
+      lines.slice(1).forEach(l => {
+        const cleaned = l.replace(/^#+\s*/, '');
+        if (l.startsWith('#') || l.startsWith('##')) out += cleaned + '\n\n';
+        else if (l.startsWith('- ') || l.startsWith('* ')) out += '→ ' + l.substring(2) + '\n';
+        else out += cleaned + '\n\n';
+      });
+      out += '\n---\nWhat are your thoughts? Share below 👇\n\n#ContentStrategy #Marketing #Growth';
+      return out;
+    },
+    ext: '.txt'
+  },
+  wordpress: {
+    name: 'WordPress',
+    tips: 'Generates HTML with WordPress-compatible CSS classes.',
+    format: text => {
+      let html = '<article class="wp-block-post-content">\n';
+      text.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        if (trimmed.startsWith('# ')) html += `  <h1 class="wp-block-heading">${esc(trimmed.substring(2))}</h1>\n`;
+        else if (trimmed.startsWith('## ')) html += `  <h2 class="wp-block-heading">${esc(trimmed.substring(3))}</h2>\n`;
+        else if (trimmed.startsWith('### ')) html += `  <h3 class="wp-block-heading">${esc(trimmed.substring(4))}</h3>\n`;
+        else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) html += `  <li>${esc(trimmed.substring(2))}</li>\n`;
+        else if (trimmed.startsWith('> ')) html += `  <blockquote class="wp-block-quote"><p>${esc(trimmed.substring(2))}</p></blockquote>\n`;
+        else html += `  <p>${esc(trimmed)}</p>\n`;
+      });
+      html += '</article>';
+      return html;
+    },
+    ext: '.html'
+  },
+  ghost: {
+    name: 'Ghost',
+    tips: 'Ghost uses extended markdown with image cards, bookmark cards, and galleries.',
+    format: text => {
+      return `<!--kg-card-begin: markdown-->\n${text}\n<!--kg-card-end: markdown-->`;
+    },
+    ext: '.md'
+  },
+  substack: {
+    name: 'Substack',
+    tips: 'Substack newsletters work best with clear sections, pull quotes, and a personal voice.',
+    format: text => {
+      let out = text;
+      out = out.replace(/^> (.+)$/gm, '<pullquote>$1</pullquote>');
+      return out + '\n\n---\n\nThanks for reading! If you enjoyed this, consider sharing with a friend.\n\n[Share this post]';
+    },
+    ext: '.md'
+  },
+  markdown: {
+    name: 'Markdown',
+    tips: 'Clean markdown output, ready for any markdown-compatible platform.',
+    format: text => text,
+    ext: '.md'
+  },
+  html: {
+    name: 'HTML',
+    tips: 'Styled HTML with inline CSS for email or standalone pages.',
+    format: text => {
+      let html = '<!DOCTYPE html>\n<html><head><meta charset="UTF-8"><style>\nbody{font-family:system-ui,sans-serif;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.7;color:#1a1a1a}\nh1,h2,h3{margin-top:2em;margin-bottom:0.5em}\np{margin:1em 0}\nblockquote{border-left:3px solid #6384ff;padding-left:16px;margin-left:0;color:#555}\n</style></head><body>\n';
+      text.split('\n').forEach(line => {
+        const t = line.trim();
+        if (!t) html += '\n';
+        else if (t.startsWith('# ')) html += `<h1>${esc(t.substring(2))}</h1>\n`;
+        else if (t.startsWith('## ')) html += `<h2>${esc(t.substring(3))}</h2>\n`;
+        else if (t.startsWith('### ')) html += `<h3>${esc(t.substring(4))}</h3>\n`;
+        else if (t.startsWith('> ')) html += `<blockquote>${esc(t.substring(2))}</blockquote>\n`;
+        else if (t.startsWith('- ')) html += `<li>${esc(t.substring(2))}</li>\n`;
+        else html += `<p>${esc(t)}</p>\n`;
+      });
+      html += '</body></html>';
+      return html;
+    },
+    ext: '.html'
+  },
+  pdf: {
+    name: 'PDF',
+    tips: 'Opens the browser print dialog to save as PDF.',
+    format: text => text,
+    ext: '.txt'
+  }
+};
+
+let currentExportContent = '';
+let currentExportPlatform = '';
+
+function exportSelected() {
+  if (!selectedPlatforms.size) { toast('Select at least one platform', 'error'); return; }
+  const text = document.getElementById('export-content').value.trim();
+  if (!text) { toast('Add content to export', 'error'); return; }
+
+  // Show first selected platform preview
+  const first = [...selectedPlatforms][0];
+  showExportPreview(first, text);
+  awardXP(5);
+}
+
+function exportAll() {
+  const text = document.getElementById('export-content').value.trim();
+  if (!text) { toast('Add content to export', 'error'); return; }
+
+  // Download all formats
+  Object.keys(PLATFORM_FORMATTERS).forEach(platform => {
+    if (platform === 'pdf') return;
+    const f = PLATFORM_FORMATTERS[platform];
+    const formatted = f.format(text);
+    const blob = new Blob([formatted], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `content-${platform}${f.ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  toast('All formats exported!', 'success');
+  awardXP(15);
+}
+
+function showExportPreview(platform, text) {
+  const f = PLATFORM_FORMATTERS[platform];
+  if (!f) return;
+  currentExportContent = f.format(text);
+  currentExportPlatform = platform;
+
+  document.getElementById('export-preview-card').style.display = 'block';
+  document.getElementById('preview-platform-name').textContent = f.name;
+  document.getElementById('export-tips').textContent = f.tips;
+  document.getElementById('export-preview-content').textContent = currentExportContent;
+}
+
 function copyExport() {
-  const text = document.getElementById('export-output').textContent;
-  navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard'));
+  navigator.clipboard.writeText(currentExportContent).then(() => toast('Copied!', 'success'));
 }
 
 function downloadExport() {
-  if(selectedPlatform==='pdf') { window.print(); return; }
-  const text = document.getElementById('export-output').textContent;
-  const p = PLATFORMS.find(x=>x.id===selectedPlatform);
-  const title = document.getElementById('export-title').value || 'export';
-  const blob = new Blob([text], {type:'text/plain'});
+  const f = PLATFORM_FORMATTERS[currentExportPlatform];
+  if (currentExportPlatform === 'pdf') {
+    const w = window.open('', '_blank');
+    w.document.write(PLATFORM_FORMATTERS.html.format(document.getElementById('export-content').value));
+    w.document.close();
+    w.print();
+    return;
+  }
+  const blob = new Blob([currentExportContent], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = title.replace(/\s+/g,'-').toLowerCase() + (p?p.ext:'.txt');
+  a.href = url;
+  a.download = `content-${currentExportPlatform}${f ? f.ext : '.txt'}`;
   a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('Downloaded!');
+  URL.revokeObjectURL(url);
+  toast('Downloaded!', 'success');
 }
 
-// ─── CONTENT CALENDAR ───────────────────────────────────────────────────────
-const CAL_COLORS = {blog:'#6384ff',social:'#a855f7',email:'#ec4899',marketing:'#34d399',technical:'#fbbf24'};
-let calYear, calMonth, calItems = {};
-
-function initCalendar() {
-  const now = new Date();
-  calYear = now.getFullYear();
-  calMonth = now.getMonth();
-  try { calItems = JSON.parse(localStorage.getItem('acg-calendar'))||{}; } catch(e){ calItems={}; }
-  renderCalendar();
-}
-
-function calNav(dir) { calMonth+=dir; if(calMonth>11){calMonth=0;calYear++;} if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
-function calToday() { const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); renderCalendar(); }
+// ═══════════════════════════════════════════════════════════════════
+// CONTENT CALENDAR
+// ═══════════════════════════════════════════════════════════════════
 
 function renderCalendar() {
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('cal-month').textContent = `${months[calMonth]} ${calYear}`;
   const grid = document.getElementById('cal-grid');
-  const firstDay = new Date(calYear,calMonth,1).getDay();
-  const daysInMonth = new Date(calYear,calMonth+1,0).getDate();
+  const label = document.getElementById('cal-month-label');
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  label.textContent = `${months[calMonth]} ${calYear}`;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
   const today = new Date();
-  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-head">${d}</div>`).join('');
 
-  // Previous month padding
-  const prevDays = new Date(calYear,calMonth,0).getDate();
-  for(let i=firstDay-1;i>=0;i--) html += `<div class="cal-cell other"><div class="cal-num">${prevDays-i}</div></div>`;
+  let html = '';
+  // Day names
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+    html += `<div class="cal-day-name">${d}</div>`;
+  });
 
-  for(let d=1;d<=daysInMonth;d++) {
-    const key = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
-    const items = calItems[key]||[];
-    const itemsHtml = items.slice(0,3).map(it=>`<div class="cal-item" style="background:${CAL_COLORS[it.type]||'#6384ff'}" title="${escHtml(it.title)}">${escHtml(it.title)}</div>`).join('');
-    const more = items.length>3 ? `<div style="font-size:.6rem;color:var(--text-muted)">+${items.length-3} more</div>` : '';
-    html += `<div class="cal-cell${isToday?' today':''}" onclick="openCalDay('${key}')"><div class="cal-num">${d}</div>${itemsHtml}${more}</div>`;
+  // Calendar days
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+  if (calViewMode === 'week') {
+    // Show just the current week
+    const currentDay = today.getMonth() === calMonth && today.getFullYear() === calYear ? today.getDate() : 1;
+    const currentDow = new Date(calYear, calMonth, currentDay).getDay();
+    const weekStart = currentDay - currentDow;
+
+    for (let i = 0; i < 7; i++) {
+      const day = weekStart + i;
+      if (day < 1 || day > daysInMonth) {
+        html += `<div class="cal-day other-month"><div class="cal-day-num">${day < 1 ? daysInPrev + day : day - daysInMonth}</div></div>`;
+      } else {
+        const isToday = today.getDate() === day && today.getMonth() === calMonth && today.getFullYear() === calYear;
+        const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const events = calendarEvents.filter(e => e.date === dateStr);
+        html += `<div class="cal-day${isToday ? ' today' : ''}" onclick="openCalendarDay('${dateStr}')" style="min-height:100px">
+          <div class="cal-day-num">${day}</div>
+          ${events.map(e => `<div class="cal-event type-${e.type}" title="${esc(e.title)}" draggable="true" ondragstart="dragCalEvent(event,'${e.id}')">${esc(e.title)}</div>`).join('')}
+        </div>`;
+      }
+    }
+  } else {
+    for (let i = 0; i < totalCells; i++) {
+      const day = i - firstDay + 1;
+      const isOther = day < 1 || day > daysInMonth;
+      const displayDay = isOther ? (day < 1 ? daysInPrev + day : day - daysInMonth) : day;
+      const isToday = !isOther && today.getDate() === day && today.getMonth() === calMonth && today.getFullYear() === calYear;
+      const dateStr = !isOther ? `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}` : '';
+      const events = !isOther ? calendarEvents.filter(e => e.date === dateStr) : [];
+
+      html += `<div class="cal-day${isToday ? ' today' : ''}${isOther ? ' other-month' : ''}" ${!isOther ? `onclick="openCalendarDay('${dateStr}')" ondragover="event.preventDefault()" ondrop="dropCalEvent(event,'${dateStr}')"` : ''}>
+        <div class="cal-day-num">${displayDay}</div>
+        ${events.map(e => `<div class="cal-event type-${e.type}" title="${esc(e.title)}" draggable="true" ondragstart="dragCalEvent(event,'${e.id}')">${esc(e.title)}</div>`).join('')}
+      </div>`;
+    }
   }
-
-  // Next month padding
-  const totalCells = firstDay + daysInMonth;
-  const remaining = (7 - totalCells%7)%7;
-  for(let i=1;i<=remaining;i++) html += `<div class="cal-cell other"><div class="cal-num">${i}</div></div>`;
 
   grid.innerHTML = html;
 }
 
-let selectedCalDay = '';
-function openCalDay(key) {
-  selectedCalDay = key;
-  const [y,m,d] = key.split('-');
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('cal-day-title').textContent = `${months[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
-  const items = calItems[key]||[];
-  const itemsEl = document.getElementById('cal-day-items');
-  if(items.length===0) itemsEl.innerHTML = '<div class="text-sm text-secondary">No content scheduled</div>';
-  else itemsEl.innerHTML = items.map((it,i)=>`<div class="flex justify-between align-center" style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span><span class="cal-dot" style="background:${CAL_COLORS[it.type]}"></span>${escHtml(it.title)}</span><button class="btn btn-ghost btn-sm" onclick="removeCalItem('${key}',${i})" style="font-size:.7rem">&times;</button></div>`).join('');
-  document.getElementById('cal-new-title').value = '';
-  document.getElementById('cal-day-modal').hidden = false;
-}
-
-function closeCalModal() { document.getElementById('cal-day-modal').hidden = true; }
-
-function addCalItem() {
-  const title = document.getElementById('cal-new-title').value.trim();
-  if(!title) { showToast('Enter a title'); return; }
-  const type = document.getElementById('cal-new-type').value;
-  if(!calItems[selectedCalDay]) calItems[selectedCalDay] = [];
-  calItems[selectedCalDay].push({title, type});
-  localStorage.setItem('acg-calendar', JSON.stringify(calItems));
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
   renderCalendar();
-  openCalDay(selectedCalDay);
-  showToast('Added to calendar');
 }
 
-function removeCalItem(key, idx) {
-  if(calItems[key]) { calItems[key].splice(idx,1); if(!calItems[key].length) delete calItems[key]; }
-  localStorage.setItem('acg-calendar', JSON.stringify(calItems));
+function toggleCalendarView() {
+  calViewMode = calViewMode === 'month' ? 'week' : 'month';
   renderCalendar();
-  openCalDay(key);
+  toast(`Switched to ${calViewMode} view`);
 }
 
-function exportICal() {
+function addCalendarEvent() {
+  document.getElementById('cal-event-title').value = '';
+  document.getElementById('cal-event-date').value = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`;
+  document.getElementById('cal-event-type').value = 'blog';
+  document.getElementById('cal-event-notes').value = '';
+  openModal('cal-modal');
+}
+
+function openCalendarDay(dateStr) {
+  document.getElementById('cal-event-title').value = '';
+  document.getElementById('cal-event-date').value = dateStr;
+  document.getElementById('cal-event-type').value = 'blog';
+  document.getElementById('cal-event-notes').value = '';
+  openModal('cal-modal');
+}
+
+function saveCalendarEvent() {
+  const title = document.getElementById('cal-event-title').value.trim();
+  const date = document.getElementById('cal-event-date').value;
+  const type = document.getElementById('cal-event-type').value;
+  const notes = document.getElementById('cal-event-notes').value;
+
+  if (!title || !date) { toast('Title and date required', 'error'); return; }
+
+  calendarEvents.push({
+    id: Date.now().toString(),
+    title, date, type, notes
+  });
+
+  localStorage.setItem('acg-calendar', JSON.stringify(calendarEvents));
+  closeModal('cal-modal');
+  renderCalendar();
+  toast('Event added!', 'success');
+  awardXP(5);
+}
+
+let draggedEventId = null;
+
+function dragCalEvent(e, id) {
+  draggedEventId = id;
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function dropCalEvent(e, dateStr) {
+  e.preventDefault();
+  if (!draggedEventId) return;
+  const evt = calendarEvents.find(ev => ev.id === draggedEventId);
+  if (evt) {
+    evt.date = dateStr;
+    localStorage.setItem('acg-calendar', JSON.stringify(calendarEvents));
+    renderCalendar();
+    toast('Event moved!', 'success');
+  }
+  draggedEventId = null;
+}
+
+function exportCalendar() {
+  if (!calendarEvents.length) { toast('No events to export', 'error'); return; }
+
   let ical = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ContentGenAI//Calendar//EN\n';
-  for(const [key, items] of Object.entries(calItems)) {
-    for(const it of items) {
-      const d = key.replace(/-/g,'');
-      ical += `BEGIN:VEVENT\nDTSTART;VALUE=DATE:${d}\nSUMMARY:${it.title} [${it.type}]\nDESCRIPTION:Content type: ${it.type}\nEND:VEVENT\n`;
-    }
-  }
+  calendarEvents.forEach(e => {
+    const d = e.date.replace(/-/g, '');
+    ical += `BEGIN:VEVENT\nDTSTART;VALUE=DATE:${d}\nSUMMARY:${e.title}\nDESCRIPTION:${e.notes || ''} [Type: ${e.type}]\nEND:VEVENT\n`;
+  });
   ical += 'END:VCALENDAR';
-  const blob = new Blob([ical], {type:'text/calendar'});
+
+  const blob = new Blob([ical], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'content-calendar.ics';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('Calendar exported as iCal');
+  a.href = url; a.download = 'content-calendar.ics'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Calendar exported!', 'success');
+  awardXP(5);
 }
 
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ═══════════════════════════════════════════════════════════════════
+// INITIALIZE
+// ═══════════════════════════════════════════════════════════════════
 
-function showToast(msg) {
-  let tc = document.getElementById('toast-container');
-  if(!tc){ tc = document.createElement('div'); tc.id='toast-container'; tc.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px'; document.body.appendChild(tc); }
-  const t = document.createElement('div');
-  t.style.cssText = 'background:var(--bg-elevated);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:10px 16px;border-radius:8px;font-size:.875rem;animation:fadeIn .2s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)';
-  t.textContent = msg;
-  tc.appendChild(t);
-  setTimeout(()=>t.remove(), 2800);
-}
-
-// Persist on textarea change
-document.addEventListener('input', e => {
-  if(['TEXTAREA','INPUT'].includes(e.target.tagName)) {
-    clearTimeout(window._saveTimer||0); window._saveTimer = setTimeout(saveStorage,500);
-    if(e.target.id==='export-content' && selectedPlatform) setTimeout(()=>generateExport(selectedPlatform, e.target.value), 100);
-  }
-});
-
-// Close modal on overlay click
-document.getElementById('tpl-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeTplModal(); });
-
-// Keyboard escape
-document.getElementById('cal-day-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeCalModal(); });
-document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeTplModal(); closeCalModal(); } });
-
-init();
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>

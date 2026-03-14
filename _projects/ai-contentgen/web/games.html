@@ -9,335 +9,296 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
   <style>
-    /* ── Design Tokens ── */
     :root {
-      --bg: #0a0b0f;
-      --bg-subtle: #0f1117;
-      --bg-card: #13151c;
-      --bg-elevated: #1a1d27;
-      --bg-input: #161921;
-      --border: rgba(255,255,255,0.06);
-      --border-focus: rgba(99,132,255,0.5);
-      --text: #e8eaf0;
-      --text-secondary: #8b8fa4;
-      --text-muted: #5c6078;
-      --accent: #6384ff;
-      --accent-soft: rgba(99,132,255,0.12);
-      --accent-glow: rgba(99,132,255,0.25);
-      --gradient: linear-gradient(135deg, #6384ff 0%, #a855f7 50%, #ec4899 100%);
-      --gradient-subtle: linear-gradient(135deg, rgba(99,132,255,0.15) 0%, rgba(168,85,247,0.08) 100%);
-      --success: #34d399;
-      --success-soft: rgba(52,211,153,0.12);
-      --error: #f87171;
-      --error-soft: rgba(248,113,113,0.12);
-      --warning: #fbbf24;
-      --warning-soft: rgba(251,191,36,0.12);
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-xl: 24px;
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
-      --shadow-glow: 0 0 40px rgba(99,132,255,0.15);
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --bg:#0a0b0f;--bg-subtle:#0f1117;--bg-card:#13151c;--bg-elevated:#1a1d27;--bg-input:#161921;
+      --border:rgba(255,255,255,0.06);--border-focus:rgba(99,132,255,0.5);
+      --text:#e8eaf0;--text-secondary:#8b8fa4;--text-muted:#5c6078;
+      --accent:#6384ff;--accent-soft:rgba(99,132,255,0.12);--accent-glow:rgba(99,132,255,0.25);
+      --gradient:linear-gradient(135deg,#6384ff 0%,#a855f7 50%,#ec4899 100%);
+      --gradient-subtle:linear-gradient(135deg,rgba(99,132,255,0.15) 0%,rgba(168,85,247,0.08) 100%);
+      --success:#34d399;--success-soft:rgba(52,211,153,0.12);
+      --error:#f87171;--error-soft:rgba(248,113,113,0.12);
+      --warning:#fbbf24;--warning-soft:rgba(251,191,36,0.12);
+      --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+      --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;
+      --shadow-md:0 4px 16px rgba(0,0,0,0.3);--shadow-lg:0 8px 32px rgba(0,0,0,0.4);
+      --shadow-glow:0 0 40px rgba(99,132,255,0.15);
+      --ease-out:cubic-bezier(0.16,1,0.3,1);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
     }
-    [data-theme="light"] {
-      --bg: #f8f9fc; --bg-subtle: #f0f1f5; --bg-card: #ffffff;
-      --bg-elevated: #ffffff; --bg-input: #f4f5f8;
-      --border: rgba(0,0,0,0.08); --border-focus: rgba(99,132,255,0.6);
-      --text: #1a1d2e; --text-secondary: #5c6078; --text-muted: #9ca0b4;
-      --accent-soft: rgba(99,132,255,0.08); --accent-glow: rgba(99,132,255,0.15);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.08); --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
-      --shadow-glow: 0 0 40px rgba(99,132,255,0.08);
+    [data-theme="light"]{
+      --bg:#f8f9fc;--bg-subtle:#f0f1f5;--bg-card:#ffffff;--bg-elevated:#ffffff;--bg-input:#f4f5f8;
+      --border:rgba(0,0,0,0.08);--border-focus:rgba(99,132,255,0.6);
+      --text:#1a1d2e;--text-secondary:#5c6078;--text-muted:#9ca0b4;
+      --accent-soft:rgba(99,132,255,0.08);--accent-glow:rgba(99,132,255,0.15);
+      --shadow-md:0 4px 16px rgba(0,0,0,0.08);--shadow-lg:0 8px 32px rgba(0,0,0,0.1);
+      --shadow-glow:0 0 40px rgba(99,132,255,0.08);
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; transition: background 400ms, color 400ms; }
-    ::selection { background: var(--accent); color: #fff; }
-    a { color: inherit; text-decoration: none; }
-    button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
-    textarea, input { font-family: var(--font); }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;transition:background .4s,color .4s}
+    ::selection{background:var(--accent);color:#fff}
+    a{color:inherit;text-decoration:none}
+    button{font-family:var(--font);cursor:pointer;border:none;outline:none}
+    textarea,input{font-family:var(--font)}
 
-    /* ── Ambient Background ── */
-    .ambient-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: orbFloat 20s infinite ease-in-out; }
-    .orb-1 { width: 500px; height: 500px; background: rgba(99,132,255,0.15); top: -10%; left: -5%; }
-    .orb-2 { width: 400px; height: 400px; background: rgba(168,85,247,0.1); top: 40%; right: -10%; animation-delay: -7s; }
-    .orb-3 { width: 350px; height: 350px; background: rgba(236,72,153,0.08); bottom: -5%; left: 30%; animation-delay: -14s; }
-    @keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-20px) scale(1.05)} 66%{transform:translate(-20px,15px) scale(0.95)} }
+    .ambient-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.4;animation:orbFloat 20s infinite ease-in-out}
+    .orb-1{width:500px;height:500px;background:rgba(99,132,255,.15);top:-10%;left:-5%}
+    .orb-2{width:400px;height:400px;background:rgba(168,85,247,.1);top:40%;right:-10%;animation-delay:-7s}
+    .orb-3{width:350px;height:350px;background:rgba(236,72,153,.08);bottom:-5%;left:30%;animation-delay:-14s}
+    @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.95)}}
 
-    /* ── Confetti Canvas ── */
-    #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+    #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
 
-    /* ── Nav ── */
-    .nav { position: sticky; top: 0; z-index: 100; background: rgba(10,11,15,0.85); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); }
-    [data-theme="light"] .nav { background: rgba(248,249,252,0.9); }
-    .nav-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
-    .nav-brand { display: flex; align-items: center; gap: 10px; }
-    .brand-icon { width: 32px; height: 32px; background: var(--gradient); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
-    .brand-text { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
-    .brand-ai { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .nav-actions { display: flex; align-items: center; gap: 8px; }
-    .nav-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 150ms; }
-    .nav-btn:hover { color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
-    .icon-moon { display: none; }
-    [data-theme="light"] .icon-sun { display: none; }
-    [data-theme="light"] .icon-moon { display: block; }
-    .nav-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; background: var(--gradient); color: #fff; letter-spacing: 0.3px; }
+    .nav{position:sticky;top:0;z-index:100;background:rgba(10,11,15,.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+    [data-theme="light"] .nav{background:rgba(248,249,252,.9)}
+    .nav-inner{max-width:1400px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{display:flex;align-items:center;gap:10px}
+    .brand-icon{width:32px;height:32px;background:var(--gradient);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+    .brand-text{font-size:16px;font-weight:700;letter-spacing:-.3px}
+    .brand-ai{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .nav-actions{display:flex;align-items:center;gap:8px}
+    .nav-btn{width:36px;height:36px;border-radius:8px;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;transition:all 150ms}
+    .nav-btn:hover{color:var(--text);border-color:var(--accent);background:var(--accent-soft)}
+    .icon-moon{display:none}
+    [data-theme="light"] .icon-sun{display:none}
+    [data-theme="light"] .icon-moon{display:block}
+    .nav-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--gradient);color:#fff;letter-spacing:.3px}
 
-    /* ── Page Layout ── */
-    .page { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; position: relative; z-index: 1; }
-    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 28px; transition: color 150ms; }
-    .back-link:hover { color: var(--accent); }
-    .page-hero { margin-bottom: 40px; text-align: center; }
-    .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; background: var(--accent-soft); border: 1px solid rgba(99,132,255,0.2); font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 16px; }
-    .page-title { font-size: clamp(28px, 5vw, 42px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 12px; }
-    .gradient-text { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .page-subtitle { color: var(--text-secondary); font-size: 16px; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+    .page{max-width:1200px;margin:0 auto;padding:32px 24px 80px;position:relative;z-index:1}
+    .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--text-muted);font-size:13px;font-weight:500;margin-bottom:28px;transition:color 150ms}
+    .back-link:hover{color:var(--accent)}
+    .page-hero{margin-bottom:40px;text-align:center}
+    .page-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:var(--accent-soft);border:1px solid rgba(99,132,255,.2);font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin-bottom:16px}
+    .page-title{font-size:clamp(28px,5vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:12px}
+    .gradient-text{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .page-subtitle{color:var(--text-secondary);font-size:16px;max-width:520px;margin:0 auto;line-height:1.7}
 
-    /* ── Game Tabs ── */
-    .game-tabs { display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 4px; margin-bottom: 32px; overflow-x: auto; scrollbar-width: none; }
-    .game-tabs::-webkit-scrollbar { display: none; }
-    .tab-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; color: var(--text-secondary); background: transparent; white-space: nowrap; transition: all 200ms var(--ease-out); position: relative; }
-    .tab-btn:hover { color: var(--text); background: var(--bg-elevated); }
-    .tab-btn.active { color: #fff; background: var(--gradient); box-shadow: 0 2px 12px rgba(99,132,255,0.35); }
-    .tab-btn .tab-icon { font-size: 16px; }
-    .tab-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.2); font-weight: 700; }
-    .tab-btn:not(.active) .tab-badge { background: var(--accent-soft); color: var(--accent); }
+    .xp-strip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .xp-level{background:var(--gradient);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
+    .xp-bar-outer{flex:1;min-width:120px;height:8px;background:var(--bg-elevated);border-radius:4px;overflow:hidden}
+    .xp-bar-inner{height:100%;border-radius:4px;background:var(--gradient);transition:width .6s var(--ease-out)}
+    .xp-text{font-size:12px;color:var(--text-muted);font-family:var(--font-mono);white-space:nowrap}
 
-    /* ── Game Panels ── */
-    .game-panel { display: none; animation: fadeUpIn 400ms var(--ease-out) both; }
-    .game-panel.active { display: block; }
-    @keyframes fadeUpIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .game-tabs{display:flex;gap:4px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:4px;margin-bottom:32px;overflow-x:auto;scrollbar-width:none}
+    .game-tabs::-webkit-scrollbar{display:none}
+    .tab-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--radius-md);font-size:13px;font-weight:600;color:var(--text-secondary);background:transparent;white-space:nowrap;transition:all 200ms var(--ease-out);position:relative}
+    .tab-btn:hover{color:var(--text);background:var(--bg-elevated)}
+    .tab-btn.active{color:#fff;background:var(--gradient);box-shadow:0 2px 12px rgba(99,132,255,.35)}
+    .tab-btn .tab-icon{font-size:16px}
+    .tab-badge{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(255,255,255,.2);font-weight:700}
+    .tab-btn:not(.active) .tab-badge{background:var(--accent-soft);color:var(--accent)}
 
-    /* ── Cards ── */
-    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
-    .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--bg-subtle); display: flex; align-items: center; justify-content: space-between; }
-    .card-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
-    .card-body { padding: 24px; }
+    .game-panel{display:none;animation:fadeUpIn 400ms var(--ease-out) both}
+    .game-panel.active{display:block}
+    @keyframes fadeUpIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-    /* ── Buttons ── */
-    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius-md); font-size: 14px; font-weight: 600; transition: all 200ms var(--ease-out); }
-    .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 2px 16px rgba(99,132,255,0.3); }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(99,132,255,0.45); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-secondary { background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-    .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
-    .btn-ghost:hover { color: var(--text); background: var(--bg-elevated); }
-    .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: var(--radius-sm); }
-    .btn-danger { background: var(--error-soft); color: var(--error); border: 1px solid rgba(248,113,113,0.2); }
-    .btn-success { background: var(--success-soft); color: var(--success); border: 1px solid rgba(52,211,153,0.2); }
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden}
+    .card-header{padding:20px 24px;border-bottom:1px solid var(--border);background:var(--bg-subtle);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    .card-title{font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+    .card-body{padding:24px}
 
-    /* ── Textarea / Input ── */
-    .field { display: flex; flex-direction: column; gap: 6px; }
-    .field-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-    .field-hint { font-size: 12px; color: var(--text-muted); }
-    textarea.input, input.input {
-      width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-md);
-      color: var(--text); padding: 12px 14px; font-size: 14px; resize: vertical;
-      transition: border-color 200ms, box-shadow 200ms;
-    }
-    textarea.input:focus, input.input:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-soft); }
-    textarea.input { min-height: 120px; line-height: 1.7; }
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-md);font-size:14px;font-weight:600;transition:all 200ms var(--ease-out)}
+    .btn-primary{background:var(--gradient);color:#fff;box-shadow:0 2px 16px rgba(99,132,255,.3)}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(99,132,255,.45)}
+    .btn-primary:active{transform:translateY(0)}
+    .btn-secondary{background:var(--bg-elevated);color:var(--text);border:1px solid var(--border)}
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+    .btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}
+    .btn-ghost:hover{color:var(--text);background:var(--bg-elevated)}
+    .btn-sm{padding:7px 14px;font-size:12px;border-radius:var(--radius-sm)}
+    .btn-danger{background:var(--error-soft);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+    .btn-success{background:var(--success-soft);color:var(--success);border:1px solid rgba(52,211,153,.2)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 
-    /* ── Progress Ring ── */
-    .ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .ring-svg { transform: rotate(-90deg); }
-    .ring-bg { fill: none; stroke: var(--bg-elevated); stroke-width: 6; }
-    .ring-fill { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1s var(--ease-out), stroke 400ms; }
-    .ring-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.4px; }
-    .ring-val { font-size: 18px; font-weight: 800; text-align: center; }
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field-label{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px}
+    textarea.input,input.input{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);padding:12px 14px;font-size:14px;resize:vertical;transition:border-color 200ms,box-shadow 200ms}
+    textarea.input:focus,input.input:focus{outline:none;border-color:var(--border-focus);box-shadow:0 0 0 3px var(--accent-soft)}
+    textarea.input{min-height:120px;line-height:1.7}
 
-    /* ── Score Display ── */
-    .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0; }
-    @media (max-width: 600px) { .score-grid { grid-template-columns: repeat(2, 1fr); } }
+    .ring-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+    .ring-svg{transform:rotate(-90deg)}
+    .ring-bg{fill:none;stroke:var(--bg-elevated);stroke-width:6}
+    .ring-fill{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease-out),stroke 400ms}
+    .ring-label{font-size:11px;color:var(--text-secondary);font-weight:600;text-align:center;text-transform:uppercase;letter-spacing:.4px}
+    .ring-val{font-size:18px;font-weight:800;text-align:center}
 
-    /* ── Stars ── */
-    .stars-row { display: flex; gap: 4px; justify-content: center; font-size: 28px; margin: 8px 0; }
-    .star { opacity: 0; transform: scale(0); transition: opacity 300ms, transform 300ms var(--ease-spring); }
-    .star.show { opacity: 1; transform: scale(1); }
+    .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+    @media(max-width:600px){.score-grid{grid-template-columns:repeat(2,1fr)}}
 
-    /* ── Keyword Density Bar ── */
-    .density-bar-wrap { background: var(--bg-input); border-radius: 100px; height: 8px; overflow: hidden; margin: 4px 0; }
-    .density-bar { height: 100%; border-radius: 100px; background: var(--gradient); transition: width 400ms var(--ease-out); }
-    .density-bar.danger { background: var(--error); }
+    .stars-row{display:flex;gap:4px;justify-content:center;font-size:28px;margin:8px 0}
+    .star{opacity:0;transform:scale(0);transition:opacity 300ms,transform 300ms var(--ease-spring)}
+    .star.show{opacity:1;transform:scale(1)}
 
-    /* ── Keyword Chip ── */
-    .kw-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid; }
-    .kw-chip.found { background: var(--success-soft); border-color: rgba(52,211,153,0.3); color: var(--success); }
-    .kw-chip.missing { background: var(--error-soft); border-color: rgba(248,113,113,0.2); color: var(--error); }
-    .kw-chip.neutral { background: var(--bg-elevated); border-color: var(--border); color: var(--text-secondary); }
-    .kw-chips-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+    .density-bar-wrap{background:var(--bg-input);border-radius:100px;height:8px;overflow:hidden;margin:4px 0}
+    .density-bar{height:100%;border-radius:100px;background:var(--gradient);transition:width 400ms var(--ease-out)}
+    .density-bar.danger{background:var(--error)}
 
-    /* ── Radar Chart ── */
-    .radar-wrap { display: flex; justify-content: center; margin: 16px 0; }
+    .kw-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid}
+    .kw-chip.found{background:var(--success-soft);border-color:rgba(52,211,153,.3);color:var(--success)}
+    .kw-chip.missing{background:var(--error-soft);border-color:rgba(248,113,113,.2);color:var(--error)}
+    .kw-chip.neutral{background:var(--bg-elevated);border-color:var(--border);color:var(--text-secondary)}
+    .kw-chips-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 
-    /* ── Battle Cards ── */
-    .battle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 640px) { .battle-grid { grid-template-columns: 1fr; } }
-    .battle-card { background: var(--bg-elevated); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 20px; cursor: pointer; transition: all 250ms var(--ease-out); position: relative; overflow: hidden; }
-    .battle-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-glow); }
-    .battle-card.selected-win { border-color: var(--success); background: var(--success-soft); }
-    .battle-card.selected-lose { border-color: var(--error); background: var(--error-soft); }
-    .battle-card.revealed-win { border-color: var(--success); box-shadow: 0 0 24px rgba(52,211,153,0.25); }
-    .battle-card.revealed-lose { border-color: var(--error); opacity: 0.75; }
-    .battle-card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px; }
-    .battle-card-text { font-size: 15px; line-height: 1.65; }
-    .battle-annotation { margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.5; display: none; }
-    .battle-annotation.show { display: block; }
-    .battle-annotation.win { background: var(--success-soft); color: var(--success); border: 1px solid rgba(52,211,153,0.2); }
-    .battle-annotation.lose { background: var(--error-soft); color: var(--error); border: 1px solid rgba(248,113,113,0.2); }
-    .annotation-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-right: 6px; }
-    .annotation-tag.win { background: rgba(52,211,153,0.25); color: var(--success); }
-    .annotation-tag.lose { background: rgba(248,113,113,0.2); color: var(--error); }
+    .radar-wrap{display:flex;justify-content:center;margin:16px 0}
 
-    /* ── Streak ── */
-    .streak-display { display: flex; align-items: center; gap: 10px; }
-    .streak-num { font-size: 28px; font-weight: 800; line-height: 1; }
-    .fire { font-size: 22px; animation: firePulse 1s infinite alternate; }
-    @keyframes firePulse { from { transform: scale(1); } to { transform: scale(1.2) rotate(5deg); } }
+    .battle-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media(max-width:640px){.battle-grid{grid-template-columns:1fr}}
+    .battle-card{background:var(--bg-elevated);border:2px solid var(--border);border-radius:var(--radius-lg);padding:20px;cursor:pointer;transition:all 250ms var(--ease-out);position:relative;overflow:hidden}
+    .battle-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-glow)}
+    .battle-card.selected-win{border-color:var(--success);background:var(--success-soft)}
+    .battle-card.selected-lose{border-color:var(--error);background:var(--error-soft)}
+    .battle-card.revealed-win{border-color:var(--success);box-shadow:0 0 24px rgba(52,211,153,.25)}
+    .battle-card.revealed-lose{border-color:var(--error);opacity:.75}
+    .battle-card-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:12px}
+    .battle-card-text{font-size:15px;line-height:1.65}
+    .battle-annotation{margin-top:12px;padding:10px 12px;border-radius:var(--radius-sm);font-size:13px;line-height:1.5;display:none}
+    .battle-annotation.show{display:block}
+    .battle-annotation.win{background:var(--success-soft);color:var(--success);border:1px solid rgba(52,211,153,.2)}
+    .battle-annotation.lose{background:var(--error-soft);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+    .annotation-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-right:6px}
+    .annotation-tag.win{background:rgba(52,211,153,.25);color:var(--success)}
+    .annotation-tag.lose{background:rgba(248,113,113,.2);color:var(--error)}
 
-    /* ── Difficulty Badges ── */
-    .diff-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 150ms; border: 1px solid; }
-    .diff-badge.beginner { background: var(--success-soft); color: var(--success); border-color: rgba(52,211,153,0.3); }
-    .diff-badge.intermediate { background: var(--warning-soft); color: var(--warning); border-color: rgba(251,191,36,0.3); }
-    .diff-badge.expert { background: var(--error-soft); color: var(--error); border-color: rgba(248,113,113,0.2); }
-    .diff-badge:not(.active) { opacity: 0.45; }
-    .diff-badge.active { opacity: 1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .streak-display{display:flex;align-items:center;gap:10px}
+    .streak-num{font-size:28px;font-weight:800;line-height:1}
+    .fire{font-size:22px;animation:firePulse 1s infinite alternate}
+    @keyframes firePulse{from{transform:scale(1)}to{transform:scale(1.2) rotate(5deg)}}
 
-    /* ── Voice Cards ── */
-    .voice-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 16px 0; }
-    @media (max-width: 760px) { .voice-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 480px) { .voice-grid { grid-template-columns: repeat(2, 1fr); } }
-    .voice-card { padding: 12px; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--bg-elevated); cursor: pointer; text-align: center; transition: all 200ms var(--ease-out); }
-    .voice-card:hover { border-color: var(--accent); background: var(--accent-soft); }
-    .voice-card.active { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 16px var(--accent-glow); }
-    .voice-card-emoji { font-size: 22px; display: block; margin-bottom: 6px; }
-    .voice-card-name { font-size: 12px; font-weight: 700; color: var(--text); }
+    .diff-badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all 150ms;border:1px solid}
+    .diff-badge.easy{background:var(--success-soft);color:var(--success);border-color:rgba(52,211,153,.3)}
+    .diff-badge.medium{background:var(--warning-soft);color:var(--warning);border-color:rgba(251,191,36,.3)}
+    .diff-badge.hard{background:var(--error-soft);color:var(--error);border-color:rgba(248,113,113,.2)}
+    .diff-badge:not(.active){opacity:.45}
+    .diff-badge.active{opacity:1;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 
-    /* ── History Log ── */
-    .history-list { display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    .history-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 12px; animation: fadeUpIn 250ms var(--ease-out); }
-    .history-item-topic { color: var(--text-secondary); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .history-score-badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-    .score-high { background: var(--success-soft); color: var(--success); }
-    .score-mid { background: var(--warning-soft); color: var(--warning); }
-    .score-low { background: var(--error-soft); color: var(--error); }
+    .voice-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0}
+    @media(max-width:760px){.voice-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:480px){.voice-grid{grid-template-columns:repeat(2,1fr)}}
+    .voice-card{padding:12px;border-radius:var(--radius-md);border:2px solid var(--border);background:var(--bg-elevated);cursor:pointer;text-align:center;transition:all 200ms var(--ease-out)}
+    .voice-card:hover{border-color:var(--accent);background:var(--accent-soft)}
+    .voice-card.active{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 16px var(--accent-glow)}
+    .voice-card-emoji{font-size:22px;display:block;margin-bottom:6px}
+    .voice-card-name{font-size:12px;font-weight:700;color:var(--text)}
 
-    /* ── Tooltip ── */
-    .tip-wrap { position: relative; display: inline-flex; }
-    .tip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px; color: var(--text-secondary); white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 200ms; z-index: 50; box-shadow: var(--shadow-md); }
-    .tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--border); }
-    .tip-wrap:hover .tip { opacity: 1; }
+    .history-list{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+    .history-item{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:12px;animation:fadeUpIn 250ms var(--ease-out)}
+    .history-item-topic{color:var(--text-secondary);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .history-score-badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
+    .score-high{background:var(--success-soft);color:var(--success)}
+    .score-mid{background:var(--warning-soft);color:var(--warning)}
+    .score-low{background:var(--error-soft);color:var(--error)}
 
-    /* ── Sound Toggle ── */
-    #sound-toggle { position: fixed; bottom: 24px; right: 24px; z-index: 200; width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); transition: all 200ms; }
-    #sound-toggle:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); transform: scale(1.1); }
-    #sound-toggle.active .icon-sound-off { display: none; }
-    #sound-toggle:not(.active) .icon-sound-on { display: none; }
-    .sound-ripple { position: absolute; border-radius: 50%; background: var(--accent-glow); animation: soundRipple 600ms ease-out forwards; }
-    @keyframes soundRipple { from { width: 44px; height: 44px; opacity: 0.7; transform: translate(-50%,-50%); } to { width: 80px; height: 80px; opacity: 0; transform: translate(-50%,-50%); } }
+    .challenge-banner{background:var(--gradient-subtle);border:1px solid rgba(99,132,255,.2);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:20px;display:flex;align-items:flex-start;gap:16px}
+    .challenge-icon{width:40px;height:40px;border-radius:var(--radius-md);background:var(--gradient);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;font-size:18px}
+    .challenge-text{flex:1}
+    .challenge-text h3{font-size:15px;font-weight:700;margin-bottom:4px}
+    .challenge-text p{font-size:14px;color:var(--text-secondary);line-height:1.5}
+    .challenge-meta{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+    .challenge-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary)}
 
-    /* ── Challenge Banner ── */
-    .challenge-banner { background: var(--gradient-subtle); border: 1px solid rgba(99,132,255,0.2); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 16px; }
-    .challenge-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--gradient); display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; font-size: 18px; }
-    .challenge-text { flex: 1; }
-    .challenge-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .challenge-text p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
-    .challenge-meta { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
-    .challenge-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); }
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    @media(max-width:640px){.compare-grid{grid-template-columns:1fr}}
+    .compare-box{border-radius:var(--radius-md);padding:16px;font-size:14px;line-height:1.7}
+    .compare-box.yours{background:var(--bg-input);border:1px solid var(--border)}
+    .compare-box.ideal{background:var(--success-soft);border:1px solid rgba(52,211,153,.2)}
+    .compare-box h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;color:var(--text-muted)}
 
-    /* ── Comparison Box ── */
-    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-    @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
-    .compare-box { border-radius: var(--radius-md); padding: 16px; font-size: 14px; line-height: 1.7; }
-    .compare-box.yours { background: var(--bg-input); border: 1px solid var(--border); }
-    .compare-box.ideal { background: var(--success-soft); border: 1px solid rgba(52,211,153,0.2); }
-    .compare-box h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; color: var(--text-muted); }
+    .principle-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px}
+    .principle-name{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px}
+    .principle-desc{font-size:13px;color:var(--text-secondary);line-height:1.5}
 
-    /* ── Principle Card ── */
-    .principle-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; }
-    .principle-name { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
-    .principle-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .total-score-ring{display:flex;justify-content:center;margin:8px 0 16px}
+    .total-score-inner{position:relative}
+    .total-score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .total-score-num{font-size:32px;font-weight:800;line-height:1}
+    .total-score-label{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
 
-    /* ── Overall Score Display ── */
-    .total-score-ring { display: flex; justify-content: center; margin: 8px 0 16px; }
-    .total-score-inner { position: relative; }
-    .total-score-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .total-score-num { font-size: 32px; font-weight: 800; line-height: 1; }
-    .total-score-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+    .alert{padding:12px 16px;border-radius:var(--radius-md);font-size:13px;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+    .alert-danger{background:var(--error-soft);border:1px solid rgba(248,113,113,.2);color:var(--error)}
+    .alert-success{background:var(--success-soft);border:1px solid rgba(52,211,153,.2);color:var(--success)}
+    .alert-info{background:var(--accent-soft);border:1px solid rgba(99,132,255,.2);color:var(--accent)}
+    .alert-warning{background:var(--warning-soft);border:1px solid rgba(251,191,36,.2);color:var(--warning)}
 
-    /* ── Alert ── */
-    .alert { padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; line-height: 1.5; display: flex; gap: 10px; align-items: flex-start; }
-    .alert-danger { background: var(--error-soft); border: 1px solid rgba(248,113,113,0.2); color: var(--error); }
-    .alert-success { background: var(--success-soft); border: 1px solid rgba(52,211,153,0.2); color: var(--success); }
-    .alert-info { background: var(--accent-soft); border: 1px solid rgba(99,132,255,0.2); color: var(--accent); }
-    .alert-warning { background: var(--warning-soft); border: 1px solid rgba(251,191,36,0.2); color: var(--warning); }
+    .section-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
 
-    /* ── Section Divider ── */
-    .section-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+    @media(max-width:840px){.two-col{grid-template-columns:1fr}}
 
-    /* ── Two-col layout ── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-    @media (max-width: 840px) { .two-col { grid-template-columns: 1fr; } }
-    .one-col { max-width: 700px; margin: 0 auto; }
+    .cat-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+    .cat-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);transition:all 150ms}
+    .cat-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .cat-btn.active{background:var(--gradient);border-color:transparent;color:#fff}
 
-    /* ── Category Select ── */
-    .cat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-    .cat-btn { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); transition: all 150ms; }
-    .cat-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .cat-btn.active { background: var(--gradient); border-color: transparent; color: #fff; }
+    .hl{background:rgba(99,132,255,.25);border-radius:3px;padding:0 2px}
+    @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .count-in{animation:countUp 400ms var(--ease-spring) both}
+    @keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 var(--accent-glow)}50%{box-shadow:0 0 20px 4px var(--accent-glow)}}
+    .glow-pulse{animation:glowPulse 2s infinite}
 
-    /* ── Highlighted Text ── */
-    .hl { background: rgba(99,132,255,0.25); border-radius: 3px; padding: 0 2px; }
+    .stats-row{display:flex;gap:16px;flex-wrap:wrap}
+    .stat-box{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 18px;flex:1;min-width:80px}
+    .stat-box-val{font-size:22px;font-weight:800;line-height:1.2}
+    .stat-box-label{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 
-    /* ── Animated Number ── */
-    @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .count-in { animation: countUp 400ms var(--ease-spring) both; }
+    /* Timer */
+    .timer-wrap{display:flex;align-items:center;gap:10px}
+    .timer-ring{position:relative;width:56px;height:56px}
+    .timer-ring svg{transform:rotate(-90deg)}
+    .timer-ring .ring-bg{stroke:var(--bg-elevated);stroke-width:4;fill:none}
+    .timer-ring .ring-fill{stroke-width:4;fill:none;stroke-linecap:round;transition:stroke-dashoffset .3s linear,stroke .3s}
+    .timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;font-family:var(--font-mono)}
 
-    /* ── Glow pulse ── */
-    @keyframes glowPulse { 0%,100% { box-shadow: 0 0 0 0 var(--accent-glow); } 50% { box-shadow: 0 0 20px 4px var(--accent-glow); } }
-    .glow-pulse { animation: glowPulse 2s infinite; }
+    /* Slider styles */
+    .slider-group{display:flex;flex-direction:column;gap:16px;margin:16px 0}
+    .slider-row{display:flex;align-items:center;gap:12px}
+    .slider-label{font-size:12px;font-weight:600;color:var(--text-secondary);width:70px;text-align:right;flex-shrink:0}
+    .slider-label-r{font-size:12px;font-weight:600;color:var(--text-secondary);width:70px;text-align:left;flex-shrink:0}
+    input[type="range"]{flex:1;-webkit-appearance:none;height:6px;background:var(--bg-elevated);border-radius:3px;outline:none}
+    input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--gradient);cursor:pointer;box-shadow:0 2px 8px rgba(99,132,255,.4)}
+    input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:none}
 
-    /* ── Stats row ── */
-    .stats-row { display: flex; gap: 16px; flex-wrap: wrap; }
-    .stat-box { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 18px; flex: 1; min-width: 80px; }
-    .stat-box-val { font-size: 22px; font-weight: 800; line-height: 1.2; }
-    .stat-box-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+    /* Heatmap highlight */
+    .seo-heatmap mark{background:rgba(99,132,255,.3);color:var(--text);border-radius:3px;padding:0 2px}
+    .seo-heatmap mark.hot{background:rgba(52,211,153,.35)}
+    .seo-heatmap mark.stuffed{background:rgba(248,113,113,.35)}
 
-    /* Responsive */
-    @media (max-width: 480px) {
-      .page { padding: 20px 16px 60px; }
-      .game-tabs { gap: 2px; padding: 3px; }
-      .tab-btn { padding: 8px 12px; font-size: 12px; }
-      .tab-btn .tab-label { display: none; }
+    /* Tutorial overlay */
+    .tutorial-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .tutorial-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:32px;max-width:480px;width:90%;text-align:center;animation:fadeUpIn .4s var(--ease-out)}
+    .tutorial-card h2{font-size:24px;font-weight:800;margin-bottom:8px}
+    .tutorial-card p{color:var(--text-secondary);font-size:14px;line-height:1.7;margin-bottom:24px}
+    .tutorial-steps{text-align:left;margin-bottom:24px}
+    .tutorial-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+    .tutorial-step:last-child{border-bottom:none}
+    .tutorial-step-num{width:28px;height:28px;border-radius:50%;background:var(--gradient);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .tutorial-step-text{font-size:13px;color:var(--text-secondary);line-height:1.5}
+
+    /* Sound Toggle */
+    #sound-toggle{position:fixed;bottom:24px;right:24px;z-index:200;width:44px;height:44px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md);transition:all 200ms}
+    #sound-toggle:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);transform:scale(1.1)}
+    #sound-toggle.active .icon-sound-off{display:none}
+    #sound-toggle:not(.active) .icon-sound-on{display:none}
+
+    @media(max-width:480px){
+      .page{padding:20px 16px 60px}
+      .game-tabs{gap:2px;padding:3px}
+      .tab-btn{padding:8px 12px;font-size:12px}
+      .tab-btn .tab-label{display:none}
     }
   </style>
 </head>
 <body>
-  <!-- Ambient Background -->
-  <div class="ambient-bg">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
-
-  <!-- Confetti Canvas -->
+  <div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Nav -->
   <nav class="nav">
     <div class="nav-inner">
       <a href="index.html" class="nav-brand">
-        <span class="brand-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-          </svg>
-        </span>
+        <span class="brand-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
         <span class="brand-text">ContentGen<span class="brand-ai">AI</span></span>
       </a>
       <div class="nav-actions">
@@ -350,68 +311,54 @@
     </div>
   </nav>
 
-  <!-- Sound Toggle -->
-  <button id="sound-toggle" class="active" title="Toggle sound feedback" aria-label="Toggle sound">
+  <button id="sound-toggle" class="active" title="Toggle sound" aria-label="Toggle sound">
     <svg class="icon-sound-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
     <svg class="icon-sound-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
   </button>
 
-  <!-- Main Page -->
   <div class="page">
-    <a href="index.html" class="back-link">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Back to Dashboard
-    </a>
+    <a href="index.html" class="back-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Dashboard</a>
 
     <div class="page-hero">
-      <div class="page-eyebrow">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        Interactive Learning
-      </div>
+      <div class="page-eyebrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Interactive Learning</div>
       <h1 class="page-title">Master Content Writing<br>through <span class="gradient-text">Play</span></h1>
       <p class="page-subtitle">Four skill-building games designed to sharpen your copywriting, SEO, and brand voice expertise.</p>
     </div>
 
-    <!-- Game Tabs -->
-    <div class="game-tabs" id="game-tabs" role="tablist">
-      <button class="tab-btn active" data-tab="challenge" role="tab">
-        <span class="tab-icon">✍️</span>
-        <span class="tab-label">Content Challenge</span>
-        <span class="tab-badge" id="badge-challenge">0</span>
-      </button>
-      <button class="tab-btn" data-tab="seo" role="tab">
-        <span class="tab-icon">🔍</span>
-        <span class="tab-label">SEO Master</span>
-        <span class="tab-badge" id="badge-seo">0</span>
-      </button>
-      <button class="tab-btn" data-tab="voice" role="tab">
-        <span class="tab-icon">🎙️</span>
-        <span class="tab-label">Brand Voice</span>
-        <span class="tab-badge" id="badge-voice">0</span>
-      </button>
-      <button class="tab-btn" data-tab="battle" role="tab">
-        <span class="tab-icon">⚔️</span>
-        <span class="tab-label">Copy Battle</span>
-        <span class="tab-badge" id="badge-battle">0</span>
-      </button>
+    <!-- XP Strip -->
+    <div class="xp-strip">
+      <span class="xp-level" id="xp-level">Level 1</span>
+      <div class="xp-bar-outer"><div class="xp-bar-inner" id="xp-bar" style="width:0%"></div></div>
+      <span class="xp-text" id="xp-text">0 / 100 XP</span>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-         GAME 1 — CONTENT CHALLENGE
-    ══════════════════════════════════════════════════════════ -->
+    <!-- Game Tabs -->
+    <div class="game-tabs" id="game-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="challenge" role="tab"><span class="tab-icon">&#9997;&#65039;</span><span class="tab-label">Content Challenge</span><span class="tab-badge" id="badge-challenge">0</span></button>
+      <button class="tab-btn" data-tab="seo" role="tab"><span class="tab-icon">&#128269;</span><span class="tab-label">SEO Master</span><span class="tab-badge" id="badge-seo">0</span></button>
+      <button class="tab-btn" data-tab="voice" role="tab"><span class="tab-icon">&#127908;&#65039;</span><span class="tab-label">Brand Voice</span><span class="tab-badge" id="badge-voice">0</span></button>
+      <button class="tab-btn" data-tab="battle" role="tab"><span class="tab-icon">&#9876;&#65039;</span><span class="tab-label">Copy Battle</span><span class="tab-badge" id="badge-battle">0</span></button>
+    </div>
+
+    <!-- GAME 1: CONTENT CHALLENGE -->
     <div class="game-panel active" id="panel-challenge">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
+        <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">Difficulty:</span>
+        <button class="diff-badge easy active" data-ccdiff="easy" onclick="ccSetDiff('easy')">Easy (120s)</button>
+        <button class="diff-badge medium" data-ccdiff="medium" onclick="ccSetDiff('medium')">Medium (90s)</button>
+        <button class="diff-badge hard" data-ccdiff="hard" onclick="ccSetDiff('hard')">Hard (60s)</button>
+      </div>
       <div class="two-col">
-        <!-- Left: Challenge + Input -->
         <div>
           <div id="cc-challenge-banner" class="challenge-banner">
-            <div class="challenge-icon">✍️</div>
+            <div class="challenge-icon">&#9997;&#65039;</div>
             <div class="challenge-text">
-              <h3 id="cc-title">Loading challenge…</h3>
+              <h3 id="cc-title">Loading challenge...</h3>
               <p id="cc-desc">Your writing prompt will appear here.</p>
               <div class="challenge-meta">
-                <span class="challenge-pill" id="cc-pill-tone">Tone: —</span>
-                <span class="challenge-pill" id="cc-pill-words">Words: —</span>
-                <span class="challenge-pill" id="cc-pill-topic">Topic: —</span>
+                <span class="challenge-pill" id="cc-pill-tone">Tone: --</span>
+                <span class="challenge-pill" id="cc-pill-words">Words: --</span>
+                <span class="challenge-pill" id="cc-pill-topic">Topic: --</span>
               </div>
             </div>
           </div>
@@ -419,65 +366,59 @@
           <div class="card">
             <div class="card-header">
               <span class="card-title">Your Response</span>
-              <span id="cc-word-counter" style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)">0 words</span>
+              <div class="timer-wrap">
+                <div class="timer-ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle class="ring-bg" cx="28" cy="28" r="24"/><circle class="ring-fill" id="cc-timer-ring" cx="28" cy="28" r="24" stroke="var(--accent)" stroke-dasharray="150.8" stroke-dashoffset="0"/></svg><div class="timer-text" id="cc-timer-text">--</div></div>
+                <span id="cc-word-counter" style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)">0 words</span>
+              </div>
             </div>
             <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
-              <div class="field">
-                <textarea class="input" id="cc-textarea" rows="6" placeholder="Start writing here…" spellcheck="true"></textarea>
-              </div>
+              <textarea class="input" id="cc-textarea" rows="6" placeholder="Start writing here... timer starts when you type!" spellcheck="true"></textarea>
               <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button class="btn btn-primary" id="cc-submit-btn" onclick="ccSubmit()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  Submit
-                </button>
-                <button class="btn btn-ghost" onclick="ccNewChallenge()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                  Next Challenge
-                </button>
+                <button class="btn btn-primary" id="cc-submit-btn" onclick="ccSubmit()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Submit</button>
+                <button class="btn btn-ghost" onclick="ccNewChallenge()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> New Challenge</button>
               </div>
             </div>
           </div>
 
-          <!-- History -->
-          <div class="card" style="margin-top:16px;" id="cc-history-card">
+          <div class="card" style="margin-top:16px;">
             <div class="card-header"><span class="card-title">Challenge History</span></div>
             <div class="card-body">
               <div class="history-list" id="cc-history"></div>
-              <p id="cc-history-empty" style="font-size:13px;color:var(--text-muted);text-align:center;padding:16px 0;">No attempts yet. Complete a challenge to see your history.</p>
+              <p id="cc-history-empty" style="font-size:13px;color:var(--text-muted);text-align:center;padding:16px 0;">No attempts yet.</p>
             </div>
           </div>
         </div>
 
-        <!-- Right: Score -->
         <div id="cc-score-panel">
           <div class="card">
             <div class="card-header"><span class="card-title">Score Breakdown</span></div>
             <div class="card-body" id="cc-score-body">
               <div style="display:flex;flex-direction:column;align-items:center;padding:32px 0;color:var(--text-muted);">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:0.4;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:.4"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
                 <p style="font-size:14px;">Submit your response to see your score</p>
               </div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:16px;">
+            <div class="card-header"><span class="card-title">Personal Best</span></div>
+            <div class="card-body" id="cc-best-body" style="text-align:center;padding:24px;">
+              <div class="stat-box-val" id="cc-best-val" style="font-size:36px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">--</div>
+              <div class="stat-box-label">Best Score</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-         GAME 2 — SEO MASTER
-    ══════════════════════════════════════════════════════════ -->
+    <!-- GAME 2: SEO MASTER -->
     <div class="game-panel" id="panel-seo">
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
         <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">Difficulty:</span>
-        <button class="diff-badge beginner active" data-diff="beginner" onclick="seoSetDiff('beginner')">Beginner (2 kw)</button>
-        <button class="diff-badge intermediate" data-diff="intermediate" onclick="seoSetDiff('intermediate')">Intermediate (4 kw)</button>
-        <button class="diff-badge expert" data-diff="expert" onclick="seoSetDiff('expert')">Expert (6+ kw)</button>
-        <button class="btn btn-ghost btn-sm" onclick="seoNewChallenge()" style="margin-left:auto;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          New Challenge
-        </button>
+        <button class="diff-badge easy active" data-seodiff="easy" onclick="seoSetDiff('easy')">Beginner (2 kw)</button>
+        <button class="diff-badge medium" data-seodiff="medium" onclick="seoSetDiff('medium')">Intermediate (4 kw)</button>
+        <button class="diff-badge hard" data-seodiff="hard" onclick="seoSetDiff('hard')">Expert (6+ kw)</button>
+        <button class="btn btn-ghost btn-sm" onclick="seoNewChallenge()" style="margin-left:auto;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> New</button>
       </div>
-
       <div class="two-col">
         <div>
           <div class="card" style="margin-bottom:16px;">
@@ -489,177 +430,147 @@
               <div class="kw-chips-row" id="seo-kw-chips"></div>
             </div>
           </div>
-
           <div class="card">
-            <div class="card-header">
-              <span class="card-title">Your Optimized Version</span>
-              <div class="tip-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);cursor:help;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                <div class="tip">Naturally integrate the target keywords.<br>Avoid stuffing — quality placement wins!</div>
-              </div>
-            </div>
+            <div class="card-header"><span class="card-title">Your Optimized Version</span></div>
             <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
-              <textarea class="input" id="seo-textarea" rows="6" placeholder="Rewrite the paragraph with the target keywords naturally integrated…" oninput="seoAnalyze()"></textarea>
-              <button class="btn btn-primary" onclick="seoSubmit()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Analyse My Text
-              </button>
+              <textarea class="input" id="seo-textarea" rows="6" placeholder="Rewrite with keywords naturally integrated..." oninput="seoAnalyze()"></textarea>
+              <div class="field-label">Live Heatmap Preview</div>
+              <div class="seo-heatmap" id="seo-heatmap" style="font-size:14px;line-height:1.75;color:var(--text-secondary);padding:12px;background:var(--bg-input);border-radius:var(--radius-md);min-height:40px;border:1px solid var(--border);"></div>
+              <button class="btn btn-primary" onclick="seoSubmit()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Analyse My Text</button>
             </div>
           </div>
         </div>
-
         <div>
           <div class="card" style="margin-bottom:16px;">
             <div class="card-header"><span class="card-title">Real-time Keyword Meters</span></div>
             <div class="card-body" id="seo-meters" style="display:flex;flex-direction:column;gap:12px;"></div>
           </div>
-
           <div class="card" id="seo-result-card" style="display:none;">
             <div class="card-header"><span class="card-title">SEO Score</span></div>
             <div class="card-body" id="seo-result-body"></div>
           </div>
-
           <div class="card" style="margin-top:16px;">
             <div class="card-header"><span class="card-title">SEO Tips</span></div>
             <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
-              <div class="alert alert-info"><span>💡</span> Place your primary keyword in the first sentence for maximum impact.</div>
-              <div class="alert alert-info"><span>💡</span> Aim for 1–2% keyword density — any higher looks spammy to search engines.</div>
-              <div class="alert alert-info"><span>💡</span> Use keyword variations and LSI terms to avoid repetition.</div>
-              <div class="alert alert-info"><span>💡</span> Strong synonyms score nearly as well as exact matches.</div>
+              <div class="alert alert-info"><span>&#128161;</span> Place your primary keyword in the first sentence for maximum impact.</div>
+              <div class="alert alert-info"><span>&#128161;</span> Aim for 1-2% keyword density -- any higher looks spammy.</div>
+              <div class="alert alert-info"><span>&#128161;</span> Use keyword variations and LSI terms to avoid repetition.</div>
+              <div class="alert alert-info"><span>&#128161;</span> Strong synonyms score nearly as well as exact matches.</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-         GAME 3 — BRAND VOICE WORKSHOP
-    ══════════════════════════════════════════════════════════ -->
+    <!-- GAME 3: BRAND VOICE WORKSHOP -->
     <div class="game-panel" id="panel-voice">
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" id="voice-mode-write" onclick="voiceSetMode('write')" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">Write Mode</button>
+        <button class="btn btn-ghost btn-sm" id="voice-mode-match" onclick="voiceSetMode('match')">Match the Voice</button>
+      </div>
       <div class="two-col">
         <div>
           <div class="card" style="margin-bottom:16px;">
-            <div class="card-header"><span class="card-title">Neutral Text to Transform</span>
-              <button class="btn btn-ghost btn-sm" onclick="voiceNewChallenge()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                New Text
-              </button>
+            <div class="card-header"><span class="card-title" id="voice-card-title">Neutral Text to Transform</span>
+              <button class="btn btn-ghost btn-sm" onclick="voiceNewChallenge()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> New</button>
             </div>
             <div class="card-body">
               <p id="voice-neutral" style="font-size:14px;line-height:1.8;color:var(--text-secondary);"></p>
-            </div>
-          </div>
-
-          <div class="field-label" style="margin-bottom:10px;padding-left:2px;">Select Target Voice</div>
-          <div class="voice-grid" id="voice-grid">
-            <div class="voice-card active" data-voice="corporate" onclick="voiceSelect('corporate')">
-              <span class="voice-card-emoji">💼</span>
-              <div class="voice-card-name">Corporate</div>
-            </div>
-            <div class="voice-card" data-voice="casual" onclick="voiceSelect('casual')">
-              <span class="voice-card-emoji">😎</span>
-              <div class="voice-card-name">Casual</div>
-            </div>
-            <div class="voice-card" data-voice="playful" onclick="voiceSelect('playful')">
-              <span class="voice-card-emoji">🎉</span>
-              <div class="voice-card-name">Playful</div>
-            </div>
-            <div class="voice-card" data-voice="technical" onclick="voiceSelect('technical')">
-              <span class="voice-card-emoji">⚙️</span>
-              <div class="voice-card-name">Technical</div>
-            </div>
-            <div class="voice-card" data-voice="luxury" onclick="voiceSelect('luxury')">
-              <span class="voice-card-emoji">✨</span>
-              <div class="voice-card-name">Luxury</div>
-            </div>
-          </div>
-
-          <div class="card" style="margin-top:16px;">
-            <div class="card-header">
-              <span class="card-title">Your Rewrite</span>
-              <span id="voice-selected-label" style="font-size:12px;color:var(--accent);font-weight:600;"></span>
-            </div>
-            <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
-              <div id="voice-characteristics" class="alert alert-info" style="font-size:13px;line-height:1.6;"></div>
-              <textarea class="input" id="voice-textarea" rows="5" placeholder="Rewrite the neutral text in the selected brand voice…"></textarea>
-              <button class="btn btn-primary" onclick="voiceSubmit()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Score My Rewrite
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <!-- Radar Chart -->
-          <div class="card" style="margin-bottom:16px;">
-            <div class="card-header"><span class="card-title">Voice Characteristics Radar</span></div>
-            <div class="card-body">
-              <div class="radar-wrap">
-                <svg id="voice-radar" width="260" height="260" viewBox="0 0 260 260"></svg>
+              <div id="voice-match-sample" style="display:none;margin-top:16px;padding:16px;background:var(--gradient-subtle);border:1px solid rgba(99,132,255,.2);border-radius:var(--radius-md);">
+                <div class="field-label" style="margin-bottom:8px;">Match this voice style:</div>
+                <p id="voice-match-text" style="font-size:14px;line-height:1.8;font-style:italic;"></p>
               </div>
             </div>
           </div>
 
-          <!-- Score + Comparison -->
+          <!-- Sliders -->
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><span class="card-title">Voice Dimensions</span></div>
+            <div class="card-body">
+              <div class="slider-group" id="voice-sliders">
+                <div class="slider-row"><span class="slider-label">Formal</span><input type="range" min="0" max="100" value="50" id="slider-formal" oninput="voiceSliderChange()"><span class="slider-label-r">Casual</span></div>
+                <div class="slider-row"><span class="slider-label">Serious</span><input type="range" min="0" max="100" value="50" id="slider-serious" oninput="voiceSliderChange()"><span class="slider-label-r">Playful</span></div>
+                <div class="slider-row"><span class="slider-label">Technical</span><input type="range" min="0" max="100" value="50" id="slider-technical" oninput="voiceSliderChange()"><span class="slider-label-r">Simple</span></div>
+                <div class="slider-row"><span class="slider-label">Bold</span><input type="range" min="0" max="100" value="50" id="slider-bold" oninput="voiceSliderChange()"><span class="slider-label-r">Subtle</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-label" style="margin-bottom:10px;padding-left:2px;">Voice Presets</div>
+          <div class="voice-grid" id="voice-grid">
+            <div class="voice-card active" data-voice="corporate" onclick="voiceSelect('corporate')"><span class="voice-card-emoji">&#128188;</span><div class="voice-card-name">Corporate</div></div>
+            <div class="voice-card" data-voice="casual" onclick="voiceSelect('casual')"><span class="voice-card-emoji">&#128526;</span><div class="voice-card-name">Casual</div></div>
+            <div class="voice-card" data-voice="playful" onclick="voiceSelect('playful')"><span class="voice-card-emoji">&#127881;</span><div class="voice-card-name">Playful</div></div>
+            <div class="voice-card" data-voice="technical" onclick="voiceSelect('technical')"><span class="voice-card-emoji">&#9881;&#65039;</span><div class="voice-card-name">Technical</div></div>
+            <div class="voice-card" data-voice="luxury" onclick="voiceSelect('luxury')"><span class="voice-card-emoji">&#10024;</span><div class="voice-card-name">Luxury</div></div>
+          </div>
+
+          <!-- Write area -->
+          <div class="card" style="margin-top:16px;" id="voice-write-area">
+            <div class="card-header"><span class="card-title">Your Rewrite</span><span id="voice-selected-label" style="font-size:12px;color:var(--accent);font-weight:600;"></span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+              <div id="voice-characteristics" class="alert alert-info" style="font-size:13px;line-height:1.6;"></div>
+              <div id="voice-live-preview" style="font-size:14px;line-height:1.8;color:var(--text-secondary);min-height:60px;padding:12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);display:none;"></div>
+              <textarea class="input" id="voice-textarea" rows="5" placeholder="Rewrite the neutral text in the selected brand voice..."></textarea>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="voiceSubmit()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Score My Rewrite</button>
+                <button class="btn btn-ghost btn-sm" id="voice-match-submit" onclick="voiceMatchSubmit()" style="display:none;">Check Match</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><span class="card-title">Voice Characteristics Radar</span></div>
+            <div class="card-body"><div class="radar-wrap"><svg id="voice-radar" width="260" height="260" viewBox="0 0 260 260"></svg></div></div>
+          </div>
           <div class="card" id="voice-result-card" style="display:none;">
             <div class="card-header"><span class="card-title">Voice Score</span></div>
             <div class="card-body" id="voice-result-body"></div>
+          </div>
+          <div class="card" style="margin-top:16px;">
+            <div class="card-header"><span class="card-title">Saved Profiles</span></div>
+            <div class="card-body">
+              <div id="voice-saved-profiles" style="display:flex;flex-direction:column;gap:8px;"></div>
+              <button class="btn btn-ghost btn-sm" style="margin-top:12px;" onclick="voiceSaveProfile()">Save Current Profile</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-         GAME 4 — COPY BATTLE ARENA
-    ══════════════════════════════════════════════════════════ -->
+    <!-- GAME 4: COPY BATTLE -->
     <div class="game-panel" id="panel-battle">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
         <div class="streak-display">
-          <span class="fire">🔥</span>
-          <div>
-            <div class="streak-num" id="battle-streak">0</div>
-            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Streak</div>
-          </div>
+          <span class="fire">&#128293;</span>
+          <div><div class="streak-num" id="battle-streak">0</div><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Streak</div></div>
           <div style="width:1px;height:32px;background:var(--border);margin:0 6px;"></div>
-          <div>
-            <div style="font-size:20px;font-weight:800;" id="battle-score">0</div>
-            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Score</div>
-          </div>
+          <div><div style="font-size:20px;font-weight:800;" id="battle-score">0</div><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Score</div></div>
           <div style="width:1px;height:32px;background:var(--border);margin:0 6px;"></div>
-          <div>
-            <div style="font-size:20px;font-weight:800;" id="battle-round">1</div>
-            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Round</div>
-          </div>
+          <div><div style="font-size:20px;font-weight:800;" id="battle-round">1</div><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Round</div></div>
         </div>
-        <div class="cat-row">
+        <div class="cat-row" style="margin-bottom:0;">
           <button class="cat-btn active" data-cat="headlines" onclick="battleSetCat('headlines')">Headlines</button>
           <button class="cat-btn" data-cat="ctas" onclick="battleSetCat('ctas')">CTAs</button>
           <button class="cat-btn" data-cat="email" onclick="battleSetCat('email')">Email</button>
           <button class="cat-btn" data-cat="social" onclick="battleSetCat('social')">Social</button>
+          <button class="cat-btn" data-cat="product" onclick="battleSetCat('product')">Product</button>
         </div>
       </div>
 
       <div class="card" style="margin-bottom:16px;">
-        <div class="card-header">
-          <span class="card-title" id="battle-cat-label">Headlines</span>
-          <span style="font-size:12px;color:var(--text-muted);">Pick the stronger copy</span>
-        </div>
+        <div class="card-header"><span class="card-title" id="battle-cat-label">Headlines</span><span style="font-size:12px;color:var(--text-muted);">Pick the stronger copy</span></div>
         <div class="card-body">
           <div class="battle-grid" id="battle-grid"></div>
           <div id="battle-explanation" style="margin-top:20px;display:none;">
             <div class="card" style="background:var(--bg-subtle);">
               <div class="card-body">
-                <div style="font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">Why Option <span id="battle-why-letter">A</span> Wins</div>
+                <div style="font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Why Option <span id="battle-why-letter">A</span> Wins</div>
                 <p id="battle-explanation-text" style="font-size:14px;line-height:1.7;"></p>
-                <div style="margin-top:14px;">
-                  <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.4px;">Principle Applied</div>
-                  <div class="principle-card" id="battle-principle"></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top:16px;" onclick="battleNext()">
-                  Next Round
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </button>
+                <div style="margin-top:14px;"><div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;">Principle Applied</div><div class="principle-card" id="battle-principle"></div></div>
+                <button class="btn btn-primary" style="margin-top:16px;" onclick="battleNext()">Next Round <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
               </div>
             </div>
           </div>
@@ -670,25 +581,12 @@
         <div class="card">
           <div class="card-header"><span class="card-title">Copywriting Principles</span></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
-            <div class="principle-card">
-              <div class="principle-name">AIDA</div>
-              <div class="principle-desc">Attention → Interest → Desire → Action. A time-tested framework that guides readers through a persuasion journey.</div>
-            </div>
-            <div class="principle-card">
-              <div class="principle-name">PAS (Problem–Agitate–Solve)</div>
-              <div class="principle-desc">Identify the reader's problem, amplify the pain, then present your solution as the relief.</div>
-            </div>
-            <div class="principle-card">
-              <div class="principle-name">Specificity</div>
-              <div class="principle-desc">"47% more conversions" beats "more conversions". Numbers and concrete details build instant credibility.</div>
-            </div>
-            <div class="principle-card">
-              <div class="principle-name">Emotional Triggers</div>
-              <div class="principle-desc">Fear of missing out, curiosity, belonging, and pride are among the strongest levers in persuasive copy.</div>
-            </div>
+            <div class="principle-card"><div class="principle-name">AIDA</div><div class="principle-desc">Attention, Interest, Desire, Action. A time-tested framework for persuasive copy.</div></div>
+            <div class="principle-card"><div class="principle-name">PAS</div><div class="principle-desc">Problem, Agitate, Solve. Name the pain, amplify it, then present the relief.</div></div>
+            <div class="principle-card"><div class="principle-name">Specificity</div><div class="principle-desc">"47% more conversions" beats "more conversions". Numbers build credibility.</div></div>
+            <div class="principle-card"><div class="principle-name">Emotional Triggers</div><div class="principle-desc">FOMO, curiosity, belonging, and pride are among the strongest levers.</div></div>
           </div>
         </div>
-
         <div class="card">
           <div class="card-header"><span class="card-title">Battle History</span></div>
           <div class="card-body">
@@ -701,891 +599,932 @@
 
   </div><!-- /page -->
 
-  <script>
-  /* ============================================================
-     UTILITIES
-  ============================================================ */
-  const $ = id => document.getElementById(id);
-  const qs = (sel, ctx = document) => ctx.querySelector(sel);
-  const qsa = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
-  const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+<script>
+/* ============================================================
+   UTILITIES
+============================================================ */
+const $ = id => document.getElementById(id);
+const qs = (sel, ctx = document) => ctx.querySelector(sel);
+const qsa = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
-  /* ── LocalStorage ── */
-  const store = {
-    get: (k, def) => { try { const v = localStorage.getItem('acg_games_'+k); return v ? JSON.parse(v) : def; } catch { return def; } },
-    set: (k, v) => { try { localStorage.setItem('acg_games_'+k, JSON.stringify(v)); } catch {} }
-  };
+const store = {
+  get: (k, def) => { try { const v = localStorage.getItem('acg_games_'+k); return v ? JSON.parse(v) : def; } catch { return def; } },
+  set: (k, v) => { try { localStorage.setItem('acg_games_'+k, JSON.stringify(v)); } catch {} }
+};
 
-  /* ── Theme Toggle ── */
-  (function initTheme() {
-    const saved = store.get('theme', 'dark');
-    document.documentElement.setAttribute('data-theme', saved);
-    $('theme-toggle').addEventListener('click', () => {
-      const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', t);
-      store.set('theme', t);
-    });
-  })();
+/* XP System */
+function getXP() { try { return parseInt(localStorage.getItem('acg-xp')) || 0; } catch { return 0; } }
+function addXP(amount) {
+  let xp = getXP() + amount;
+  try { localStorage.setItem('acg-xp', xp); } catch {}
+  updateXPBar();
+  return xp;
+}
+function updateXPBar() {
+  const xp = getXP();
+  const level = Math.floor(xp / 100) + 1;
+  const progress = xp % 100;
+  $('xp-level').textContent = 'Level ' + level;
+  $('xp-bar').style.width = progress + '%';
+  $('xp-text').textContent = progress + ' / 100 XP';
+}
+updateXPBar();
 
-  /* ── Tab Navigation ── */
-  qsa('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      qsa('.tab-btn').forEach(b => b.classList.remove('active'));
-      qsa('.game-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      $('panel-' + btn.dataset.tab).classList.add('active');
-    });
+/* Theme */
+(function initTheme() {
+  const saved = store.get('theme', 'dark');
+  document.documentElement.setAttribute('data-theme', saved);
+  $('theme-toggle').addEventListener('click', () => {
+    const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    store.set('theme', t);
   });
+})();
 
-  /* ── Sound Toggle ── */
-  let soundOn = store.get('sound', true);
-  const soundBtn = $('sound-toggle');
-  if (soundOn) soundBtn.classList.add('active'); else soundBtn.classList.remove('active');
-  soundBtn.addEventListener('click', () => {
-    soundOn = !soundOn;
-    store.set('sound', soundOn);
-    soundOn ? soundBtn.classList.add('active') : soundBtn.classList.remove('active');
-    if (soundOn) triggerSoundFeedback();
+/* Tabs */
+qsa('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    qsa('.tab-btn').forEach(b => b.classList.remove('active'));
+    qsa('.game-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = $('panel-' + btn.dataset.tab);
+    panel.classList.add('active');
+    playSound('click');
   });
+});
 
-  function triggerSoundFeedback() {
-    const ripple = document.createElement('div');
-    ripple.className = 'sound-ripple';
-    ripple.style.cssText = 'position:absolute;top:50%;left:50%;';
-    soundBtn.style.position = 'relative';
-    soundBtn.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 700);
-  }
+/* Sound System - Web Audio API */
+let soundOn = store.get('sound', true);
+const soundBtn = $('sound-toggle');
+if (soundOn) soundBtn.classList.add('active'); else soundBtn.classList.remove('active');
+soundBtn.addEventListener('click', () => {
+  soundOn = !soundOn;
+  store.set('sound', soundOn);
+  soundOn ? soundBtn.classList.add('active') : soundBtn.classList.remove('active');
+});
 
-  /* ── Confetti ── */
-  const canvas = $('confetti-canvas');
-  const ctx = canvas.getContext('2d');
-  let confettiParticles = [];
-  function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
 
-  function launchConfetti(count = 120) {
-    const colors = ['#6384ff','#a855f7','#ec4899','#34d399','#fbbf24','#f87171'];
-    for (let i = 0; i < count; i++) {
-      confettiParticles.push({
-        x: Math.random() * canvas.width, y: -10,
-        vx: (Math.random() - 0.5) * 6, vy: Math.random() * 4 + 2,
-        color: rand(colors), w: Math.random() * 10 + 4, h: Math.random() * 6 + 2,
-        rot: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 8,
-        alpha: 1, decay: Math.random() * 0.01 + 0.005
-      });
-    }
-    if (confettiParticles.length > 0 && !confettiRunning) animateConfetti();
-  }
+function playSound(type) {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.value = 0.08;
+    if (type === 'click') { osc.frequency.value = 600; osc.type = 'sine'; gain.gain.value = 0.05; osc.start(); osc.stop(ctx.currentTime + 0.05); }
+    else if (type === 'success') { osc.frequency.value = 523; osc.type = 'sine'; gain.gain.value = 0.08; osc.start(); osc.stop(ctx.currentTime + 0.15); setTimeout(() => { const o2 = ctx.createOscillator(); const g2 = ctx.createGain(); o2.connect(g2); g2.connect(ctx.destination); o2.frequency.value = 659; o2.type = 'sine'; g2.gain.value = 0.08; o2.start(); o2.stop(ctx.currentTime + 0.15); }, 120); setTimeout(() => { const o3 = ctx.createOscillator(); const g3 = ctx.createGain(); o3.connect(g3); g3.connect(ctx.destination); o3.frequency.value = 784; o3.type = 'sine'; g3.gain.value = 0.08; o3.start(); o3.stop(ctx.currentTime + 0.2); }, 240); }
+    else if (type === 'fail') { osc.frequency.value = 200; osc.type = 'sawtooth'; gain.gain.value = 0.04; osc.start(); osc.stop(ctx.currentTime + 0.2); }
+    else if (type === 'tick') { osc.frequency.value = 440; osc.type = 'sine'; gain.gain.value = 0.03; osc.start(); osc.stop(ctx.currentTime + 0.02); }
+  } catch {}
+}
 
-  let confettiRunning = false;
-  function animateConfetti() {
-    confettiRunning = true;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    confettiParticles = confettiParticles.filter(p => p.alpha > 0.01);
-    confettiParticles.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.rot += p.rotSpeed; p.alpha -= p.decay;
-      ctx.save();
-      ctx.globalAlpha = p.alpha;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot * Math.PI / 180);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-      ctx.restore();
-    });
-    if (confettiParticles.length > 0) requestAnimationFrame(animateConfetti);
-    else { confettiRunning = false; ctx.clearRect(0, 0, canvas.width, canvas.height); }
-  }
+/* Confetti */
+const canvas = $('confetti-canvas');
+const ctx2d = canvas.getContext('2d');
+let confettiParticles = [];
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-  /* ── SVG Progress Ring ── */
-  function makeRing(containerId, value, maxVal, color, size = 80) {
-    const r = (size - 14) / 2;
-    const circ = 2 * Math.PI * r;
-    const off = circ - (value / maxVal) * circ;
-    return `
-      <div class="ring-wrap">
-        <svg class="ring-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-          <circle class="ring-bg" cx="${size/2}" cy="${size/2}" r="${r}"/>
-          <circle class="ring-fill" cx="${size/2}" cy="${size/2}" r="${r}"
-            stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${circ}"
-            data-target="${off}" data-circ="${circ}"/>
-        </svg>
-      </div>`;
-  }
-  function animateRings() {
-    qsa('.ring-fill').forEach(el => {
-      const target = parseFloat(el.dataset.target);
-      setTimeout(() => { el.style.strokeDashoffset = target; }, 50);
+function launchConfetti(count = 120) {
+  const colors = ['#6384ff','#a855f7','#ec4899','#34d399','#fbbf24','#f87171'];
+  for (let i = 0; i < count; i++) {
+    confettiParticles.push({
+      x: Math.random() * canvas.width, y: -10,
+      vx: (Math.random() - 0.5) * 6, vy: Math.random() * 4 + 2,
+      color: rand(colors), w: Math.random() * 10 + 4, h: Math.random() * 6 + 2,
+      rot: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 8,
+      alpha: 1, decay: Math.random() * 0.01 + 0.005
     });
   }
-
-  /* ── Animated Score Number ── */
-  function animateNum(el, target, duration = 800) {
-    const start = Date.now();
-    const from = 0;
-    function tick() {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.round(from + (target - from) * ease);
-      if (progress < 1) requestAnimationFrame(tick);
-    }
-    tick();
-  }
-
-  /* ── Stars ── */
-  function renderStars(score100) {
-    const stars = score100 >= 90 ? 5 : score100 >= 75 ? 4 : score100 >= 60 ? 3 : score100 >= 40 ? 2 : 1;
-    let html = '<div class="stars-row" id="stars-row">';
-    for (let i = 1; i <= 5; i++) html += `<span class="star ${i <= stars ? '' : 'dim'}" data-idx="${i}">${i <= stars ? '⭐' : '☆'}</span>`;
-    html += '</div>';
-    return { html, stars };
-  }
-  function animateStars() {
-    qsa('#stars-row .star').forEach((s, i) => {
-      setTimeout(() => s.classList.add('show'), i * 150 + 200);
-    });
-  }
-
-  /* ── Color for score ── */
-  function scoreColor(v) {
-    if (v >= 80) return 'var(--success)';
-    if (v >= 55) return 'var(--warning)';
-    return 'var(--error)';
-  }
-  function scoreClass(v) {
-    if (v >= 80) return 'score-high';
-    if (v >= 55) return 'score-mid';
-    return 'score-low';
-  }
-
-  /* ── Power words ── */
-  const POWER_WORDS = ['proven','discover','secret','guaranteed','exclusive','instantly','free','new','you','because','imagine','never','always','effortless','transform','unlock','boost','master','ultimate','breakthrough','revolutionary'];
-  const QUESTION_PATTERN = /\?/;
-  const NUMBER_PATTERN = /\b\d+\b/;
-
-  /* ============================================================
-     GAME 1 — CONTENT CHALLENGE
-  ============================================================ */
-  const CC_TOPICS = ['remote work productivity','sustainable packaging','the future of AI','personal finance for millennials','plant-based diets','mental health at work','electric vehicles','home gardening','online education','cryptocurrency basics','travel hacking','freelancing tips','smart home devices','fitness technology','data privacy'];
-  const CC_TONES = ['professional','conversational','authoritative','friendly','inspirational','educational','humorous','persuasive'];
-  const CC_TYPES = ['blog intro','product description','newsletter opener','social caption','ad headline','email subject line', 'landing page headline','about section'];
-
-  let ccCurrent = null;
-  let ccHistory = store.get('cc_history', []);
-
-  function ccNewChallenge() {
-    const wordLimit = randInt(50, 150);
-    ccCurrent = {
-      topic: rand(CC_TOPICS), tone: rand(CC_TONES),
-      type: rand(CC_TYPES), wordLimit
-    };
-    $('cc-title').textContent = `Write a ${ccCurrent.type} about "${ccCurrent.topic}"`;
-    $('cc-desc').textContent = `Your response must be ${ccCurrent.tone} in tone and stay under ${wordLimit} words. Make it engaging!`;
-    $('cc-pill-tone').textContent = `Tone: ${ccCurrent.tone}`;
-    $('cc-pill-words').textContent = `Max words: ${wordLimit}`;
-    $('cc-pill-topic').textContent = `Topic: ${ccCurrent.topic}`;
-    $('cc-textarea').value = '';
-    $('cc-word-counter').textContent = '0 words';
-    $('cc-score-body').innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;padding:32px 0;color:var(--text-muted);"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:0.4;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><p style="font-size:14px;">Submit your response to see your score</p></div>`;
-    $('cc-challenge-banner').style.animation = 'none';
-    requestAnimationFrame(() => { $('cc-challenge-banner').style.animation = 'fadeUpIn 400ms var(--ease-out) both'; });
-  }
-
-  $('cc-textarea').addEventListener('input', () => {
-    const words = $('cc-textarea').value.trim().split(/\s+/).filter(w => w);
-    const count = words.length;
-    const limit = ccCurrent ? ccCurrent.wordLimit : 100;
-    $('cc-word-counter').textContent = `${count} / ${limit} words`;
-    $('cc-word-counter').style.color = count > limit ? 'var(--error)' : 'var(--text-muted)';
+  if (!confettiRunning) animateConfetti();
+}
+let confettiRunning = false;
+function animateConfetti() {
+  confettiRunning = true;
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+  confettiParticles = confettiParticles.filter(p => p.alpha > 0.01);
+  confettiParticles.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.rot += p.rotSpeed; p.alpha -= p.decay;
+    ctx2d.save(); ctx2d.globalAlpha = p.alpha; ctx2d.translate(p.x, p.y);
+    ctx2d.rotate(p.rot * Math.PI / 180); ctx2d.fillStyle = p.color;
+    ctx2d.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx2d.restore();
   });
+  if (confettiParticles.length > 0) requestAnimationFrame(animateConfetti);
+  else { confettiRunning = false; ctx2d.clearRect(0, 0, canvas.width, canvas.height); }
+}
 
-  function ccSubmit() {
-    if (!ccCurrent) return;
-    const text = $('cc-textarea').value.trim();
-    if (!text) return;
+/* SVG Ring */
+function makeRing(containerId, value, maxVal, color, size = 80) {
+  const r = (size - 14) / 2;
+  const circ = 2 * Math.PI * r;
+  const off = circ - (value / maxVal) * circ;
+  return '<div class="ring-wrap"><svg class="ring-svg" width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle class="ring-bg" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'"/><circle class="ring-fill" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" stroke="'+color+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+circ+'" data-target="'+off+'" data-circ="'+circ+'"/></svg></div>';
+}
+function animateRings() { qsa('.ring-fill').forEach(el => { setTimeout(() => { el.style.strokeDashoffset = el.dataset.target; }, 50); }); }
 
-    const words = text.split(/\s+/).filter(w => w);
-    const wordCount = words.length;
-    const limit = ccCurrent.wordLimit;
-
-    /* Metric 1: Word count compliance */
-    const wcScore = wordCount <= limit ? 100 : Math.max(0, 100 - ((wordCount - limit) / limit) * 200);
-
-    /* Metric 2: Tone match — keyword heuristics */
-    const toneKeywords = {
-      professional: ['therefore','however','furthermore','consequently','additionally','leverage','facilitate','implement','strategic','comprehensive'],
-      conversational: ["you'll","let's","here's","that's","it's","I","we","hey","great","awesome","easy"],
-      authoritative: ['research','studies','proven','data','evidence','expert','analysis','demonstrates','clearly','definitively'],
-      friendly: ['love','amazing','wonderful','happy','help','support','together','share','welcome','enjoy'],
-      inspirational: ['dream','achieve','believe','potential','transform','journey','inspire','succeed','rise','empower'],
-      educational: ['learn','understand','example','consider','note','important','key','fundamental','concept','principle'],
-      humorous: ['ha','laugh','funny','silly','oops','absurd','ridiculous','literally','seriously','wild'],
-      persuasive: ['must','should','now','today','limited','proven','guarantee','results','imagine','picture']
-    };
-    const toneKws = toneKeywords[ccCurrent.tone] || [];
-    const textLower = text.toLowerCase();
-    const toneHits = toneKws.filter(kw => textLower.includes(kw)).length;
-    const toneScore = clamp((toneHits / 3) * 100, 0, 100);
-
-    /* Metric 3: Engagement hooks */
-    let engScore = 0;
-    if (QUESTION_PATTERN.test(text)) engScore += 35;
-    if (NUMBER_PATTERN.test(text)) engScore += 25;
-    const pwHits = POWER_WORDS.filter(pw => textLower.includes(pw)).length;
-    engScore += Math.min(pwHits * 15, 40);
-    engScore = clamp(engScore, 0, 100);
-
-    /* Metric 4: Readability — avg sentence length */
-    const sentences = text.split(/[.!?]+/).filter(s => s.trim().split(/\s+/).length > 2);
-    const avgSentLen = sentences.length > 0 ? wordCount / sentences.length : wordCount;
-    const readScore = avgSentLen <= 15 ? 100 : avgSentLen <= 20 ? 80 : avgSentLen <= 25 ? 60 : 40;
-
-    const total = Math.round((wcScore + toneScore + engScore + readScore) / 4);
-
-    /* Render score */
-    const { html: starsHtml, stars } = renderStars(total);
-    const metrics = [
-      { label: 'Word Count', val: Math.round(wcScore), color: '#6384ff' },
-      { label: 'Tone Match', val: Math.round(toneScore), color: '#a855f7' },
-      { label: 'Engagement', val: Math.round(engScore), color: '#ec4899' },
-      { label: 'Readability', val: Math.round(readScore), color: '#34d399' }
-    ];
-
-    let ringsHtml = '<div class="score-grid">';
-    metrics.forEach(m => {
-      ringsHtml += `<div style="text-align:center;">
-        ${makeRing('', m.val, 100, m.color, 80)}
-        <div class="ring-val" style="color:${m.color}">${m.val}</div>
-        <div class="ring-label">${m.label}</div>
-      </div>`;
-    });
-    ringsHtml += '</div>';
-
-    $('cc-score-body').innerHTML = `
-      <div class="total-score-ring">
-        <div class="total-score-inner">
-          <svg class="ring-svg" width="120" height="120" viewBox="0 0 120 120">
-            <circle class="ring-bg" cx="60" cy="60" r="50"/>
-            <circle class="ring-fill" cx="60" cy="60" r="50"
-              stroke="${scoreColor(total)}"
-              stroke-dasharray="${2*Math.PI*50}"
-              stroke-dashoffset="${2*Math.PI*50}"
-              data-target="${2*Math.PI*50 - (total/100)*2*Math.PI*50}"
-              data-circ="${2*Math.PI*50}"
-              stroke-width="8"/>
-          </svg>
-          <div class="total-score-text">
-            <div class="total-score-num" style="color:${scoreColor(total)}" id="cc-total-num">0</div>
-            <div class="total-score-label">Score</div>
-          </div>
-        </div>
-      </div>
-      ${starsHtml}
-      ${ringsHtml}
-      <hr class="section-divider">
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        ${wcScore < 70 ? '<div class="alert alert-danger">⚠️ Over the word limit — trim your response to score higher.</div>' : ''}
-        ${toneScore < 40 ? `<div class="alert alert-warning">💬 Try using more ${ccCurrent.tone} language patterns.</div>` : ''}
-        ${engScore < 40 ? '<div class="alert alert-info">🎯 Add a question, statistic, or power word to boost engagement.</div>' : ''}
-        ${readScore < 60 ? '<div class="alert alert-info">📖 Shorten your sentences for better readability.</div>' : ''}
-        ${total >= 85 ? '<div class="alert alert-success">🏆 Excellent writing! You nailed this challenge.</div>' : ''}
-      </div>
-    `;
-
-    animateRings();
-    animateStars();
-    animateNum($('cc-total-num'), total);
-
-    if (total >= 75 && soundOn) triggerSoundFeedback();
-    if (total >= 80) launchConfetti(total >= 90 ? 180 : 100);
-
-    /* Save history */
-    ccHistory.unshift({ topic: ccCurrent.topic, type: ccCurrent.type, score: total, date: Date.now() });
-    if (ccHistory.length > 10) ccHistory = ccHistory.slice(0, 10);
-    store.set('cc_history', ccHistory);
-    ccRenderHistory();
-    updateBadge('challenge', ccHistory.length);
+function animateNum(el, target, duration = 800) {
+  const start = Date.now();
+  function tick() {
+    const p = Math.min((Date.now() - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(target * ease);
+    if (p < 1) requestAnimationFrame(tick);
   }
+  tick();
+}
 
-  function ccRenderHistory() {
-    const list = $('cc-history');
-    const empty = $('cc-history-empty');
-    if (!ccHistory.length) { empty.style.display = 'block'; list.innerHTML = ''; return; }
-    empty.style.display = 'none';
-    list.innerHTML = ccHistory.map(h => `
-      <div class="history-item">
-        <span class="history-item-topic">${h.type} — ${h.topic}</span>
-        <span class="history-score-badge ${scoreClass(h.score)}">${h.score}/100</span>
-      </div>`).join('');
-  }
+function renderStars(score100) {
+  const stars = score100 >= 90 ? 5 : score100 >= 75 ? 4 : score100 >= 60 ? 3 : score100 >= 40 ? 2 : 1;
+  let html = '<div class="stars-row" id="stars-row">';
+  for (let i = 1; i <= 5; i++) html += '<span class="star" data-idx="'+i+'">'+(i <= stars ? '\u2B50' : '\u2606')+'</span>';
+  html += '</div>';
+  return { html, stars };
+}
+function animateStars() { qsa('#stars-row .star').forEach((s, i) => { setTimeout(() => s.classList.add('show'), i * 150 + 200); }); }
 
-  function updateBadge(tab, count) {
-    $(`badge-${tab}`).textContent = count;
-  }
+function scoreColor(v) { return v >= 80 ? 'var(--success)' : v >= 55 ? 'var(--warning)' : 'var(--error)'; }
+function scoreClass(v) { return v >= 80 ? 'score-high' : v >= 55 ? 'score-mid' : 'score-low'; }
 
-  /* Init */
+function updateBadge(tab, count) { $('badge-'+tab).textContent = count; }
+
+const POWER_WORDS = ['proven','discover','secret','guaranteed','exclusive','instantly','free','new','you','because','imagine','never','always','effortless','transform','unlock','boost','master','ultimate','breakthrough','revolutionary'];
+
+/* Tutorial System */
+function showTutorial(gameKey, title, steps) {
+  if (store.get('tut_'+gameKey, false)) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'tutorial-overlay';
+  let stepsHtml = steps.map((s, i) => '<div class="tutorial-step"><div class="tutorial-step-num">'+(i+1)+'</div><div class="tutorial-step-text">'+s+'</div></div>').join('');
+  overlay.innerHTML = '<div class="tutorial-card"><h2>'+title+'</h2><p>Here is how to play:</p><div class="tutorial-steps">'+stepsHtml+'</div><button class="btn btn-primary" onclick="this.closest(\'.tutorial-overlay\').remove()">Got it!</button></div>';
+  document.body.appendChild(overlay);
+  store.set('tut_'+gameKey, true);
+}
+
+/* ============================================================
+   GAME 1 — CONTENT CHALLENGE
+============================================================ */
+const CC_BRIEFS = {
+  easy: [
+    {topic:'remote work productivity',type:'blog intro',tone:'conversational',words:120},
+    {topic:'healthy eating tips',type:'newsletter opener',tone:'friendly',words:100},
+    {topic:'home gardening basics',type:'social caption',tone:'inspirational',words:80},
+    {topic:'time management',type:'blog intro',tone:'educational',words:120},
+    {topic:'pet care advice',type:'social caption',tone:'friendly',words:80}
+  ],
+  medium: [
+    {topic:'AI in healthcare',type:'product description',tone:'professional',words:100},
+    {topic:'sustainable fashion',type:'ad headline + body',tone:'persuasive',words:90},
+    {topic:'cryptocurrency investing',type:'email subject + preview',tone:'authoritative',words:80},
+    {topic:'mental health at work',type:'landing page headline',tone:'inspirational',words:90},
+    {topic:'electric vehicles',type:'product description',tone:'professional',words:100}
+  ],
+  hard: [
+    {topic:'quantum computing for business',type:'executive brief',tone:'authoritative',words:80},
+    {topic:'Gen Z consumer behavior',type:'data-driven blog intro',tone:'humorous',words:70},
+    {topic:'zero-waste manufacturing',type:'investor pitch paragraph',tone:'persuasive',words:60},
+    {topic:'neuroscience of habit formation',type:'course landing page',tone:'educational',words:70},
+    {topic:'decentralized finance risks',type:'advisory notice',tone:'professional',words:60}
+  ]
+};
+
+const CC_TIMES = { easy: 120, medium: 90, hard: 60 };
+
+let ccCurrent = null;
+let ccDiff = 'easy';
+let ccHistory = store.get('cc_history', []);
+let ccBest = store.get('cc_best', 0);
+let ccTimer = null;
+let ccTimeLeft = 120;
+let ccTimerStarted = false;
+
+function ccSetDiff(d) {
+  ccDiff = d;
+  qsa('[data-ccdiff]').forEach(b => b.classList.toggle('active', b.dataset.ccdiff === d));
   ccNewChallenge();
+}
+
+function ccNewChallenge() {
+  ccStopTimer();
+  ccTimerStarted = false;
+  const pool = CC_BRIEFS[ccDiff];
+  ccCurrent = rand(pool);
+  ccTimeLeft = CC_TIMES[ccDiff];
+  $('cc-title').textContent = 'Write a '+ccCurrent.type+' about "'+ccCurrent.topic+'"';
+  $('cc-desc').textContent = 'Use a '+ccCurrent.tone+' tone. Stay under '+ccCurrent.words+' words. Make it engaging!';
+  $('cc-pill-tone').textContent = 'Tone: '+ccCurrent.tone;
+  $('cc-pill-words').textContent = 'Max: '+ccCurrent.words+' words';
+  $('cc-pill-topic').textContent = 'Topic: '+ccCurrent.topic;
+  $('cc-textarea').value = '';
+  $('cc-textarea').disabled = false;
+  $('cc-submit-btn').disabled = false;
+  $('cc-word-counter').textContent = '0 words';
+  $('cc-timer-text').textContent = ccTimeLeft;
+  $('cc-timer-ring').style.strokeDashoffset = '0';
+  $('cc-timer-ring').style.stroke = 'var(--accent)';
+  $('cc-score-body').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;padding:32px 0;color:var(--text-muted);"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:.4"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><p style="font-size:14px;">Submit your response to see your score</p></div>';
+  $('cc-best-val').textContent = ccBest || '--';
+  $('cc-challenge-banner').style.animation = 'none';
+  requestAnimationFrame(() => { $('cc-challenge-banner').style.animation = 'fadeUpIn 400ms var(--ease-out) both'; });
+}
+
+function ccStartTimer() {
+  if (ccTimerStarted) return;
+  ccTimerStarted = true;
+  const totalTime = CC_TIMES[ccDiff];
+  const circumference = 2 * Math.PI * 24;
+  ccTimer = setInterval(() => {
+    ccTimeLeft--;
+    $('cc-timer-text').textContent = ccTimeLeft;
+    const pct = 1 - (ccTimeLeft / totalTime);
+    $('cc-timer-ring').style.strokeDashoffset = (circumference * pct).toString();
+    if (ccTimeLeft <= 10) { $('cc-timer-ring').style.stroke = 'var(--error)'; if (ccTimeLeft <= 5) playSound('tick'); }
+    else if (ccTimeLeft <= 30) { $('cc-timer-ring').style.stroke = 'var(--warning)'; }
+    if (ccTimeLeft <= 0) { ccStopTimer(); ccSubmit(); }
+  }, 1000);
+}
+function ccStopTimer() { if (ccTimer) { clearInterval(ccTimer); ccTimer = null; } }
+
+$('cc-textarea').addEventListener('input', () => {
+  ccStartTimer();
+  const words = $('cc-textarea').value.trim().split(/\s+/).filter(w => w);
+  const count = words.length;
+  const limit = ccCurrent ? ccCurrent.words : 100;
+  $('cc-word-counter').textContent = count + ' / ' + limit + ' words';
+  $('cc-word-counter').style.color = count > limit ? 'var(--error)' : 'var(--text-muted)';
+});
+
+const toneKeywords = {
+  professional:['therefore','however','furthermore','consequently','leverage','facilitate','implement','strategic','comprehensive','accordingly'],
+  conversational:["you'll","let's","here's","that's","it's","I","we","hey","great","awesome","easy"],
+  authoritative:['research','studies','proven','data','evidence','expert','analysis','demonstrates','clearly','definitively'],
+  friendly:['love','amazing','wonderful','happy','help','support','together','share','welcome','enjoy'],
+  inspirational:['dream','achieve','believe','potential','transform','journey','inspire','succeed','rise','empower'],
+  educational:['learn','understand','example','consider','note','important','key','fundamental','concept','principle'],
+  humorous:['ha','laugh','funny','silly','oops','absurd','ridiculous','literally','seriously','wild'],
+  persuasive:['must','should','now','today','limited','proven','guarantee','results','imagine','picture']
+};
+
+function ccSubmit() {
+  ccStopTimer();
+  if (!ccCurrent) return;
+  const text = $('cc-textarea').value.trim();
+  if (!text) return;
+  $('cc-textarea').disabled = true;
+  $('cc-submit-btn').disabled = true;
+
+  const words = text.split(/\s+/).filter(w => w);
+  const wordCount = words.length;
+  const limit = ccCurrent.words;
+  const textLower = text.toLowerCase();
+
+  // Relevance: word count compliance + topic mention
+  let relevanceScore = wordCount <= limit ? 25 : Math.max(0, 25 - ((wordCount - limit) / limit) * 50);
+  if (textLower.includes(ccCurrent.topic.split(' ')[0].toLowerCase())) relevanceScore = Math.min(25, relevanceScore + 5);
+
+  // Tone match
+  const toneKws = toneKeywords[ccCurrent.tone] || [];
+  const toneHits = toneKws.filter(kw => textLower.includes(kw)).length;
+  const toneScore = clamp(Math.round((toneHits / 3) * 25), 0, 25);
+
+  // Readability: Flesch-Kincaid approx
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().split(/\s+/).length > 1);
+  const syllableCount = words.reduce((sum, w) => sum + countSyllables(w), 0);
+  const avgSentLen = sentences.length > 0 ? wordCount / sentences.length : wordCount;
+  const avgSyllPerWord = wordCount > 0 ? syllableCount / wordCount : 1;
+  const fkGrade = 0.39 * avgSentLen + 11.8 * avgSyllPerWord - 15.59;
+  const readScore = fkGrade <= 8 ? 25 : fkGrade <= 12 ? 20 : fkGrade <= 16 ? 12 : 5;
+
+  // Creativity: power words, questions, variety
+  let creatScore = 0;
+  if (/\?/.test(text)) creatScore += 8;
+  if (/\b\d+\b/.test(text)) creatScore += 5;
+  const pwHits = POWER_WORDS.filter(pw => textLower.includes(pw)).length;
+  creatScore += Math.min(pwHits * 4, 12);
+  creatScore = clamp(creatScore, 0, 25);
+
+  const total = Math.round(relevanceScore + toneScore + readScore + creatScore);
+
+  // Render score
+  const metrics = [
+    {label:'Relevance',val:Math.round(relevanceScore*4),color:'#6384ff'},
+    {label:'Tone Match',val:Math.round(toneScore*4),color:'#a855f7'},
+    {label:'Readability',val:Math.round(readScore*4),color:'#34d399'},
+    {label:'Creativity',val:Math.round(creatScore*4),color:'#ec4899'}
+  ];
+  const { html: starsHtml } = renderStars(total);
+  let ringsHtml = '<div class="score-grid">';
+  metrics.forEach(m => {
+    ringsHtml += '<div style="text-align:center;">'+makeRing('',m.val,100,m.color,80)+'<div class="ring-val" style="color:'+m.color+'">'+m.val+'</div><div class="ring-label">'+m.label+'</div></div>';
+  });
+  ringsHtml += '</div>';
+
+  const circ = 2 * Math.PI * 50;
+  $('cc-score-body').innerHTML = '<div class="total-score-ring"><div class="total-score-inner"><svg class="ring-svg" width="120" height="120" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle class="ring-fill" cx="60" cy="60" r="50" stroke="'+scoreColor(total)+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+circ+'" data-target="'+(circ-(total/100)*circ)+'" data-circ="'+circ+'" stroke-width="8"/></svg><div class="total-score-text"><div class="total-score-num" style="color:'+scoreColor(total)+'" id="cc-total-num">0</div><div class="total-score-label">Score</div></div></div></div>'+starsHtml+ringsHtml+'<hr class="section-divider"><div style="display:flex;flex-direction:column;gap:8px;">'+(total>=85?'<div class="alert alert-success">Excellent writing! You nailed this challenge.</div>':'')+(toneScore<10?'<div class="alert alert-warning">Try using more '+ccCurrent.tone+' language patterns.</div>':'')+(readScore<15?'<div class="alert alert-info">Shorten your sentences for better readability.</div>':'')+'</div>';
+
+  animateRings(); animateStars(); animateNum($('cc-total-num'), total);
+  if (total >= 75) { playSound('success'); launchConfetti(total >= 90 ? 180 : 100); } else { playSound('click'); }
+
+  // XP
+  addXP(Math.round(total / 10) + 5);
+
+  // Best
+  if (total > ccBest) { ccBest = total; store.set('cc_best', ccBest); }
+  $('cc-best-val').textContent = ccBest;
+
+  // History
+  ccHistory.unshift({topic:ccCurrent.topic,type:ccCurrent.type,score:total,date:Date.now()});
+  if (ccHistory.length > 10) ccHistory = ccHistory.slice(0,10);
+  store.set('cc_history', ccHistory);
   ccRenderHistory();
   updateBadge('challenge', ccHistory.length);
+}
 
-  /* ============================================================
-     GAME 2 — SEO MASTER
-  ============================================================ */
-  const SEO_DATA = {
-    beginner: [
-      { original: "Our software helps businesses manage their projects more effectively. Teams can track progress and deadlines with ease. The tool supports collaboration between multiple departments and remote workers.", keywords: ["project management","team collaboration"] },
-      { original: "Staying healthy requires consistent effort and good habits. Exercise and proper nutrition play key roles in maintaining energy levels throughout the day.", keywords: ["healthy lifestyle","fitness routine"] },
-      { original: "Online learning has become increasingly popular in recent years. People of all ages are taking courses to expand their knowledge and improve their skills.", keywords: ["online education","digital learning"] }
-    ],
-    intermediate: [
-      { original: "Many entrepreneurs struggle to build a sustainable business in the early stages. Cash flow, hiring, and marketing are among the most common obstacles faced by founders.", keywords: ["startup growth","business strategy","entrepreneur tips","scaling a business"] },
-      { original: "Social media has changed the way brands communicate with their audiences. Companies now publish content daily and engage with followers through comments and messages.", keywords: ["social media marketing","brand engagement","content strategy","audience growth"] },
-      { original: "Working from home has introduced new challenges for employees and managers alike. Productivity, communication, and work-life balance all require fresh approaches in a remote setting.", keywords: ["remote work","work from home tips","productivity hacks","employee engagement"] }
-    ],
-    expert: [
-      { original: "Cybersecurity is a growing concern for organisations of all sizes. Data breaches, ransomware attacks, and phishing scams continue to evolve in sophistication and frequency. Businesses must adopt proactive security measures.", keywords: ["cybersecurity best practices","data breach prevention","network security","threat detection","information security","cyber risk management"] },
-      { original: "E-commerce conversion rates depend on a wide range of factors including site speed, user experience, product descriptions, and checkout flow. Small improvements in each area can lead to significant revenue gains.", keywords: ["ecommerce conversion","product page optimization","checkout UX","conversion rate optimization","online store tips","customer journey"] }
-    ]
-  };
+function countSyllables(word) {
+  word = word.toLowerCase().replace(/[^a-z]/g,'');
+  if (word.length <= 3) return 1;
+  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '').replace(/^y/, '');
+  const m = word.match(/[aeiouy]{1,2}/g);
+  return m ? m.length : 1;
+}
 
-  let seoCurrent = null;
-  let seoDiff = 'beginner';
-  let seoScores = store.get('seo_scores', []);
+function ccRenderHistory() {
+  const list = $('cc-history');
+  const empty = $('cc-history-empty');
+  if (!ccHistory.length) { empty.style.display = 'block'; list.innerHTML = ''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = ccHistory.map(h => '<div class="history-item"><span class="history-item-topic">'+h.type+' -- '+h.topic+'</span><span class="history-score-badge '+scoreClass(h.score)+'">'+h.score+'/100</span></div>').join('');
+}
 
-  function seoSetDiff(d) {
-    seoDiff = d;
-    qsa('[data-diff]').forEach(b => b.classList.toggle('active', b.dataset.diff === d));
-    seoNewChallenge();
-  }
+ccNewChallenge();
+ccRenderHistory();
+updateBadge('challenge', ccHistory.length);
+showTutorial('challenge', 'Content Challenge', [
+  'Read the brief: topic, tone, word limit',
+  'Start typing -- the timer begins on first keystroke',
+  'Submit before time runs out for maximum points',
+  'Score is based on Relevance, Tone, Readability, and Creativity'
+]);
 
-  function seoNewChallenge() {
-    const pool = SEO_DATA[seoDiff];
-    seoCurrent = rand(pool);
-    $('seo-original').textContent = seoCurrent.original;
-    $('seo-textarea').value = '';
-    $('seo-result-card').style.display = 'none';
-    seoRenderChips(seoCurrent.keywords, []);
-    seoRenderMeters(seoCurrent.keywords, '');
-  }
+/* ============================================================
+   GAME 2 — SEO MASTER
+============================================================ */
+const SEO_DATA = {
+  easy: [
+    {original:"Our software helps businesses manage their projects more effectively. Teams can track progress and deadlines with ease. The tool supports collaboration between multiple departments and remote workers.",keywords:["project management","team collaboration"]},
+    {original:"Staying healthy requires consistent effort and good habits. Exercise and proper nutrition play key roles in maintaining energy levels throughout the day.",keywords:["healthy lifestyle","fitness routine"]},
+    {original:"Online learning has become increasingly popular in recent years. People of all ages are taking courses to expand their knowledge and improve their skills.",keywords:["online education","digital learning"]},
+    {original:"Many companies are shifting to cloud-based solutions for their data storage needs. This approach provides flexibility and scalability for growing organisations.",keywords:["cloud storage","data management"]},
+    {original:"Good customer service can make or break a business. Companies that respond quickly to complaints and inquiries tend to retain more customers over time.",keywords:["customer service","client retention"]}
+  ],
+  medium: [
+    {original:"Many entrepreneurs struggle to build a sustainable business in the early stages. Cash flow, hiring, and marketing are among the most common obstacles faced by founders.",keywords:["startup growth","business strategy","entrepreneur tips","scaling a business"]},
+    {original:"Social media has changed the way brands communicate with their audiences. Companies now publish content daily and engage with followers through comments and messages.",keywords:["social media marketing","brand engagement","content strategy","audience growth"]},
+    {original:"Working from home has introduced new challenges for employees and managers alike. Productivity, communication, and work-life balance all require fresh approaches.",keywords:["remote work","work from home tips","productivity hacks","employee engagement"]},
+    {original:"Email remains one of the most effective channels for reaching customers. Personalised messages with clear subject lines tend to achieve significantly higher open rates.",keywords:["email marketing","open rate optimization","email personalization","campaign automation"]},
+    {original:"Mobile applications have become essential tools for modern businesses. Users expect fast load times, intuitive navigation, and seamless integration with other services.",keywords:["mobile app development","user experience design","app performance","cross-platform development"]}
+  ],
+  hard: [
+    {original:"Cybersecurity is a growing concern for organisations of all sizes. Data breaches, ransomware attacks, and phishing scams continue to evolve in sophistication and frequency. Businesses must adopt proactive security measures.",keywords:["cybersecurity best practices","data breach prevention","network security","threat detection","information security","cyber risk management"]},
+    {original:"E-commerce conversion rates depend on a wide range of factors including site speed, user experience, product descriptions, and checkout flow. Small improvements in each area can lead to significant revenue gains.",keywords:["ecommerce conversion","product page optimization","checkout UX","conversion rate optimization","online store tips","customer journey"]},
+    {original:"Content marketing has evolved beyond simple blog posts. Today's most successful brands create comprehensive multimedia strategies that include video, podcasts, infographics, and interactive tools to engage their audiences.",keywords:["content marketing strategy","multimedia content","video marketing","podcast marketing","audience engagement","brand storytelling"]}
+  ]
+};
 
-  function seoRenderChips(keywords, found) {
-    $('seo-kw-chips').innerHTML = keywords.map(kw =>
-      `<span class="kw-chip ${found.includes(kw) ? 'found' : 'neutral'}">${found.includes(kw) ? '✓' : '○'} ${kw}</span>`
-    ).join('');
-  }
+let seoCurrent = null;
+let seoDiff = 'easy';
+let seoScores = store.get('seo_scores', []);
 
-  function seoAnalyze() {
-    if (!seoCurrent) return;
-    const text = $('seo-textarea').value.toLowerCase();
-    seoRenderMeters(seoCurrent.keywords, text);
-    // Update chips live
-    const found = seoCurrent.keywords.filter(kw => text.includes(kw.toLowerCase()));
-    seoRenderChips(seoCurrent.keywords, found);
-  }
-
-  function seoRenderMeters(keywords, text) {
-    const words = text.split(/\s+/).filter(w => w).length || 1;
-    $('seo-meters').innerHTML = keywords.map(kw => {
-      const occurrences = (text.match(new RegExp(kw.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'g')) || []).length;
-      const density = (occurrences / words) * 100;
-      const isStuffed = density > 4;
-      const barWidth = Math.min(density * 25, 100);
-      return `
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-size:13px;font-weight:600;color:var(--text);">${kw}</span>
-            <span style="font-size:12px;font-family:var(--font-mono);color:${isStuffed ? 'var(--error)' : occurrences > 0 ? 'var(--success)' : 'var(--text-muted)'};">${occurrences}× (${density.toFixed(1)}%)</span>
-          </div>
-          <div class="density-bar-wrap">
-            <div class="density-bar ${isStuffed ? 'danger' : ''}" style="width:${barWidth}%;"></div>
-          </div>
-          ${isStuffed ? '<div style="font-size:11px;color:var(--error);margin-top:3px;">⚠️ Keyword stuffing detected! Reduce usage.</div>' : ''}
-        </div>`;
-    }).join('');
-  }
-
-  function seoSubmit() {
-    if (!seoCurrent) return;
-    const text = $('seo-textarea').value.trim();
-    if (!text) return;
-    const textLower = text.toLowerCase();
-    const words = text.split(/\s+/).filter(w => w);
-    const totalWords = words.length || 1;
-    const sentences = text.split(/[.!?]+/).filter(s => s.trim());
-    const firstSentence = sentences[0] || '';
-
-    let totalScore = 0;
-    let breakdown = [];
-
-    seoCurrent.keywords.forEach(kw => {
-      const kwLower = kw.toLowerCase();
-      const occurrences = (textLower.match(new RegExp(kwLower.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'g')) || []).length;
-      const density = (occurrences / totalWords) * 100;
-      const inFirst = firstSentence.toLowerCase().includes(kwLower);
-      const isStuffed = density > 4;
-
-      let kwScore = 0;
-      if (occurrences > 0 && !isStuffed) kwScore += 60;
-      else if (occurrences > 0 && isStuffed) kwScore += 20;
-      if (inFirst) kwScore += 25;
-      if (occurrences >= 2 && density <= 3) kwScore += 15;
-      kwScore = Math.min(kwScore, 100);
-
-      totalScore += kwScore;
-      breakdown.push({ kw, occurrences, density, kwScore, inFirst, isStuffed });
-    });
-
-    const avgScore = Math.round(totalScore / seoCurrent.keywords.length);
-
-    $('seo-result-card').style.display = 'block';
-    $('seo-result-body').innerHTML = `
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
-        <div class="total-score-inner" style="position:relative;">
-          <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
-            <circle class="ring-bg" cx="45" cy="45" r="36"/>
-            <circle class="ring-fill" cx="45" cy="45" r="36"
-              stroke="${scoreColor(avgScore)}"
-              stroke-dasharray="${2*Math.PI*36}"
-              stroke-dashoffset="${2*Math.PI*36}"
-              data-target="${2*Math.PI*36 - (avgScore/100)*2*Math.PI*36}"
-              data-circ="${2*Math.PI*36}"
-              stroke-width="6"/>
-          </svg>
-          <div class="total-score-text">
-            <div class="total-score-num" style="color:${scoreColor(avgScore)};font-size:22px;" id="seo-score-num">0</div>
-            <div class="total-score-label" style="font-size:9px;">SEO</div>
-          </div>
-        </div>
-        <div>
-          <div style="font-size:20px;font-weight:800;">SEO Score: ${avgScore}/100</div>
-          <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">${avgScore >= 80 ? 'Excellent optimisation!' : avgScore >= 60 ? 'Good effort, keep refining.' : 'Keep practising — see tips below.'}</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        ${breakdown.map(b => `
-          <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-              <span style="font-size:13px;font-weight:600;">${b.kw}</span>
-              <span style="font-size:13px;font-weight:700;color:${scoreColor(b.kwScore)};">${b.kwScore}/100</span>
-            </div>
-            <div style="font-size:12px;color:var(--text-muted);">${b.occurrences}× used${b.inFirst ? ' · ✅ In first sentence' : ''}${b.isStuffed ? ' · ⚠️ Stuffed' : ''}</div>
-          </div>`).join('')}
-      </div>
-      ${avgScore >= 80 ? '<div class="alert alert-success" style="margin-top:12px;">🏆 Great keyword integration! Natural and effective.</div>' : ''}
-      ${avgScore < 50 ? '<div class="alert alert-warning" style="margin-top:12px;">📝 Try to include each keyword at least once, naturally woven into the text.</div>' : ''}
-    `;
-    animateRings();
-    animateNum($('seo-score-num'), avgScore);
-
-    seoScores.unshift({ diff: seoDiff, score: avgScore, date: Date.now() });
-    if (seoScores.length > 20) seoScores = seoScores.slice(0, 20);
-    store.set('seo_scores', seoScores);
-    updateBadge('seo', seoScores.length);
-
-    if (avgScore >= 80) launchConfetti(120);
-    if (soundOn) triggerSoundFeedback();
-  }
-
-  /* Init SEO */
+function seoSetDiff(d) {
+  seoDiff = d;
+  qsa('[data-seodiff]').forEach(b => b.classList.toggle('active', b.dataset.seodiff === d));
   seoNewChallenge();
+}
+
+function seoNewChallenge() {
+  const pool = SEO_DATA[seoDiff];
+  seoCurrent = rand(pool);
+  $('seo-original').textContent = seoCurrent.original;
+  $('seo-textarea').value = '';
+  $('seo-result-card').style.display = 'none';
+  $('seo-heatmap').innerHTML = '';
+  seoRenderChips(seoCurrent.keywords, []);
+  seoRenderMeters(seoCurrent.keywords, '');
+}
+
+function seoRenderChips(keywords, found) {
+  $('seo-kw-chips').innerHTML = keywords.map(kw =>
+    '<span class="kw-chip '+(found.includes(kw)?'found':'neutral')+'">'+(found.includes(kw)?'&#10003;':'&#9675;')+' '+kw+'</span>'
+  ).join('');
+}
+
+function seoAnalyze() {
+  if (!seoCurrent) return;
+  const text = $('seo-textarea').value;
+  const textLower = text.toLowerCase();
+  seoRenderMeters(seoCurrent.keywords, textLower);
+  const found = seoCurrent.keywords.filter(kw => textLower.includes(kw.toLowerCase()));
+  seoRenderChips(seoCurrent.keywords, found);
+  // Heatmap
+  let html = text;
+  seoCurrent.keywords.forEach(kw => {
+    const regex = new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+    const words = textLower.split(/\s+/).filter(w=>w).length||1;
+    const occ = (textLower.match(regex)||[]).length;
+    const density = (occ/words)*100;
+    const cls = density > 4 ? 'stuffed' : occ > 0 ? 'hot' : '';
+    if (cls) html = html.replace(regex, '<mark class="'+cls+'">$1</mark>');
+  });
+  $('seo-heatmap').innerHTML = html || '<span style="color:var(--text-muted)">Start typing to see keyword highlighting...</span>';
+}
+
+function seoRenderMeters(keywords, text) {
+  const words = text.split(/\s+/).filter(w => w).length || 1;
+  $('seo-meters').innerHTML = keywords.map(kw => {
+    const occ = (text.match(new RegExp(kw.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'))||[]).length;
+    const density = (occ/words)*100;
+    const isStuffed = density > 4;
+    const barWidth = Math.min(density*25, 100);
+    return '<div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;font-weight:600;color:var(--text);">'+kw+'</span><span style="font-size:12px;font-family:var(--font-mono);color:'+(isStuffed?'var(--error)':occ>0?'var(--success)':'var(--text-muted)')+';">'+occ+'x ('+density.toFixed(1)+'%)</span></div><div class="density-bar-wrap"><div class="density-bar '+(isStuffed?'danger':'')+'" style="width:'+barWidth+'%;"></div></div>'+(isStuffed?'<div style="font-size:11px;color:var(--error);margin-top:3px;">Keyword stuffing detected!</div>':'')+'</div>';
+  }).join('');
+}
+
+function seoSubmit() {
+  if (!seoCurrent) return;
+  const text = $('seo-textarea').value.trim();
+  if (!text) return;
+  const textLower = text.toLowerCase();
+  const words = text.split(/\s+/).filter(w=>w);
+  const totalWords = words.length||1;
+  const sentences = text.split(/[.!?]+/).filter(s=>s.trim());
+  const firstSentence = (sentences[0]||'').toLowerCase();
+
+  let totalScore = 0;
+  let breakdown = [];
+  seoCurrent.keywords.forEach(kw => {
+    const kwLower = kw.toLowerCase();
+    const occ = (textLower.match(new RegExp(kwLower.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'))||[]).length;
+    const density = (occ/totalWords)*100;
+    const inFirst = firstSentence.includes(kwLower);
+    const isStuffed = density > 4;
+    let kwScore = 0;
+    if (occ > 0 && !isStuffed) kwScore += 60;
+    else if (occ > 0 && isStuffed) kwScore += 20;
+    if (inFirst) kwScore += 25;
+    if (occ >= 2 && density <= 3) kwScore += 15;
+    kwScore = Math.min(kwScore, 100);
+    totalScore += kwScore;
+    breakdown.push({kw,occ,density,kwScore,inFirst,isStuffed});
+  });
+  const avgScore = Math.round(totalScore / seoCurrent.keywords.length);
+
+  const circ = 2*Math.PI*36;
+  $('seo-result-card').style.display = 'block';
+  $('seo-result-body').innerHTML = '<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;"><div class="total-score-inner" style="position:relative;"><svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90"><circle class="ring-bg" cx="45" cy="45" r="36"/><circle class="ring-fill" cx="45" cy="45" r="36" stroke="'+scoreColor(avgScore)+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+circ+'" data-target="'+(circ-(avgScore/100)*circ)+'" data-circ="'+circ+'" stroke-width="6"/></svg><div class="total-score-text"><div class="total-score-num" style="color:'+scoreColor(avgScore)+';font-size:22px;" id="seo-score-num">0</div><div class="total-score-label" style="font-size:9px;">SEO</div></div></div><div><div style="font-size:20px;font-weight:800;">SEO Score: '+avgScore+'/100</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">'+(avgScore>=80?'Excellent optimisation!':avgScore>=60?'Good effort, keep refining.':'Keep practising.')+'</div></div></div><div style="display:flex;flex-direction:column;gap:8px;">'+breakdown.map(b=>'<div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;font-weight:600;">'+b.kw+'</span><span style="font-size:13px;font-weight:700;color:'+scoreColor(b.kwScore)+';">'+b.kwScore+'/100</span></div><div style="font-size:12px;color:var(--text-muted);">'+b.occ+'x used'+(b.inFirst?' · In first sentence':'')+(b.isStuffed?' · Stuffed':'')+'</div></div>').join('')+'</div>';
+
+  animateRings();
+  animateNum($('seo-score-num'), avgScore);
+  seoScores.unshift({diff:seoDiff,score:avgScore,date:Date.now()});
+  if (seoScores.length > 20) seoScores = seoScores.slice(0,20);
+  store.set('seo_scores', seoScores);
   updateBadge('seo', seoScores.length);
+  addXP(Math.round(avgScore / 10) + 3);
+  if (avgScore >= 80) { launchConfetti(120); playSound('success'); } else { playSound('click'); }
+}
 
-  /* ============================================================
-     GAME 3 — BRAND VOICE WORKSHOP
-  ============================================================ */
-  const VOICE_DATA = {
-    corporate: {
-      emoji: '💼', label: 'Corporate',
-      characteristics: 'Use formal, polished language. Prefer passive constructions sparingly. Leverage industry terminology. Maintain a measured, authoritative tone.',
-      markers: ['leverage','facilitate','implement','synergy','strategic','solution','framework','comprehensive','stakeholder','optimize'],
-      ideal: 'Our organisation is pleased to present a comprehensive solution designed to facilitate operational efficiency and deliver measurable value to all stakeholders.'
-    },
-    casual: {
-      emoji: '😎', label: 'Casual',
-      characteristics: 'Keep it relaxed and conversational. Use contractions freely. Address the reader directly. Short sentences. Everyday vocabulary.',
-      markers: ["you'll","let's","easy","awesome","great","just","really","super","no-brainer","totally"],
-      ideal: "Here's the thing — it's really easy to get started, and you'll love how much time you save. Just give it a try!"
-    },
-    playful: {
-      emoji: '🎉', label: 'Playful',
-      characteristics: 'Use humour, wordplay, and exclamations. Emojis optional. Keep energy high. Short punchy sentences. Surprise the reader.',
-      markers: ['wow','amazing','fun','exciting','love','awesome','brilliant','cool','wild','magic'],
-      ideal: "Buckle up — this is going to be the most fun you've ever had with productivity! 🚀 Seriously, your future self is going to high-five you."
-    },
-    technical: {
-      emoji: '⚙️', label: 'Technical',
-      characteristics: 'Be precise and specific. Use industry jargon correctly. Support claims with data or mechanics. Prioritise accuracy over flair.',
-      markers: ['algorithm','implementation','configuration','parameter','protocol','architecture','latency','throughput','specification','integration'],
-      ideal: 'The system implements a distributed architecture with sub-50ms latency, supporting horizontal scaling via automated load-balancing algorithms.'
-    },
-    luxury: {
-      emoji: '✨', label: 'Luxury',
-      characteristics: 'Evoke exclusivity and elegance. Use sensory language. Imply status and refinement. Avoid clichés — use distinctive, aspirational vocabulary.',
-      markers: ['curated','exquisite','refined','bespoke','artisanal','elevated','discerning','unparalleled','impeccable','coveted'],
-      ideal: 'Crafted for those with an impeccable eye for detail, this bespoke experience elevates the everyday into the extraordinary — for the truly discerning few.'
-    }
-  };
+seoNewChallenge();
+updateBadge('seo', seoScores.length);
 
-  const VOICE_NEUTRALS = [
-    "Our product helps people do their jobs. It has several features that make work easier. Many customers use it every day and report that it saves them time.",
-    "The service connects buyers and sellers. Users can list items and set prices. Other users can search, compare, and purchase what they need.",
-    "Our team builds websites for small businesses. We take each project from concept to launch. We also offer ongoing support after the site goes live.",
-    "The event will take place next month. Tickets are available on our website. Speakers will cover topics related to technology and innovation.",
-    "We offer a range of wellness products. Each product is made with natural ingredients. Customers can choose from several sizes and formats."
-  ];
+/* ============================================================
+   GAME 3 — BRAND VOICE WORKSHOP
+============================================================ */
+const VOICE_DATA = {
+  corporate:{emoji:'\uD83D\uDCBC',label:'Corporate',sliders:[15,20,30,30],
+    characteristics:'Use formal, polished language. Leverage industry terminology. Maintain an authoritative tone.',
+    markers:['leverage','facilitate','implement','synergy','strategic','solution','framework','comprehensive','stakeholder','optimize'],
+    ideal:'Our organisation is pleased to present a comprehensive solution designed to facilitate operational efficiency and deliver measurable value to all stakeholders.'},
+  casual:{emoji:'\uD83D\uDE0E',label:'Casual',sliders:[85,65,80,50],
+    characteristics:'Keep it relaxed and conversational. Use contractions freely. Address the reader directly.',
+    markers:["you'll","let's","easy","awesome","great","just","really","super","no-brainer","totally"],
+    ideal:"Here's the thing -- it's really easy to get started, and you'll love how much time you save. Just give it a try!"},
+  playful:{emoji:'\uD83C\uDF89',label:'Playful',sliders:[80,95,75,25],
+    characteristics:'Use humour, wordplay, and exclamations. Keep energy high. Surprise the reader.',
+    markers:['wow','amazing','fun','exciting','love','awesome','brilliant','cool','wild','magic'],
+    ideal:"Buckle up -- this is going to be the most fun you've ever had with productivity! Seriously, your future self is going to high-five you."},
+  technical:{emoji:'\u2699\uFE0F',label:'Technical',sliders:[25,15,5,40],
+    characteristics:'Be precise and specific. Use industry jargon correctly. Support claims with data.',
+    markers:['algorithm','implementation','configuration','parameter','protocol','architecture','latency','throughput','specification','integration'],
+    ideal:'The system implements a distributed architecture with sub-50ms latency, supporting horizontal scaling via automated load-balancing algorithms.'},
+  luxury:{emoji:'\u2728',label:'Luxury',sliders:[30,40,60,15],
+    characteristics:'Evoke exclusivity and elegance. Use sensory language. Imply status and refinement.',
+    markers:['curated','exquisite','refined','bespoke','artisanal','elevated','discerning','unparalleled','impeccable','coveted'],
+    ideal:'Crafted for those with an impeccable eye for detail, this bespoke experience elevates the everyday into the extraordinary.'}
+};
 
-  let voiceCurrent = { neutral: '', voice: 'corporate' };
-  let voiceScores = store.get('voice_scores', []);
+const VOICE_NEUTRALS = [
+  "Our product helps people do their jobs. It has several features that make work easier. Many customers use it every day and report that it saves them time.",
+  "The service connects buyers and sellers. Users can list items and set prices. Other users can search, compare, and purchase what they need.",
+  "Our team builds websites for small businesses. We take each project from concept to launch. We also offer ongoing support after the site goes live.",
+  "The event will take place next month. Tickets are available on our website. Speakers will cover topics related to technology and innovation.",
+  "We offer a range of wellness products. Each product is made with natural ingredients. Customers can choose from several sizes and formats.",
+  "The new software update includes several improvements. Users have requested these features for months. The update also includes important security patches.",
+  "Our company provides training for employees. The courses cover leadership, communication, and technical skills. Participants can learn at their own pace."
+];
 
-  function voiceNewChallenge() {
-    voiceCurrent.neutral = rand(VOICE_NEUTRALS);
-    $('voice-neutral').textContent = voiceCurrent.neutral;
-    $('voice-textarea').value = '';
-    $('voice-result-card').style.display = 'none';
-    voiceUpdateCharacteristics();
-    drawRadar(voiceCurrent.voice, []);
+const RADAR_AXES = ['Formality','Energy','Specificity','Emotion','Vocabulary','Brevity'];
+const RADAR_PROFILES = {
+  corporate:[90,40,75,30,85,50],
+  casual:[25,70,40,60,35,80],
+  playful:[20,95,30,90,40,85],
+  technical:[80,35,95,25,90,55],
+  luxury:[75,50,60,85,95,40]
+};
+
+let voiceCurrent = {neutral:'',voice:'corporate'};
+let voiceScores = store.get('voice_scores', []);
+let voiceMode = 'write'; // 'write' or 'match'
+let voiceMatchTarget = null;
+let voiceSavedProfiles = store.get('voice_profiles', []);
+
+function voiceSetMode(mode) {
+  voiceMode = mode;
+  $('voice-mode-write').style.background = mode === 'write' ? 'var(--accent-soft)' : '';
+  $('voice-mode-write').style.borderColor = mode === 'write' ? 'var(--accent)' : 'var(--border)';
+  $('voice-mode-write').style.color = mode === 'write' ? 'var(--accent)' : 'var(--text-secondary)';
+  $('voice-mode-match').style.background = mode === 'match' ? 'var(--accent-soft)' : '';
+  $('voice-mode-match').style.borderColor = mode === 'match' ? 'var(--accent)' : 'var(--border)';
+  $('voice-mode-match').style.color = mode === 'match' ? 'var(--accent)' : 'var(--text-secondary)';
+
+  if (mode === 'match') {
+    $('voice-match-sample').style.display = 'block';
+    $('voice-match-submit').style.display = '';
+    $('voice-card-title').textContent = 'Match the Voice Challenge';
+    // Pick random voice as target, show its ideal text
+    const voices = Object.keys(VOICE_DATA);
+    const targetKey = rand(voices);
+    voiceMatchTarget = targetKey;
+    $('voice-match-text').textContent = VOICE_DATA[targetKey].ideal;
+    // Reset sliders to 50
+    ['formal','serious','technical','bold'].forEach(s => { $('slider-'+s).value = 50; });
+    voiceSliderChange();
+  } else {
+    $('voice-match-sample').style.display = 'none';
+    $('voice-match-submit').style.display = 'none';
+    $('voice-card-title').textContent = 'Neutral Text to Transform';
+    voiceMatchTarget = null;
   }
-
-  function voiceSelect(v) {
-    voiceCurrent.voice = v;
-    qsa('.voice-card').forEach(c => c.classList.toggle('active', c.dataset.voice === v));
-    voiceUpdateCharacteristics();
-    drawRadar(v, []);
-  }
-
-  function voiceUpdateCharacteristics() {
-    const vd = VOICE_DATA[voiceCurrent.voice];
-    $('voice-selected-label').textContent = `${vd.emoji} ${vd.label} Voice`;
-    $('voice-characteristics').innerHTML = `<strong>${vd.emoji} ${vd.label} Voice Tips:</strong> ${vd.characteristics}`;
-  }
-
-  /* Radar chart — animated SVG */
-  const RADAR_AXES = ['Formality','Energy','Specificity','Emotion','Vocabulary','Brevity'];
-  const RADAR_PROFILES = {
-    corporate:  [90, 40, 75, 30, 85, 50],
-    casual:     [25, 70, 40, 60, 35, 80],
-    playful:    [20, 95, 30, 90, 40, 85],
-    technical:  [80, 35, 95, 25, 90, 55],
-    luxury:     [75, 50, 60, 85, 95, 40]
-  };
-
-  function drawRadar(voice, userScores) {
-    const svg = $('voice-radar');
-    const W = 260, H = 260, CX = 130, CY = 130, R = 95;
-    const profile = RADAR_PROFILES[voice];
-    const n = RADAR_AXES.length;
-    const angleStep = (2 * Math.PI) / n;
-    const angleOffset = -Math.PI / 2;
-
-    function pt(val, i, radius) {
-      const a = i * angleStep + angleOffset;
-      return { x: CX + radius * (val / 100) * Math.cos(a), y: CY + radius * (val / 100) * Math.sin(a) };
-    }
-
-    let html = '';
-
-    /* Grid rings */
-    [20, 40, 60, 80, 100].forEach(pct => {
-      let pts = [];
-      for (let i = 0; i < n; i++) { const a = i * angleStep + angleOffset; pts.push(`${CX + R * (pct/100) * Math.cos(a)},${CY + R * (pct/100) * Math.sin(a)}`); }
-      html += `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
-    });
-
-    /* Spokes */
-    for (let i = 0; i < n; i++) {
-      const a = i * angleStep + angleOffset;
-      html += `<line x1="${CX}" y1="${CY}" x2="${CX + R * Math.cos(a)}" y2="${CY + R * Math.sin(a)}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
-    }
-
-    /* Profile fill */
-    const profilePts = profile.map((v, i) => { const p = pt(v, i, R); return `${p.x},${p.y}`; });
-    html += `<polygon points="${profilePts.join(' ')}" fill="rgba(99,132,255,0.15)" stroke="#6384ff" stroke-width="2" opacity="0.8"/>`;
-
-    /* User fill */
-    if (userScores && userScores.length === n) {
-      const userPts = userScores.map((v, i) => { const p = pt(v, i, R); return `${p.x},${p.y}`; });
-      html += `<polygon points="${userPts.join(' ')}" fill="rgba(52,211,153,0.15)" stroke="#34d399" stroke-width="2" stroke-dasharray="4 2"/>`;
-    }
-
-    /* Labels */
-    for (let i = 0; i < n; i++) {
-      const a = i * angleStep + angleOffset;
-      const lx = CX + (R + 18) * Math.cos(a);
-      const ly = CY + (R + 18) * Math.sin(a);
-      html += `<text x="${lx}" y="${ly + 4}" text-anchor="middle" fill="rgba(139,143,164,0.9)" font-size="10" font-family="Inter,sans-serif" font-weight="600">${RADAR_AXES[i]}</text>`;
-    }
-
-    /* Legend */
-    html += `<rect x="8" y="${H-30}" width="10" height="10" rx="2" fill="rgba(99,132,255,0.4)" stroke="#6384ff"/>
-             <text x="22" y="${H-22}" font-size="10" fill="rgba(139,143,164,0.8)" font-family="Inter,sans-serif">Target</text>`;
-    if (userScores && userScores.length) {
-      html += `<rect x="70" y="${H-30}" width="10" height="10" rx="2" fill="rgba(52,211,153,0.4)" stroke="#34d399"/>
-               <text x="84" y="${H-22}" font-size="10" fill="rgba(139,143,164,0.8)" font-family="Inter,sans-serif">Yours</text>`;
-    }
-
-    svg.innerHTML = html;
-  }
-
-  function voiceSubmit() {
-    const text = $('voice-textarea').value.trim();
-    if (!text) return;
-    const vd = VOICE_DATA[voiceCurrent.voice];
-    const textLower = text.toLowerCase();
-    const words = text.split(/\s+/).filter(w => w);
-    const sentences = text.split(/[.!?]+/).filter(s => s.trim().split(/\s+/).length > 1);
-    const avgLen = words.length / Math.max(sentences.length, 1);
-
-    /* Vocabulary score */
-    const markerHits = vd.markers.filter(m => textLower.includes(m)).length;
-    const vocabScore = clamp((markerHits / Math.max(vd.markers.length * 0.3, 2)) * 100, 0, 100);
-
-    /* Sentence structure score */
-    let structScore = 50;
-    if (voiceCurrent.voice === 'casual' || voiceCurrent.voice === 'playful') {
-      structScore = avgLen < 12 ? 90 : avgLen < 18 ? 70 : 40;
-    } else if (voiceCurrent.voice === 'technical' || voiceCurrent.voice === 'corporate') {
-      structScore = avgLen > 15 ? 85 : avgLen > 10 ? 65 : 45;
-    } else {
-      structScore = avgLen < 20 ? 80 : 55;
-    }
-
-    /* Emotional tone */
-    const emotionalWords = ['love','hate','fear','exciting','amazing','incredible','powerful','urgent','exclusive','rare','limited','miss'];
-    const emotHits = emotionalWords.filter(w => textLower.includes(w)).length;
-    const emotScore = clamp(emotHits * 25, 0, 100);
-
-    /* Consistency — length vs original */
-    const origWords = voiceCurrent.neutral.split(/\s+/).length;
-    const lenRatio = words.length / origWords;
-    const consistScore = lenRatio > 0.5 && lenRatio < 2 ? 85 : 55;
-
-    const total = Math.round((vocabScore + structScore + emotScore + consistScore) / 4);
-
-    /* Radar scores */
-    const voiceProfile = RADAR_PROFILES[voiceCurrent.voice];
-    const userRadar = [
-      clamp(structScore, 0, 100),
-      clamp(emotScore + 20, 0, 100),
-      clamp(vocabScore, 0, 100),
-      clamp(emotScore, 0, 100),
-      clamp(vocabScore + 10, 0, 100),
-      clamp(avgLen < 12 ? 85 : avgLen < 16 ? 65 : 40, 0, 100)
-    ];
-    drawRadar(voiceCurrent.voice, userRadar);
-
-    $('voice-result-card').style.display = 'block';
-    const { html: starsHtml } = renderStars(total);
-    $('voice-result-body').innerHTML = `
-      <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
-        <div class="total-score-inner" style="position:relative;">
-          <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
-            <circle class="ring-bg" cx="45" cy="45" r="36"/>
-            <circle class="ring-fill" cx="45" cy="45" r="36"
-              stroke="${scoreColor(total)}"
-              stroke-dasharray="${2*Math.PI*36}"
-              stroke-dashoffset="${2*Math.PI*36}"
-              data-target="${2*Math.PI*36 - (total/100)*2*Math.PI*36}"
-              data-circ="${2*Math.PI*36}"
-              stroke-width="6"/>
-          </svg>
-          <div class="total-score-text">
-            <div class="total-score-num" style="color:${scoreColor(total)};font-size:22px;" id="voice-score-num">0</div>
-            <div class="total-score-label" style="font-size:9px;">Score</div>
-          </div>
-        </div>
-        <div>
-          <div style="font-size:18px;font-weight:800;">Voice Match: ${total}/100</div>
-          ${starsHtml}
-        </div>
-      </div>
-      <div class="score-grid" style="grid-template-columns:repeat(2,1fr);">
-        <div style="text-align:center;">${makeRing('',Math.round(vocabScore),100,'#6384ff',70)}<div class="ring-val" style="color:#6384ff;font-size:14px;">${Math.round(vocabScore)}</div><div class="ring-label">Vocabulary</div></div>
-        <div style="text-align:center;">${makeRing('',Math.round(structScore),100,'#a855f7',70)}<div class="ring-val" style="color:#a855f7;font-size:14px;">${Math.round(structScore)}</div><div class="ring-label">Structure</div></div>
-        <div style="text-align:center;">${makeRing('',Math.round(emotScore),100,'#ec4899',70)}<div class="ring-val" style="color:#ec4899;font-size:14px;">${Math.round(emotScore)}</div><div class="ring-label">Emotion</div></div>
-        <div style="text-align:center;">${makeRing('',Math.round(consistScore),100,'#34d399',70)}<div class="ring-val" style="color:#34d399;font-size:14px;">${Math.round(consistScore)}</div><div class="ring-label">Consistency</div></div>
-      </div>
-      <hr class="section-divider">
-      <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Example Ideal Rewrite</div>
-      <div class="compare-grid">
-        <div class="compare-box yours"><h4>Yours</h4>${text}</div>
-        <div class="compare-box ideal"><h4>${vd.emoji} Ideal ${vd.label}</h4>${vd.ideal}</div>
-      </div>
-    `;
-    animateRings();
-    animateStars();
-    animateNum($('voice-score-num'), total);
-
-    voiceScores.unshift({ voice: voiceCurrent.voice, score: total, date: Date.now() });
-    if (voiceScores.length > 20) voiceScores = voiceScores.slice(0, 20);
-    store.set('voice_scores', voiceScores);
-    updateBadge('voice', voiceScores.length);
-
-    if (total >= 75) launchConfetti(100);
-    if (soundOn) triggerSoundFeedback();
-  }
-
-  /* Init Voice */
   voiceNewChallenge();
+}
+
+function voiceNewChallenge() {
+  voiceCurrent.neutral = rand(VOICE_NEUTRALS);
+  $('voice-neutral').textContent = voiceCurrent.neutral;
+  $('voice-textarea').value = '';
+  $('voice-result-card').style.display = 'none';
+  voiceUpdateCharacteristics();
+  drawRadar(voiceCurrent.voice, []);
+  if (voiceMode === 'match' && voiceMatchTarget) {
+    const voices = Object.keys(VOICE_DATA);
+    voiceMatchTarget = rand(voices);
+    $('voice-match-text').textContent = VOICE_DATA[voiceMatchTarget].ideal;
+  }
+}
+
+function voiceSelect(v) {
+  voiceCurrent.voice = v;
+  qsa('.voice-card').forEach(c => c.classList.toggle('active', c.dataset.voice === v));
+  voiceUpdateCharacteristics();
+  // Set sliders to match preset
+  const sliders = VOICE_DATA[v].sliders;
+  $('slider-formal').value = sliders[0];
+  $('slider-serious').value = sliders[1];
+  $('slider-technical').value = sliders[2];
+  $('slider-bold').value = sliders[3];
+  voiceSliderChange();
+  drawRadar(v, []);
+}
+
+function voiceSliderChange() {
+  // Update the live preview text based on slider positions
+  const formal = parseInt($('slider-formal').value);
+  const serious = parseInt($('slider-serious').value);
+  const technical = parseInt($('slider-technical').value);
+  const bold = parseInt($('slider-bold').value);
+  drawRadarFromSliders(formal, serious, technical, bold);
+}
+
+function drawRadarFromSliders(formal, serious, technical, bold) {
+  // Map sliders to radar axes: Formality, Energy, Specificity, Emotion, Vocabulary, Brevity
+  const profile = [
+    100 - formal,      // Formality (low formal = more formal)
+    serious,            // Energy
+    100 - technical,    // Specificity
+    serious * 0.8 + bold * 0.2, // Emotion
+    (100 - formal + 100 - technical) / 2, // Vocabulary
+    formal * 0.7 + 30   // Brevity
+  ];
+  const svg = $('voice-radar');
+  const W=260,H=260,CX=130,CY=130,R=95;
+  const n = RADAR_AXES.length;
+  const angleStep = (2*Math.PI)/n;
+  const angleOffset = -Math.PI/2;
+  let html = '';
+  [20,40,60,80,100].forEach(pct => {
+    let pts = [];
+    for (let i=0;i<n;i++){const a=i*angleStep+angleOffset;pts.push((CX+R*(pct/100)*Math.cos(a))+','+(CY+R*(pct/100)*Math.sin(a)));}
+    html += '<polygon points="'+pts.join(' ')+'" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>';
+  });
+  for (let i=0;i<n;i++){const a=i*angleStep+angleOffset;html += '<line x1="'+CX+'" y1="'+CY+'" x2="'+(CX+R*Math.cos(a))+'" y2="'+(CY+R*Math.sin(a))+'" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>';}
+  // Target profile (current voice)
+  const target = RADAR_PROFILES[voiceCurrent.voice];
+  const tPts = target.map((v,i)=>{const a=i*angleStep+angleOffset;return (CX+R*(v/100)*Math.cos(a))+','+(CY+R*(v/100)*Math.sin(a));});
+  html += '<polygon points="'+tPts.join(' ')+'" fill="rgba(99,132,255,0.15)" stroke="#6384ff" stroke-width="2" opacity="0.8"/>';
+  // Current slider profile
+  const uPts = profile.map((v,i)=>{const val=clamp(v,0,100);const a=i*angleStep+angleOffset;return (CX+R*(val/100)*Math.cos(a))+','+(CY+R*(val/100)*Math.sin(a));});
+  html += '<polygon points="'+uPts.join(' ')+'" fill="rgba(52,211,153,0.15)" stroke="#34d399" stroke-width="2" stroke-dasharray="4 2"/>';
+  // Labels
+  for(let i=0;i<n;i++){const a=i*angleStep+angleOffset;const lx=CX+(R+18)*Math.cos(a);const ly=CY+(R+18)*Math.sin(a);html += '<text x="'+lx+'" y="'+(ly+4)+'" text-anchor="middle" fill="rgba(139,143,164,0.9)" font-size="10" font-family="Inter,sans-serif" font-weight="600">'+RADAR_AXES[i]+'</text>';}
+  html += '<rect x="8" y="'+(H-30)+'" width="10" height="10" rx="2" fill="rgba(99,132,255,0.4)" stroke="#6384ff"/><text x="22" y="'+(H-22)+'" font-size="10" fill="rgba(139,143,164,0.8)" font-family="Inter,sans-serif">Target</text>';
+  html += '<rect x="70" y="'+(H-30)+'" width="10" height="10" rx="2" fill="rgba(52,211,153,0.4)" stroke="#34d399"/><text x="84" y="'+(H-22)+'" font-size="10" fill="rgba(139,143,164,0.8)" font-family="Inter,sans-serif">Yours</text>';
+  svg.innerHTML = html;
+}
+
+function drawRadar(voice, userScores) {
+  const svg = $('voice-radar');
+  const W=260,H=260,CX=130,CY=130,R=95;
+  const profile = RADAR_PROFILES[voice];
+  const n = RADAR_AXES.length;
+  const angleStep = (2*Math.PI)/n;
+  const angleOffset = -Math.PI/2;
+  let html = '';
+  [20,40,60,80,100].forEach(pct => {
+    let pts = [];
+    for(let i=0;i<n;i++){const a=i*angleStep+angleOffset;pts.push((CX+R*(pct/100)*Math.cos(a))+','+(CY+R*(pct/100)*Math.sin(a)));}
+    html += '<polygon points="'+pts.join(' ')+'" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>';
+  });
+  for(let i=0;i<n;i++){const a=i*angleStep+angleOffset;html += '<line x1="'+CX+'" y1="'+CY+'" x2="'+(CX+R*Math.cos(a))+'" y2="'+(CY+R*Math.sin(a))+'" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>';}
+  const tPts = profile.map((v,i)=>{const a=i*angleStep+angleOffset;return (CX+R*(v/100)*Math.cos(a))+','+(CY+R*(v/100)*Math.sin(a));});
+  html += '<polygon points="'+tPts.join(' ')+'" fill="rgba(99,132,255,0.15)" stroke="#6384ff" stroke-width="2" opacity="0.8"/>';
+  if (userScores&&userScores.length===n){
+    const uPts = userScores.map((v,i)=>{const a=i*angleStep+angleOffset;return (CX+R*(v/100)*Math.cos(a))+','+(CY+R*(v/100)*Math.sin(a));});
+    html += '<polygon points="'+uPts.join(' ')+'" fill="rgba(52,211,153,0.15)" stroke="#34d399" stroke-width="2" stroke-dasharray="4 2"/>';
+  }
+  for(let i=0;i<n;i++){const a=i*angleStep+angleOffset;const lx=CX+(R+18)*Math.cos(a);const ly=CY+(R+18)*Math.sin(a);html += '<text x="'+lx+'" y="'+(ly+4)+'" text-anchor="middle" fill="rgba(139,143,164,0.9)" font-size="10" font-family="Inter,sans-serif" font-weight="600">'+RADAR_AXES[i]+'</text>';}
+  html += '<rect x="8" y="'+(H-30)+'" width="10" height="10" rx="2" fill="rgba(99,132,255,0.4)" stroke="#6384ff"/><text x="22" y="'+(H-22)+'" font-size="10" fill="rgba(139,143,164,0.8)" font-family="Inter,sans-serif">Target</text>';
+  if(userScores&&userScores.length){html += '<rect x="70" y="'+(H-30)+'" width="10" height="10" rx="2" fill="rgba(52,211,153,0.4)" stroke="#34d399"/><text x="84" y="'+(H-22)+'" font-size="10" fill="rgba(139,143,164,0.8)" font-family="Inter,sans-serif">Yours</text>';}
+  svg.innerHTML = html;
+}
+
+function voiceUpdateCharacteristics() {
+  const vd = VOICE_DATA[voiceCurrent.voice];
+  $('voice-selected-label').textContent = vd.emoji+' '+vd.label+' Voice';
+  $('voice-characteristics').innerHTML = '<strong>'+vd.emoji+' '+vd.label+' Voice Tips:</strong> '+vd.characteristics;
+}
+
+function voiceSubmit() {
+  const text = $('voice-textarea').value.trim();
+  if (!text) return;
+  const vd = VOICE_DATA[voiceCurrent.voice];
+  const textLower = text.toLowerCase();
+  const words = text.split(/\s+/).filter(w=>w);
+  const sentences = text.split(/[.!?]+/).filter(s=>s.trim().split(/\s+/).length>1);
+  const avgLen = words.length / Math.max(sentences.length,1);
+
+  const markerHits = vd.markers.filter(m=>textLower.includes(m)).length;
+  const vocabScore = clamp((markerHits/Math.max(vd.markers.length*.3,2))*100,0,100);
+  let structScore = 50;
+  if (voiceCurrent.voice==='casual'||voiceCurrent.voice==='playful') structScore = avgLen<12?90:avgLen<18?70:40;
+  else if (voiceCurrent.voice==='technical'||voiceCurrent.voice==='corporate') structScore = avgLen>15?85:avgLen>10?65:45;
+  else structScore = avgLen<20?80:55;
+  const emotionalWords = ['love','hate','fear','exciting','amazing','incredible','powerful','urgent','exclusive','rare'];
+  const emotHits = emotionalWords.filter(w=>textLower.includes(w)).length;
+  const emotScore = clamp(emotHits*25,0,100);
+  const origWords = voiceCurrent.neutral.split(/\s+/).length;
+  const lenRatio = words.length / origWords;
+  const consistScore = lenRatio>.5&&lenRatio<2?85:55;
+  const total = Math.round((vocabScore+structScore+emotScore+consistScore)/4);
+
+  const userRadar = [clamp(structScore,0,100),clamp(emotScore+20,0,100),clamp(vocabScore,0,100),clamp(emotScore,0,100),clamp(vocabScore+10,0,100),clamp(avgLen<12?85:avgLen<16?65:40,0,100)];
+  drawRadar(voiceCurrent.voice, userRadar);
+
+  $('voice-result-card').style.display = 'block';
+  const {html:starsHtml} = renderStars(total);
+  const circ = 2*Math.PI*36;
+  $('voice-result-body').innerHTML = '<div style="display:flex;gap:16px;align-items:center;margin-bottom:16px;flex-wrap:wrap;"><div class="total-score-inner" style="position:relative;"><svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90"><circle class="ring-bg" cx="45" cy="45" r="36"/><circle class="ring-fill" cx="45" cy="45" r="36" stroke="'+scoreColor(total)+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+circ+'" data-target="'+(circ-(total/100)*circ)+'" data-circ="'+circ+'" stroke-width="6"/></svg><div class="total-score-text"><div class="total-score-num" style="color:'+scoreColor(total)+';font-size:22px;" id="voice-score-num">0</div><div class="total-score-label" style="font-size:9px;">Score</div></div></div><div><div style="font-size:18px;font-weight:800;">Voice Match: '+total+'/100</div>'+starsHtml+'</div></div><div class="score-grid" style="grid-template-columns:repeat(2,1fr);"><div style="text-align:center;">'+makeRing('',Math.round(vocabScore),100,'#6384ff',70)+'<div class="ring-val" style="color:#6384ff;font-size:14px;">'+Math.round(vocabScore)+'</div><div class="ring-label">Vocabulary</div></div><div style="text-align:center;">'+makeRing('',Math.round(structScore),100,'#a855f7',70)+'<div class="ring-val" style="color:#a855f7;font-size:14px;">'+Math.round(structScore)+'</div><div class="ring-label">Structure</div></div><div style="text-align:center;">'+makeRing('',Math.round(emotScore),100,'#ec4899',70)+'<div class="ring-val" style="color:#ec4899;font-size:14px;">'+Math.round(emotScore)+'</div><div class="ring-label">Emotion</div></div><div style="text-align:center;">'+makeRing('',Math.round(consistScore),100,'#34d399',70)+'<div class="ring-val" style="color:#34d399;font-size:14px;">'+Math.round(consistScore)+'</div><div class="ring-label">Consistency</div></div></div><hr class="section-divider"><div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Example Ideal Rewrite</div><div class="compare-grid"><div class="compare-box yours"><h4>Yours</h4>'+text+'</div><div class="compare-box ideal"><h4>'+vd.emoji+' Ideal '+vd.label+'</h4>'+vd.ideal+'</div></div>';
+
+  animateRings(); animateStars(); animateNum($('voice-score-num'), total);
+  voiceScores.unshift({voice:voiceCurrent.voice,score:total,date:Date.now()});
+  if (voiceScores.length > 20) voiceScores = voiceScores.slice(0,20);
+  store.set('voice_scores', voiceScores);
   updateBadge('voice', voiceScores.length);
+  addXP(Math.round(total / 10) + 3);
+  if (total >= 75) { launchConfetti(100); playSound('success'); } else { playSound('click'); }
+}
 
-  /* ============================================================
-     GAME 4 — COPY BATTLE ARENA
-  ============================================================ */
-  const BATTLE_DATA = {
-    headlines: [
-      { a: "New Email Tool Available Now", b: "Write Emails 3× Faster — Starting Today", winner: 'b', explanation: "Option B uses a specific multiplier (3×), addresses a direct benefit, and creates urgency with 'Starting Today'. Specificity and immediate value always beat vague claims.", principle: "Specificity", principleDesc: "Concrete numbers build credibility. '3× faster' is more compelling than 'faster' because it gives the reader a tangible, believable promise." },
-      { a: "We're the #1 Trusted Marketing Platform", b: "Stop Losing Leads. Start Closing Deals.", winner: 'b', explanation: "Option B uses the PAS framework opener — it names the pain ('Stop Losing Leads') then transitions to desire. Option A makes a self-congratulatory claim with no proof and no benefit to the reader.", principle: "PAS (Problem–Agitate–Solve)", principleDesc: "Lead with the reader's problem to immediately capture attention. Self-promotional claims rarely outperform reader-centric copy." },
-      { a: "Improve Your Sleep Tonight With Our Supplement", b: "Tired of Being Tired? Sleep Like a Baby — Guaranteed", winner: 'b', explanation: "Option B opens with a relatable question (curiosity hook), uses vivid imagery ('Sleep Like a Baby'), and adds a risk reversal ('Guaranteed'). These three devices in one headline dramatically outperform a flat feature statement.", principle: "Emotional Trigger + Risk Reversal", principleDesc: "Relatable questions create instant resonance. Risk reversal removes objections before they form — a powerful one-two punch." },
-      { a: "Our AI Writes Blog Posts", b: "What If You Could Publish Great Blogs in 60 Seconds?", winner: 'b', explanation: "Option B opens with a curiosity-driven 'What If' question and quantifies the promise ('60 Seconds'). Option A is purely descriptive with zero emotional pull.", principle: "Curiosity + Specificity", principleDesc: "'What If' questions are scientifically proven to boost engagement by triggering the reader's imagination and desire to know the answer." }
-    ],
-    ctas: [
-      { a: "Click Here", b: "Get My Free Growth Plan →", winner: 'b', explanation: "Option B is personalised ('My' creates ownership), value-specific ('Free Growth Plan'), and directional (arrow). 'Click Here' provides zero context or motivation.", principle: "Value-Forward CTA", principleDesc: "A CTA should answer the implicit question: 'What do I get?' Personalisation with first-person language ('My') can increase clicks by up to 90%." },
-      { a: "Subscribe", b: "Join 47,000 Founders Getting Weekly Insights", winner: 'b', explanation: "Option B provides social proof (47,000 founders), defines the tribe (Founders), and clarifies the value (Weekly Insights). 'Subscribe' is a friction word that focuses on cost not benefit.", principle: "Social Proof + Tribe Identity", principleDesc: "Humans are tribal — showing who else is already in increases trust and FOMO simultaneously. Specificity in the number makes it more believable." },
-      { a: "Start Free Trial", b: "Start Free — No Credit Card Required", winner: 'b', explanation: "Both are decent, but Option B adds a powerful objection-buster. 'No Credit Card Required' is one of the highest-impact micro-copy additions in SaaS — it removes the #1 hesitation.", principle: "Objection Removal", principleDesc: "Anticipate and remove objections inline. The phrase 'No Credit Card Required' can increase trial sign-ups by 30–60% on its own." }
-    ],
-    email: [
-      { a: "Monthly Newsletter – March Issue", b: "You're leaving money on the table (here's how to fix it)", winner: 'b', explanation: "Option B uses a loss-aversion trigger and immediately promises a solution. Option A is a generic label that gives no reason to open.", principle: "Loss Aversion", principleDesc: "Daniel Kahneman's research shows losses feel ~2× more painful than equivalent gains feel good. Subject lines that imply loss consistently outperform gain-framing." },
-      { a: "We've Updated Our Product", b: "This new feature just saved one customer 12 hours/week", winner: 'b', explanation: "Option B uses a real (or realistic) case study with a specific quantified result. It tells a mini-story and makes the benefit concrete. Option A is purely company-centric.", principle: "Social Proof via Story", principleDesc: "Micro-stories in subject lines (even implied ones) boost open rates because they trigger the human brain's story-processing instinct." },
-      { a: "Important Information About Your Account", b: "Quick question, [Name]…", winner: 'b', explanation: "Option B is personalised, brief, and curiosity-triggering. 'Important information' has become a spam signal. Conversational, personal subject lines dramatically outperform formal notices.", principle: "Personalisation + Curiosity Gap", principleDesc: "A 'curiosity gap' — where you hint at information without giving it — is one of the most reliable ways to improve open rates. The brain craves closure." }
-    ],
-    social: [
-      { a: "Check out our latest blog post about content marketing!", b: "3 things that doubled our blog traffic in 60 days (we shared everything):", winner: 'b', explanation: "Option B is specific (3 things, 60 days), uses authority ('we shared everything' = transparency), and implies a listicle structure which performs well on all platforms.", principle: "Specificity + Transparency Hook", principleDesc: "Numbered lists signal scannability. 'We shared everything' is a transparency hook that builds trust and curiosity simultaneously." },
-      { a: "Great article on AI tools! Highly recommend reading it.", b: "I used AI to write 30 days of content in 4 hours. Here's the exact process:", winner: 'b', explanation: "Option B is a first-person proof post — it makes a bold, specific claim and promises a 'how-to'. This format drives massive saves and shares because of its practical utility.", principle: "Proof + Process Promise", principleDesc: "First-person experience posts outperform generic recommendations because authenticity and specificity are the two highest trust-builders in social copy." }
-    ]
+function voiceMatchSubmit() {
+  if (!voiceMatchTarget) return;
+  const targetSliders = VOICE_DATA[voiceMatchTarget].sliders;
+  const userSliders = [
+    parseInt($('slider-formal').value),
+    parseInt($('slider-serious').value),
+    parseInt($('slider-technical').value),
+    parseInt($('slider-bold').value)
+  ];
+  let totalDiff = 0;
+  for (let i=0;i<4;i++) totalDiff += Math.abs(targetSliders[i]-userSliders[i]);
+  const score = Math.round(Math.max(0, 100 - (totalDiff / 4)));
+
+  $('voice-result-card').style.display = 'block';
+  $('voice-result-body').innerHTML = '<div style="text-align:center;padding:24px;"><div style="font-size:48px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">'+score+'/100</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px;">Voice: '+VOICE_DATA[voiceMatchTarget].emoji+' '+VOICE_DATA[voiceMatchTarget].label+'</div><div style="margin-top:16px;font-size:13px;color:var(--text-muted);">'+(score>=80?'Excellent match! You have a great ear for voice.':score>=60?'Good attempt! Study the preset values to improve.':'Keep practising -- try loading the preset to see the target values.')+'</div></div>';
+
+  addXP(Math.round(score / 10) + 2);
+  if (score >= 80) { launchConfetti(80); playSound('success'); } else { playSound('click'); }
+}
+
+function voiceSaveProfile() {
+  const name = prompt('Name this voice profile:');
+  if (!name) return;
+  const profile = {
+    name,
+    formal: parseInt($('slider-formal').value),
+    serious: parseInt($('slider-serious').value),
+    technical: parseInt($('slider-technical').value),
+    bold: parseInt($('slider-bold').value),
+    date: Date.now()
   };
+  voiceSavedProfiles.unshift(profile);
+  if (voiceSavedProfiles.length > 10) voiceSavedProfiles = voiceSavedProfiles.slice(0,10);
+  store.set('voice_profiles', voiceSavedProfiles);
+  voiceRenderSavedProfiles();
+  playSound('success');
+}
 
-  let battleState = {
-    cat: 'headlines',
-    round: 1,
-    streak: store.get('battle_streak', 0),
-    score: store.get('battle_score', 0),
-    history: store.get('battle_history', []),
-    current: null,
-    answered: false
-  };
+function voiceRenderSavedProfiles() {
+  const el = $('voice-saved-profiles');
+  if (!voiceSavedProfiles.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text-muted);text-align:center;">No saved profiles yet.</p>'; return; }
+  el.innerHTML = voiceSavedProfiles.map((p,i) => '<div class="history-item" style="cursor:pointer;" onclick="voiceLoadProfile('+i+')"><span class="history-item-topic">'+p.name+'</span><span style="font-size:11px;color:var(--text-muted);">F:'+p.formal+' S:'+p.serious+' T:'+p.technical+' B:'+p.bold+'</span></div>').join('');
+}
 
-  function battleSetCat(cat) {
-    battleState.cat = cat;
-    qsa('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-    $('battle-cat-label').textContent = { headlines: 'Headlines', ctas: 'CTAs', email: 'Email Subject Lines', social: 'Social Posts' }[cat];
-    battleNext();
-  }
+function voiceLoadProfile(idx) {
+  const p = voiceSavedProfiles[idx];
+  if (!p) return;
+  $('slider-formal').value = p.formal;
+  $('slider-serious').value = p.serious;
+  $('slider-technical').value = p.technical;
+  $('slider-bold').value = p.bold;
+  voiceSliderChange();
+  playSound('click');
+}
 
-  function battleNext() {
-    const pool = BATTLE_DATA[battleState.cat];
-    battleState.current = rand(pool);
-    battleState.answered = false;
-    $('battle-explanation').style.display = 'none';
+voiceNewChallenge();
+voiceRenderSavedProfiles();
+updateBadge('voice', voiceScores.length);
+drawRadar('corporate', []);
 
-    $('battle-grid').innerHTML = `
-      <div class="battle-card" id="battle-a" onclick="battlePick('a')">
-        <div class="battle-card-label">Option A</div>
-        <div class="battle-card-text">${battleState.current.a}</div>
-        <div class="battle-annotation" id="battle-ann-a"></div>
-      </div>
-      <div class="battle-card" id="battle-b" onclick="battlePick('b')">
-        <div class="battle-card-label">Option B</div>
-        <div class="battle-card-text">${battleState.current.b}</div>
-        <div class="battle-annotation" id="battle-ann-b"></div>
-      </div>`;
+/* ============================================================
+   GAME 4 — COPY BATTLE ARENA
+============================================================ */
+const BATTLE_DATA = {
+  headlines: [
+    {a:"New Email Tool Available Now",b:"Write Emails 3x Faster -- Starting Today",winner:'b',explanation:"Option B uses a specific multiplier (3x), addresses a direct benefit, and creates urgency. Specificity and immediate value always beat vague claims.",principle:"Specificity",principleDesc:"Concrete numbers build credibility. '3x faster' is more compelling than 'faster'."},
+    {a:"We're the #1 Trusted Marketing Platform",b:"Stop Losing Leads. Start Closing Deals.",winner:'b',explanation:"Option B uses the PAS framework -- names the pain then transitions to desire. Option A is self-congratulatory with no proof.",principle:"PAS",principleDesc:"Lead with the reader's problem to immediately capture attention."},
+    {a:"Improve Your Sleep Tonight With Our Supplement",b:"Tired of Being Tired? Sleep Like a Baby -- Guaranteed",winner:'b',explanation:"Option B opens with a relatable question, uses vivid imagery, and adds risk reversal. These three devices outperform a flat feature statement.",principle:"Emotional Trigger + Risk Reversal",principleDesc:"Relatable questions create instant resonance. Risk reversal removes objections."},
+    {a:"Our AI Writes Blog Posts",b:"What If You Could Publish Great Blogs in 60 Seconds?",winner:'b',explanation:"Option B opens with a curiosity-driven question and quantifies the promise. Option A is descriptive with zero emotional pull.",principle:"Curiosity + Specificity",principleDesc:"'What If' questions boost engagement by triggering imagination and desire."},
+    {a:"Launch Your Store Today",b:"From Side Hustle to $10K/Month -- Here's Your Blueprint",winner:'b',explanation:"Option B paints a transformation journey with a specific financial goal. It implies a proven path and uses aspirational language.",principle:"Transformation Narrative",principleDesc:"Showing a before/after transformation is more compelling than a command."}
+  ],
+  ctas: [
+    {a:"Click Here",b:"Get My Free Growth Plan",winner:'b',explanation:"Option B is personalised ('My' creates ownership), value-specific ('Free Growth Plan'), and directional. 'Click Here' provides zero motivation.",principle:"Value-Forward CTA",principleDesc:"A CTA should answer: 'What do I get?' First-person language can increase clicks up to 90%."},
+    {a:"Subscribe",b:"Join 47,000 Founders Getting Weekly Insights",winner:'b',explanation:"Option B provides social proof, defines the tribe, and clarifies the value. 'Subscribe' is a friction word with no benefit.",principle:"Social Proof + Tribe Identity",principleDesc:"Showing who else is already in increases trust and FOMO simultaneously."},
+    {a:"Start Free Trial",b:"Start Free -- No Credit Card Required",winner:'b',explanation:"Option B adds a powerful objection-buster. 'No Credit Card Required' removes the #1 hesitation.",principle:"Objection Removal",principleDesc:"The phrase 'No Credit Card Required' can increase trial sign-ups by 30-60%."},
+    {a:"Download Now",b:"Download the Playbook (5-Minute Read)",winner:'b',explanation:"Option B sets expectations with the time investment, reducing perceived commitment. It names the content type specifically.",principle:"Commitment Clarity",principleDesc:"Telling users exactly what they get and how long it takes reduces friction."}
+  ],
+  email: [
+    {a:"Monthly Newsletter -- March Issue",b:"You're leaving money on the table (here's how to fix it)",winner:'b',explanation:"Option B uses a loss-aversion trigger and immediately promises a solution. Option A is a generic label with no reason to open.",principle:"Loss Aversion",principleDesc:"Losses feel ~2x more painful than equivalent gains. Loss-framing subject lines outperform gain-framing."},
+    {a:"We've Updated Our Product",b:"This new feature just saved one customer 12 hours/week",winner:'b',explanation:"Option B uses a case study with a specific quantified result. It tells a mini-story and makes the benefit concrete.",principle:"Social Proof via Story",principleDesc:"Micro-stories in subject lines boost open rates by triggering the brain's story-processing instinct."},
+    {a:"Important Information About Your Account",b:"Quick question for you...",winner:'b',explanation:"Option B is brief and curiosity-triggering. 'Important information' has become a spam signal. Conversational subject lines outperform formal notices.",principle:"Curiosity Gap",principleDesc:"A curiosity gap hints at information without giving it -- the brain craves closure."},
+    {a:"New Blog Post Published",b:"I made a mistake last week (and it cost me $2,400)",winner:'b',explanation:"Option B uses vulnerability, specificity, and curiosity. Admitting a mistake feels authentic and the specific cost demands attention.",principle:"Vulnerability + Specificity",principleDesc:"Authentic vulnerability builds trust. Specific dollar amounts make claims tangible and believable."}
+  ],
+  social: [
+    {a:"Check out our latest blog post about content marketing!",b:"3 things that doubled our blog traffic in 60 days (we shared everything):",winner:'b',explanation:"Option B is specific (3 things, 60 days), uses authority, and implies a listicle structure which performs well on all platforms.",principle:"Specificity + Transparency Hook",principleDesc:"Numbered lists signal scannability. 'We shared everything' builds trust and curiosity."},
+    {a:"Great article on AI tools! Highly recommend reading it.",b:"I used AI to write 30 days of content in 4 hours. Here's the exact process:",winner:'b',explanation:"Option B is a first-person proof post with a specific claim and promises a how-to. This format drives saves and shares.",principle:"Proof + Process Promise",principleDesc:"First-person experience posts outperform generic recommendations due to authenticity."},
+    {a:"Happy Friday everyone! Hope you have a great weekend.",b:"Friday brain dump: 5 lessons from failing at 3 startups (thread)",winner:'b',explanation:"Option B transforms a throwaway post into valuable content. It uses vulnerability, specificity, and the 'thread' hook.",principle:"Value Density",principleDesc:"Every post should deliver value. Personal failure stories with lessons are consistently high-performing."}
+  ],
+  product: [
+    {a:"High-quality wireless headphones with great sound.",b:"Studio-grade audio. 40-hour battery. One charge for your entire work week.",winner:'b',explanation:"Option B uses specific specs (40-hour, studio-grade) and frames features as lifestyle benefits (entire work week). Specifics always outperform generics.",principle:"Feature-to-Benefit Translation",principleDesc:"Don't just list features -- translate them into how they improve the customer's daily life."},
+    {a:"Our moisturizer is made with natural ingredients and is good for your skin.",b:"Wake up to visibly softer skin in 7 days -- or your money back.",winner:'b',explanation:"Option B sets a concrete timeline (7 days), uses sensory language (visibly softer), and adds a guarantee. It sells the outcome, not the process.",principle:"Outcome-First + Guarantee",principleDesc:"Customers buy outcomes, not ingredients. Adding a guarantee removes the final purchasing barrier."},
+    {a:"A comfortable office chair for long work sessions.",b:"Designed with NASA-inspired lumbar support. Your back will thank you at 5 PM.",winner:'b',explanation:"Option B uses authority anchoring (NASA), names the specific benefit (lumbar support), and paints a vivid moment (5 PM). It makes the benefit tangible.",principle:"Authority Anchoring",principleDesc:"Associating with a respected entity (NASA) instantly elevates perceived quality and credibility."}
+  ]
+};
 
-    $('battle-round').textContent = battleState.round;
-    $('battle-streak').textContent = battleState.streak;
-    $('battle-score').textContent = battleState.score;
-  }
+let battleState = {
+  cat:'headlines', round:1,
+  streak: store.get('battle_streak',0),
+  score: store.get('battle_score',0),
+  history: store.get('battle_history',[]),
+  current:null, answered:false
+};
 
-  function battlePick(choice) {
-    if (battleState.answered) return;
-    battleState.answered = true;
-    const correct = battleState.current.winner;
-    const won = choice === correct;
-
-    /* Visual feedback on cards */
-    const cardA = $('battle-a');
-    const cardB = $('battle-b');
-    cardA.onclick = null; cardB.onclick = null;
-    cardA.style.cursor = 'default'; cardB.style.cursor = 'default';
-
-    cardA.classList.add(correct === 'a' ? 'revealed-win' : 'revealed-lose');
-    cardB.classList.add(correct === 'b' ? 'revealed-win' : 'revealed-lose');
-    if (choice === 'a') cardA.classList.add(won ? 'selected-win' : 'selected-lose');
-    if (choice === 'b') cardB.classList.add(won ? 'selected-win' : 'selected-lose');
-
-    /* Annotations */
-    const winCard = correct === 'a' ? $('battle-ann-a') : $('battle-ann-b');
-    const loseCard = correct === 'a' ? $('battle-ann-b') : $('battle-ann-a');
-    winCard.innerHTML = `<span class="annotation-tag win">✓ Winner</span>Strong copywriting principles applied here.`;
-    winCard.className = 'battle-annotation win show';
-    loseCard.innerHTML = `<span class="annotation-tag lose">✗ Weaker</span>See explanation below for what it lacks.`;
-    loseCard.className = 'battle-annotation lose show';
-
-    /* Explanation */
-    $('battle-explanation').style.display = 'block';
-    $('battle-why-letter').textContent = correct.toUpperCase();
-    $('battle-explanation-text').textContent = battleState.current.explanation;
-    $('battle-principle').innerHTML = `<div class="principle-name">${battleState.current.principle}</div><div class="principle-desc">${battleState.current.principleDesc}</div>`;
-
-    /* Score update */
-    if (won) {
-      battleState.streak++;
-      battleState.score += 10 + Math.min(battleState.streak * 2, 20);
-      if (soundOn) triggerSoundFeedback();
-      if (battleState.streak >= 3) launchConfetti(80);
-    } else {
-      battleState.streak = 0;
-    }
-    battleState.round++;
-
-    /* History */
-    battleState.history.unshift({ cat: battleState.cat, correct: won, round: battleState.round - 1 });
-    if (battleState.history.length > 15) battleState.history = battleState.history.slice(0, 15);
-
-    store.set('battle_streak', battleState.streak);
-    store.set('battle_score', battleState.score);
-    store.set('battle_history', battleState.history);
-
-    $('battle-streak').textContent = battleState.streak;
-    $('battle-score').textContent = battleState.score;
-    $('battle-round').textContent = battleState.round;
-
-    battleRenderHistory();
-    updateBadge('battle', battleState.history.length);
-  }
-
-  function battleRenderHistory() {
-    const list = $('battle-history');
-    const empty = $('battle-history-empty');
-    if (!battleState.history.length) { empty.style.display = 'block'; list.innerHTML = ''; return; }
-    empty.style.display = 'none';
-    const catLabels = { headlines: '📰 Headline', ctas: '🎯 CTA', email: '📧 Email', social: '📱 Social' };
-    list.innerHTML = battleState.history.map((h, i) => `
-      <div class="history-item">
-        <span class="history-item-topic">${catLabels[h.cat] || h.cat} — Round ${h.round}</span>
-        <span class="history-score-badge ${h.correct ? 'score-high' : 'score-low'}">${h.correct ? '✓ Correct' : '✗ Wrong'}</span>
-      </div>`).join('');
-  }
-
-  /* Init Battle */
+function battleSetCat(cat) {
+  battleState.cat = cat;
+  qsa('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  const labels = {headlines:'Headlines',ctas:'CTAs',email:'Email Subject Lines',social:'Social Posts',product:'Product Descriptions'};
+  $('battle-cat-label').textContent = labels[cat] || cat;
   battleNext();
+}
+
+function battleNext() {
+  const pool = BATTLE_DATA[battleState.cat];
+  battleState.current = rand(pool);
+  battleState.answered = false;
+  $('battle-explanation').style.display = 'none';
+  $('battle-grid').innerHTML = '<div class="battle-card" id="battle-a" onclick="battlePick(\'a\')"><div class="battle-card-label">Option A</div><div class="battle-card-text">'+battleState.current.a+'</div><div class="battle-annotation" id="battle-ann-a"></div></div><div class="battle-card" id="battle-b" onclick="battlePick(\'b\')"><div class="battle-card-label">Option B</div><div class="battle-card-text">'+battleState.current.b+'</div><div class="battle-annotation" id="battle-ann-b"></div></div>';
+  $('battle-round').textContent = battleState.round;
+  $('battle-streak').textContent = battleState.streak;
+  $('battle-score').textContent = battleState.score;
+}
+
+function battlePick(choice) {
+  if (battleState.answered) return;
+  battleState.answered = true;
+  const correct = battleState.current.winner;
+  const won = choice === correct;
+
+  const cardA = $('battle-a'), cardB = $('battle-b');
+  cardA.onclick = null; cardB.onclick = null;
+  cardA.style.cursor = 'default'; cardB.style.cursor = 'default';
+  cardA.classList.add(correct==='a'?'revealed-win':'revealed-lose');
+  cardB.classList.add(correct==='b'?'revealed-win':'revealed-lose');
+  if (choice==='a') cardA.classList.add(won?'selected-win':'selected-lose');
+  if (choice==='b') cardB.classList.add(won?'selected-win':'selected-lose');
+
+  const winAnn = correct==='a'?$('battle-ann-a'):$('battle-ann-b');
+  const loseAnn = correct==='a'?$('battle-ann-b'):$('battle-ann-a');
+  winAnn.innerHTML = '<span class="annotation-tag win">Winner</span>Strong copywriting principles.';
+  winAnn.className = 'battle-annotation win show';
+  loseAnn.innerHTML = '<span class="annotation-tag lose">Weaker</span>See explanation below.';
+  loseAnn.className = 'battle-annotation lose show';
+
+  $('battle-explanation').style.display = 'block';
+  $('battle-why-letter').textContent = correct.toUpperCase();
+  $('battle-explanation-text').textContent = battleState.current.explanation;
+  $('battle-principle').innerHTML = '<div class="principle-name">'+battleState.current.principle+'</div><div class="principle-desc">'+battleState.current.principleDesc+'</div>';
+
+  if (won) {
+    battleState.streak++;
+    battleState.score += 10 + Math.min(battleState.streak * 2, 20);
+    playSound('success');
+    if (battleState.streak >= 3) launchConfetti(80);
+  } else {
+    battleState.streak = 0;
+    playSound('fail');
+  }
+  battleState.round++;
+  battleState.history.unshift({cat:battleState.cat,correct:won,round:battleState.round-1});
+  if (battleState.history.length > 15) battleState.history = battleState.history.slice(0,15);
+  store.set('battle_streak', battleState.streak);
+  store.set('battle_score', battleState.score);
+  store.set('battle_history', battleState.history);
+
+  $('battle-streak').textContent = battleState.streak;
+  $('battle-score').textContent = battleState.score;
+  $('battle-round').textContent = battleState.round;
   battleRenderHistory();
   updateBadge('battle', battleState.history.length);
+  addXP(won ? 8 : 2);
+}
 
-  /* ── Draw initial radar ── */
-  drawRadar('corporate', []);
+function battleRenderHistory() {
+  const list = $('battle-history');
+  const empty = $('battle-history-empty');
+  if (!battleState.history.length) { empty.style.display = 'block'; list.innerHTML = ''; return; }
+  empty.style.display = 'none';
+  const catLabels = {headlines:'Headline',ctas:'CTA',email:'Email',social:'Social',product:'Product'};
+  list.innerHTML = battleState.history.map(h => '<div class="history-item"><span class="history-item-topic">'+(catLabels[h.cat]||h.cat)+' -- Round '+h.round+'</span><span class="history-score-badge '+(h.correct?'score-high':'score-low')+'">'+(h.correct?'Correct':'Wrong')+'</span></div>').join('');
+}
 
-  /* ── Scroll-into-view entry animations ── */
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.style.animationPlayState = 'running'; } });
-  }, { threshold: 0.1 });
-  qsa('.card, .challenge-banner').forEach(el => {
-    el.style.animationPlayState = 'paused';
-    el.style.animation = 'fadeUpIn 500ms var(--ease-out) both';
-    observer.observe(el);
-  });
-  </script>
+battleNext();
+battleRenderHistory();
+updateBadge('battle', battleState.history.length);
+
+/* ── Entry Animations ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.style.animationPlayState = 'running'; });
+}, {threshold:0.1});
+qsa('.card, .challenge-banner').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  el.style.animation = 'fadeUpIn 500ms var(--ease-out) both';
+  observer.observe(el);
+});
+</script>
 </body>
 </html>
